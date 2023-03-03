@@ -1,11 +1,11 @@
 import { A, useNavigate } from "@solidjs/router"
 import { Box, Button, Table, TableBody, TableCell, TableHead, TableRow, Modal, TextField } from "@suid/material"
 import { createSignal, For, JSX, onMount } from "solid-js"
+import NewProductPopup from "../components/Nomenclature/NewProductPopup/NewProductPopup"
 import { API_URL } from "../config/config"
 
 export default function Nomenclature() {
 	const [products, setProducts] = createSignal<any[]>([])
-	const [product, setProduct] = createSignal({ name: "" })
 	const [isFetching, setIsFetching] = createSignal(false)
 	const [openModal, setOpenModal] = createSignal(false);
 	const navigate = useNavigate()
@@ -15,16 +15,6 @@ export default function Nomenclature() {
 		setProducts(prods)
 	})
 
-	async function saveProduct() {
-		const headers = new Headers({
-			"Content-Type": "application/json"
-		})
-		await fetch(`${API_URL}/create/product/`, {
-			method: "POST",
-			body: JSON.stringify(product()),
-			headers: headers
-		})
-	}
 	function openProduct(product_id: number) {
 		navigate(`/product/${product_id}`)
 	}
@@ -45,28 +35,7 @@ export default function Nomenclature() {
 			<h1>Номенклатура</h1>
 			<div>
 				<Button onClick={() => setOpenModal(true)} variant="contained">Створити</Button>
-				<Modal open={openModal()} onClose={() => setOpenModal(false)}>
-					<Box sx={{
-						position: "absolute",
-						top: "50%",
-						left: "50%",
-						transform: "translate(-50%, -50%)",
-						width: 400,
-						backgroundColor: "white",
-						border: "2px solid #000",
-						boxShadow: "24px",
-						p: 4,
-					}}>
-						<TextField 
-							value={product().name} 
-							onChange={(event, value) => setProduct({ ...product(), name: value })} 
-							variant="outlined" 
-							label="Назва товару" />	
-						<Button onClick={saveProduct}>
-							Зберегти
-						</Button>		
-					</Box>
-				</Modal>
+				<NewProductPopup isOpen={openModal()} closeModal={() => setOpenModal(false)} />
 			</div>
 			<Box onScroll={onScroll} sx={{ height: "90%", overflowY: "scroll" }}>
 				<Table size="small" stickyHeader>
@@ -81,7 +50,7 @@ export default function Nomenclature() {
 					<TableBody>
 						<For each={products()}>
 							{(prod) => (
-								<TableRow onClick={() => openProduct(prod.product_id)}>
+								<TableRow onDblClick={() => openProduct(prod.product_id)}>
 									<TableCell>{prod.product_id}</TableCell>
 									<TableCell>{prod.name}</TableCell>
 									<TableCell>{prod.price}</TableCell>
