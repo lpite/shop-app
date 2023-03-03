@@ -449,7 +449,7 @@ app.patch("/update/income-document/", async (req, res) => {
 })
 
 app.listen({ host: "0.0.0.0", port: 1337 }).then(async () => {
-	console.log("it works")
+	console.log("server works on http://localhost:1337")
 	try {
 		const db = await getDb()
 		// db.exec("DROP TABLE IF EXISTS product;")
