@@ -1,0 +1,21 @@
+{
+  "name": "shop-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev server.ts",
+    "dev1": "ts-node-dev loadProducts.ts",
+    "dev2": "ts-node-dev fillDb.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.2.0",
+    "fastify": "^4.11.0",
+    "sqlite": "^4.1.2",
+    "sqlite3": "^5.1.4"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.9.4"
+  }
+}
