@@ -90,7 +90,7 @@ export default function IncomeDocument() {
 			<Button variant="contained" onClick={unPostDocument}>Відмінити проведення</Button>
 			<h1>час {incomeDocument()?.time}</h1>
 			<h1>isPosted {incomeDocument()?.isPosted.toString()}</h1>
-			<A href="/select-products/inocome">товари</A>
+			<A href="/select-products/income">товари</A>
 			<TableContainer>
 				<Table sx={{ width: "95%", margin: "0 auto" }} size="small">
 					<TableHead>
