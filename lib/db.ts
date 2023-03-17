@@ -12,7 +12,6 @@ export default async function getDb(){
 	await db.exec("PRAGMA temp_store = memory;")
 	await db.exec("PRAGMA mmap_size = 30000000000;")
 	await db.exec("PRAGMA synchronous = normal;")
-
 	await db.exec("PRAGMA vacuum;")
 	await db.exec("PRAGMA optimize;")
 	

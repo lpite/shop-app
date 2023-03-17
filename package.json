@@ -4,11 +4,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev server.ts",
+    "build": "tsc",
+    "start": "node ./dist/server.js",
     "dev1": "ts-node-dev loadProducts.ts",
     "dev2": "ts-node-dev fillDb.ts"
   },
   "dependencies": {
     "@fastify/cors": "^8.2.0",
+    "@fastify/static": "^6.9.0",
     "fastify": "^4.11.0",
     "sqlite": "^4.1.2",
     "sqlite3": "^5.1.4"
