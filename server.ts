@@ -24,9 +24,10 @@ app.get("/get/product/", async (req, res) => {
     /*
 	---- query ---- 
 	product_id
+
 	Повертає 
 	{
-		id:string,
+		product_id:string,
 		name:string,
 		price:number,
 		quantity:number
@@ -34,14 +35,16 @@ app.get("/get/product/", async (req, res) => {
 */
     const query = req.query as any;
     const db = await getDb();
-    const product:any = await db.get(
+    const product = await db.get(
       `SELECT name,product.product_id,price FROM product LEFT JOIN price ON price.product_id=product.product_id WHERE product.product_id = ?`,
       [query.product_id]
     );
     if (!product) {
       throw new Error("No product");
     }
-    const productQuantity = Object.values(await countProductQuantityExp({products:[product]}))[0];
+    const productQuantity = Object.values(
+      await countProductQuantityExp({ products: [product] })
+    )[0];
 
     res.send({ ...product, quantity: productQuantity });
   } catch (error) {
@@ -51,6 +54,15 @@ app.get("/get/product/", async (req, res) => {
 });
 
 app.get("/get/products/", async (req, res) => {
+  /*
+    Повертає
+  {
+		product_id:string,
+		name:string,
+		price:number,
+		quantity:number
+	}[]
+  */
   try {
     const db = await getDb();
     const query = req.query as { skip: string };
