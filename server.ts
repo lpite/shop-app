@@ -5,9 +5,6 @@ import path from "path";
 
 import { getTimeInSeconds } from "./lib/getTime";
 import getDb from "./lib/db";
-import countProductQuantity from "./lib/countProductQuantity";
-import prettifyProducts from "./lib/prettifyProducts";
-import stringifyProducts from "./lib/stringifyProducts";
 
 import { Product } from "types/product";
 import { IncomeDocument } from "types/incomeDocument";
@@ -26,9 +23,7 @@ app.get("/get/product/", async (req, res) => {
   try {
     /*
 	---- query ---- 
-	time час на який показувати наявність товару
-	searchCode або id
-
+	product_id
 	Повертає 
 	{
 		id:string,
@@ -37,15 +32,16 @@ app.get("/get/product/", async (req, res) => {
 		quantity:number
 	}
 */
-
     const query = req.query as any;
     const db = await getDb();
-    const product: any = await db.get(
+    const product:any = await db.get(
       `SELECT name,product.product_id,price FROM product LEFT JOIN price ON price.product_id=product.product_id WHERE product.product_id = ?`,
       [query.product_id]
     );
-
-    const productQuantity = await countProductQuantity(product.product_id, 0);
+    if (!product) {
+      throw new Error("No product");
+    }
+    const productQuantity = Object.values(await countProductQuantityExp({products:[product]}))[0];
 
     res.send({ ...product, quantity: productQuantity });
   } catch (error) {
