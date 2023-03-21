@@ -99,21 +99,23 @@ export default function IncomeDocument() {
     setIncomeDocument({ ...incomeDocument(), isPosted: false });
     saveDocument();
   }
-
   function setPrices() {
-    const headers = new Headers({
-      "Content-Type": "application/json",
-    });
-    incomeDocument().products.forEach(async (product) => {
-      await fetch(`${API_URL}/create/price/`, {
-        method: "POST",
-        body: JSON.stringify({
-          productId: product.product_id,
-          price: product.price,
-        }),
-        headers: headers,
-      });
-    });
+    // const headers = new Headers({
+    //   "Content-Type": "application/json",
+    // });
+    // incomeDocument().products.forEach(async (product) => {
+    //   await fetch(`${API_URL}/create/price/`, {
+    //     method: "POST",
+    //     body: JSON.stringify({
+    //       productId: product.product_id,
+    //       price: product.price,
+    //     }),
+    //     headers: headers,
+    //   });
+    // });
+    navigate(
+      `/set-prices/?products=${JSON.stringify(incomeDocument().products)}`
+    );
   }
 
   function deleteProduct(index: number) {
