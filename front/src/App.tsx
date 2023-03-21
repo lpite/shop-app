@@ -9,6 +9,7 @@ import ProductPage from './pages/ProductPage';
 import SaleDocument from './pages/SaleDocument';
 import SaleDocuments from './pages/SaleDocuments';
 import SelectProducts from './pages/SelectProducts';
+import SetPrices from './pages/SetPrices';
 
 const App: Component = () => {
   return (
@@ -23,6 +24,8 @@ const App: Component = () => {
         <Route path="/nomenclature" component={Nomenclature} />
         <Route path="/product/:productId" component={ProductPage} />
         <Route path="/select-products/:type" component={SelectProducts} />
+        <Route path="/set-prices" component={SetPrices} />
+
       </Routes>
     </>
   );
