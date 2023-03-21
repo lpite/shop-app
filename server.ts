@@ -98,12 +98,24 @@ app.post("/create/product/", async (req, res) => {
   }
 });
 
+app.get("/get/price/", async (req, res) => {
+  try {
+    const db = await getDb();
+    const query = req.query as { productId: string };
+    const price = await db.get(
+      "SELECT * FROM price WHERE product_id = ?",
+      query.productId
+    );
+    res.send(price);
+  } catch (error) {
+    res.send({});
+  }
+});
+
 app.post("/create/price/", async (req, res) => {
   try {
     const db = await getDb();
-
     const body = req.body as any;
-	console.log(body)
     if (!body.productId) {
       throw new Error("Немає айді товару");
     }
