@@ -18,9 +18,9 @@ const app = fastify();
 app.register(cors, {
   // put your options here
 });
-app.register(require('@fastify/static'), {
-  root: path.join(__dirname, 'public')
-})
+app.register(require("@fastify/static"), {
+  root: path.join(__dirname, "public"),
+});
 
 app.get("/get/product/", async (req, res) => {
   try {
