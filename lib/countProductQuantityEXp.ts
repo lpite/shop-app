@@ -46,8 +46,6 @@ export default async function countProductQuantityExp({
 									${query})
 									AND income_document.isPosted = 1
 									GROUP BY product.product_id`)	
-	console.log()
-	console.log(saleProducts, incomeProducts)
 	const productsLength = products.length;
 	let quantities: { [key: string]: number } = {};
 
