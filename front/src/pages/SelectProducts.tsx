@@ -107,10 +107,10 @@ export default function SelectProducts() {
         >
           <TableHead>
             <TableRow>
-              <TableCell align="left">id</TableCell>
-              <TableCell align="left">name</TableCell>
-              <TableCell align="right">price</TableCell>
-              <TableCell align="center">quantity</TableCell>
+              <TableCell align="left">Пошуковий код</TableCell>
+              <TableCell align="left">Назва</TableCell>
+              <TableCell align="right">Ціна</TableCell>
+              <TableCell align="center">Кількість</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -156,10 +156,10 @@ export default function SelectProducts() {
         >
           <TableHead>
             <TableRow sx={{ height: 30 }}>
-              <TableCell align="left">id</TableCell>
-              <TableCell align="left">name</TableCell>
-              <TableCell align="right">price</TableCell>
-              <TableCell align="center">quantity</TableCell>
+              <TableCell align="left">Пошуковий код</TableCell>
+              <TableCell align="left">Назва</TableCell>
+              <TableCell align="right">Ціна</TableCell>
+              <TableCell align="center">Кількість</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
