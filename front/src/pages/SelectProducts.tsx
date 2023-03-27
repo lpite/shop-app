@@ -1,10 +1,12 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import {
+  Divider,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  TextField,
 } from "@suid/material";
 import Box from "@suid/material/Box";
 import Button from "@suid/material/Button";
@@ -42,7 +44,6 @@ export default function SelectProducts() {
     const product = selectedProducts().find(
       (prod) => prod.product_id === product_id
     );
-    //setSelectedProducts([...selectedProducts()])
     if (product) {
       setSelectedProducts(
         selectedProducts().map((prod) => {
@@ -77,7 +78,7 @@ export default function SelectProducts() {
   const [isOpen, setIsOpen] = createSignal(false);
 
   return (
-    <main>
+    <main style={{ height: "90%" }}>
       <SelectIncomeProductPopup
         isOpen={isOpen()}
         closeModal={() => setIsOpen(false)}
@@ -85,9 +86,20 @@ export default function SelectProducts() {
         productId={selectedProductData().id}
         productName={selectedProductData().name}
         selectProduct={selectProduct}
+        product={selectedProductData}
       />
-      <button onClick={() => navigate(-1)}>Додати в документ</button>
-      <Box sx={{ overflowY: "scroll", maxHeight: "60vh" }}>
+      <div style={{ margin: "5px" }}>
+        <Button variant="contained" onClick={() => navigate(-1)}>
+          Додати в документ
+        </Button>
+        <hr />
+        <div style={{ display: "flex" }}>
+          <TextField size="small" placeholder="Поле для пошуку" />
+          <Divider orientation="vertical" flexItem sx={{ margin: "5px" }} />
+          <Button variant="contained">Пошук</Button>
+        </div>
+      </div>
+      <Box sx={{ overflowY: "scroll", maxHeight: "60vh", height: "60%" }}>
         <Table
           sx={{ width: "95%", margin: "0 auto" }}
           size="small"
@@ -131,7 +143,7 @@ export default function SelectProducts() {
         sx={{
           bottom: 0,
           width: "100%",
-          height: 250,
+          height: "30%",
           overflowY: "scroll",
           borderTop: "2px solid black",
         }}
@@ -179,3 +191,33 @@ export default function SelectProducts() {
     </main>
   );
 }
+
+type RowProductProps = {
+  productId:number,
+  name:string,
+  price:number,
+  quantity:number
+
+};
+
+// function RowProduct(props: RowProductProps) {
+//   const params = useParams();
+
+//   function onDoubleClick() {
+//     if (params.type === "income") {
+//       selectProductIncome({
+//         name:props.name,
+//       });
+//     } else {
+//       selectProduct({ name, product_id, price, quantity: 1 });
+//     }
+//   }
+//   return (
+//     <TableRow onDblClick={onDoubleClick}>
+//       <TableCell align="left">{product_id}</TableCell>
+//       <TableCell align="left">{name}</TableCell>
+//       <TableCell align="right">{price}</TableCell>
+//       <TableCell align="center">{quantity}</TableCell>
+//     </TableRow>
+//   );
+// }
