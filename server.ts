@@ -96,9 +96,28 @@ app.post("/create/product/", async (req, res) => {
     const db = await getDb();
 
     const body = req.body as any;
-    console.log(body);
     await db.run(`INSERT INTO product(name) VALUES(?);`, body.name);
 
+    res.send({ ok: true });
+  } catch (error) {
+    console.error(error);
+    res.send({ ok: false });
+  }
+});
+
+app.patch("/update/product/", async (req, res) => {
+  try {
+    const db = await getDb();
+    const query = req.query as { productId?: string };
+    const body = req.body as any;
+
+    console.log(body);
+    await db.run(
+      `UPDATE product SET product_id = ?, name = ? WHERE product_id = ?;`,
+      body.product_id,
+      body.name,
+      query.productId
+    );
     res.send({ ok: true });
   } catch (error) {
     console.error(error);

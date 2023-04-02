@@ -1,6 +1,5 @@
 import { Box, Button, Modal, TextField } from "@suid/material";
 import { createSignal } from "solid-js";
-import { Setter } from "solid-js/types/reactive/signal";
 import { Product } from "../../pages/SelectProducts";
 
 type SelectIncomeProductPopupProps = {
@@ -10,6 +9,7 @@ type SelectIncomeProductPopupProps = {
   productId: number;
   productName: string;
   selectProduct: (product: Product) => void;
+  product:any
 };
 
 export default function SelectIncomeProductPopup(
@@ -17,7 +17,7 @@ export default function SelectIncomeProductPopup(
 ) {
   const [productData, setProductData] = createSignal({
     quantity: 1,
-    price: props.productPrice || 0,
+    price: props.product.price || 0,
   });
   function selectProductAndCloseModal() {
     props.selectProduct({
@@ -30,7 +30,8 @@ export default function SelectIncomeProductPopup(
   function closeModal() {
     props.closeModal();
   }
-
+  
+  console.log(props.product())
   return (
     <Modal open={props.isOpen} onClose={props.closeModal}>
       <Box
@@ -59,6 +60,16 @@ export default function SelectIncomeProductPopup(
             type="number"
             defaultValue={props.productPrice}
           /> */}
+          <TextField
+            type="number"
+            value={productData().price}
+            onChange={(e, val) =>
+              setProductData({
+                ...productData(),
+                price: Number(val) || 1,
+              })
+            }
+          />
           <input
             type="number"
             value={productData().price}
