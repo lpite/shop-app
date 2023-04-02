@@ -223,7 +223,7 @@ app.post("/create/sale-document/", async (req, res) => {
     }
 
     if (body.isPosted === true && !body.products.length) {
-      return res.status(400).send({ msg: "Немає товарів" });
+      return res.status(400).send({ ok: false, msg: "Немає товарів" });
     }
     let newProducts: Product[] = body.products;
     let outOfStock = false;
@@ -253,7 +253,11 @@ app.post("/create/sale-document/", async (req, res) => {
     }
 
     if (outOfStock) {
-      return res.send({ status: "outOfStock", outOfStock: newProducts });
+      return res.send({
+        ok: false,
+        msg: "Недостатньо товарів",
+        outOfStock: newProducts,
+      });
     }
     let error = false;
     await db.exec("BEGIN TRANSACTION;");
@@ -277,15 +281,14 @@ app.post("/create/sale-document/", async (req, res) => {
     } else {
       await db.exec("COMMIT");
     }
-    // const productsString = stringifyProducts(body.products)
     const saleDocument = await db.get(
       "SELECT * FROM sale_document WHERE document_id = ?",
       [result.lastID]
     );
-    res.send(saleDocument);
+    res.send({ ok: true, document: saleDocument });
   } catch (error) {
     console.error(error);
-    res.status(400).send({ msg: "Помилка!" });
+    res.status(400).send({ ok: false, msg: "Помилка!" });
   }
 });
 
@@ -314,7 +317,6 @@ app.patch("/update/sale-document/", async (req, res) => {
       exept: Number(query.document_id),
       exeptType: "sale",
     });
-    //console.log(quantities, productsQuantity)
     for (let i = 0; i < Object.keys(productsQuantity).length; i++) {
       const [product_id, quantity] = Object.entries(productsQuantity)[i];
       if (quantities[product_id] - quantity < 0) {
@@ -328,7 +330,11 @@ app.patch("/update/sale-document/", async (req, res) => {
       }
     }
     if (outOfStock) {
-      return res.send({ status: "outOfStock", outOfStock: newProducts });
+      return res.send({
+        ok: false,
+        msg: "Недостатньо товарів",
+        outOfStock: newProducts,
+      });
     }
     let error = false;
     await db.exec("BEGIN TRANSACTION;");
@@ -357,7 +363,7 @@ app.patch("/update/sale-document/", async (req, res) => {
     }
     if (error) {
       await db.exec("ROLLBACK;");
-      return res.status(400).send({ msg: "Якась помилочка" });
+      return res.status(400).send({ ok: false, msg: "Якась помилочка" });
     } else {
       await db.exec("COMMIT");
     }
@@ -366,7 +372,7 @@ app.patch("/update/sale-document/", async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    res.status(400).send({ msg: "Якась помилочка" });
+    res.status(400).send({ ok: false, msg: "Якась помилочка" });
   }
 });
 
