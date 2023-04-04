@@ -155,7 +155,7 @@ export default function SaleDocument() {
     return request;
   }
   return (
-    <main style={{ margin: "10px 15px" }}>
+    <main class="page">
       <Typography variant="h5">
         Документ продажу {saleDocument().document_id}
       </Typography>

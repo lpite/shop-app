@@ -78,7 +78,7 @@ export default function SelectProducts() {
   const [isOpen, setIsOpen] = createSignal(false);
 
   return (
-    <main style={{ height: "90%" }}>
+    <main class="page" style={{ height: "90%" }}>
       <SelectIncomeProductPopup
         isOpen={isOpen()}
         closeModal={() => setIsOpen(false)}

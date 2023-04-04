@@ -18,7 +18,7 @@ export default function IncomeDocuments() {
 	}
 
 	return (
-		<main>
+		<main class="page">
 			<h1>Надходження</h1>
 			<Button onClick={()=>openIncomeDocument("new")} variant="contained">Новий</Button>
 			<Table size="small">

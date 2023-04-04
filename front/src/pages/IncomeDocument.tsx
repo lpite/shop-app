@@ -126,7 +126,7 @@ export default function IncomeDocument() {
   }
 
   return (
-    <main>
+    <main class="page">
       <Typography variant="h5">
         Документ продажу {incomeDocument().document_id}
       </Typography>

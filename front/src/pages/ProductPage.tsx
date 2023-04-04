@@ -59,7 +59,7 @@ export default function ProductPage() {
     }
   }
   return (
-    <main>
+    <main class="page">
       <h1 style={{ margin: "15px" }}>Товар {product().name}</h1>
       <div style={{ display: "flex", margin: "15px" }}>
         <Button variant="contained" onClick={updateProductAndClose}>

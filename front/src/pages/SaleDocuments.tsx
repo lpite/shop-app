@@ -27,7 +27,7 @@ export default function SaleDocuments() {
   }
 
   return (
-    <main>
+    <main class="page">
       <h1>Продаж</h1>
       <Button onClick={() => openSaleDocument("new")} variant="contained">
         Новий

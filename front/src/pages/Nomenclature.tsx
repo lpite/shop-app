@@ -46,7 +46,7 @@ export default function Nomenclature() {
     }
   };
   return (
-    <main style={{ height: "85%" }}>
+    <main class="page" style={{ height: "85%" }}>
       <h1>Номенклатура</h1>
       <div style={{ margin: "10px" }}>
         <Button onClick={() => setOpenModal(true)} variant="contained">
