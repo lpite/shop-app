@@ -12,9 +12,7 @@ import countProductQuantityExp from "./lib/countProductQuantityEXp";
 
 const app = fastify();
 
-app.register(cors, {
-  // put your options here
-});
+app.register(cors);
 app.register(require("@fastify/static"), {
   root: path.join(__dirname, "public"),
 });
@@ -125,7 +123,10 @@ app.patch("/update/product/", async (req, res) => {
   }
 });
 
-app.get("/get/price/", async (req, res) => {
+app.get<{
+  Querystring: { productId?: string };
+  Reply?: number;
+}>("/get/price/", async (req, res) => {
   try {
     const db = await getDb();
     const query = req.query as { productId: string };
@@ -133,23 +134,28 @@ app.get("/get/price/", async (req, res) => {
       "SELECT * FROM price WHERE product_id = ?",
       query.productId
     );
-    res.send(price);
+    res.send(price.price);
   } catch (error) {
-    res.send({});
+    res.send(0);
   }
 });
 
-app.post("/create/price/", async (req, res) => {
+app.post<{
+  Querystring: { productId?: string };
+  Body: { price?: number };
+  Reply: { ok: boolean };
+}>("/create/price/", async (req, res) => {
   try {
     const db = await getDb();
-    const body = req.body as any;
-    if (!body.productId) {
+    const { productId } = req.query;
+    const { price } = req.body;
+    if (!productId) {
       throw new Error("Немає айді товару");
     }
     await db.run(
       `INSERT INTO price(product_id,price) VALUES(?,?);`,
-      body.productId,
-      body.price
+      productId,
+      price
     );
 
     res.send({ ok: true });
@@ -180,6 +186,7 @@ app.patch<{
     res.send({ ok: false });
   }
 });
+
 app.get("/get/sale-document/", async (req, res) => {
   try {
     const db = await getDb();
