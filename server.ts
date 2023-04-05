@@ -159,6 +159,27 @@ app.post("/create/price/", async (req, res) => {
   }
 });
 
+app.patch<{
+  Querystring: { productId?: string };
+  Body: { newPrice?: number };
+}>("/update/price/", async (req, res) => {
+  try {
+    const db = await getDb();
+    const query = req.query;
+    const body = req.body;
+    if (!query.productId) {
+      throw new Error("Немає айді товару");
+    }
+    await db.run(
+      "UPDATE price SET price = ? WHERE product_id = ?",
+      body.newPrice,
+      query.productId
+    );
+    res.send({ ok: true });
+  } catch (error) {
+    res.send({ ok: false });
+  }
+});
 app.get("/get/sale-document/", async (req, res) => {
   try {
     const db = await getDb();
