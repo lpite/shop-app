@@ -17,25 +17,16 @@ app.register(require("@fastify/static"), {
   root: path.join(__dirname, "public"),
 });
 
-app.get("/get/product/", async (req, res) => {
+app.get<{
+  Querystring: { productId?: string };
+  Reply: Product | {};
+}>("/get/product/", async (req, res) => {
   try {
-    /*
-	---- query ---- 
-	product_id
-
-	Повертає 
-	{
-		product_id:string,
-		name:string,
-		price:number,
-		quantity:number
-	}
-*/
-    const query = req.query as any;
+    const { productId } = req.query;
     const db = await getDb();
     const product = await db.get(
       `SELECT name,product.product_id,price FROM product LEFT JOIN price ON price.product_id=product.product_id WHERE product.product_id = ?`,
-      [query.product_id]
+      [productId]
     );
     if (!product) {
       throw new Error("No product");
@@ -51,25 +42,19 @@ app.get("/get/product/", async (req, res) => {
   }
 });
 
-app.get("/get/products/", async (req, res) => {
-  /*
-    Повертає
-  {
-		product_id:string,
-		name:string,
-		price:number,
-		quantity:number
-	}[]
-  */
+app.get<{
+  Querystring: { skip?: string };
+  Reply: Product[] | [];
+}>("/get/products/", async (req, res) => {
   try {
     const db = await getDb();
-    const query = req.query as { skip: string };
+    const { skip } = req.query;
     const products = await db.all(
       `SELECT product.product_id,price.price,name
 									FROM product 
 									LEFT JOIN price ON price.product_id=product.product_id 
 									GROUP BY product.product_id LIMIT 50 OFFSET ?`,
-      [query.skip || 0]
+      [skip || 0]
     );
     const quantities = await countProductQuantityExp({ products: products });
     for (let i = 0; i < products.length; i++) {
@@ -79,7 +64,6 @@ app.get("/get/products/", async (req, res) => {
         name: product.name,
         price: product.price,
         quantity: quantities[product.product_id],
-        // quantity: product.income_quantity - product.sale_quantity
       };
     }
     res.send(products);
@@ -89,12 +73,15 @@ app.get("/get/products/", async (req, res) => {
   }
 });
 
-app.post("/create/product/", async (req, res) => {
+app.post<{
+  Body: { name?: string };
+  Reply: { ok: boolean };
+}>("/create/product/", async (req, res) => {
   try {
     const db = await getDb();
 
-    const body = req.body as any;
-    await db.run(`INSERT INTO product(name) VALUES(?);`, body.name);
+    const { name } = req.body;
+    await db.run(`INSERT INTO product(name) VALUES(?);`, name);
 
     res.send({ ok: true });
   } catch (error) {
@@ -103,13 +90,16 @@ app.post("/create/product/", async (req, res) => {
   }
 });
 
-app.patch("/update/product/", async (req, res) => {
+app.patch<{
+  Querystring: { productId?: string };
+  Body: { product_id?: number; name?: string };
+  Reply: { ok: boolean };
+}>("/update/product/", async (req, res) => {
   try {
     const db = await getDb();
-    const query = req.query as { productId?: string };
-    const body = req.body as any;
+    const query = req.query;
+    const body = req.body;
 
-    console.log(body);
     await db.run(
       `UPDATE product SET product_id = ?, name = ? WHERE product_id = ?;`,
       body.product_id,
