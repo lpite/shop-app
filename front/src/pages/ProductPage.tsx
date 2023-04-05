@@ -16,7 +16,7 @@ export default function ProductPage() {
   const navigate = useNavigate();
   onMount(async () => {
     const prod = await fetch(
-      `${API_URL}/get/product/?product_id=${params.productId}`
+      `${API_URL}/get/product/?productId=${params.productId}`
     )
       .then((res) => res.json())
       .catch((err) => {});
