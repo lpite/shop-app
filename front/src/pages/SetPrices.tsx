@@ -19,9 +19,12 @@ import { createEffect, createSignal, For, JSX, onMount } from "solid-js";
 import { API_URL } from "../config/config";
 
 async function getProductPrice(product_id: number) {
-  return await fetch(`${API_URL}/get/price/?productId=${product_id}`).then(
-    (res) => res.json()
-  );
+  return await fetch(`${API_URL}/get/price/?productId=${product_id}`)
+    .then((res) => res.text())
+    .then((text) => parseFloat(text))
+    .catch(() => {
+      return 0;
+    });
 }
 
 type Product = {
@@ -44,6 +47,35 @@ export default function SetPrices() {
       })
     );
   }
+
+  async function setPrices() {
+    const headers = new Headers({
+      "Content-Type": "application/json",
+    });
+    for (let i = 0; i < products().length; i++) {
+      const product = products()[i];
+      const prevPrice = await getProductPrice(product.product_id);
+      if (!prevPrice) {
+        await fetch(
+          `${API_URL}/create/price/?productId=${product.product_id}`,
+          {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify({ price: product.price }),
+          }
+        );
+      } else {
+        await fetch(
+          `${API_URL}/update/price/?productId=${product.product_id}`,
+          {
+            method: "PATCH",
+            headers: headers,
+            body: JSON.stringify({ newPrice: product.price }),
+          }
+        );
+      }
+    }
+  }
   onMount(() => {
     const products: { [key: string]: Product } = {};
     const parsedProducts = JSON.parse(searchParams.products) as Product[];
@@ -53,7 +85,7 @@ export default function SetPrices() {
     setProducts(Object.values(products));
   });
   return (
-    <main style={{ margin: "0 30px" }}>
+    <main class="page">
       <div style={{ height: "170px" }}>
         <h1>Встановлення цін</h1>
         <div>
@@ -61,7 +93,9 @@ export default function SetPrices() {
           <Button variant="text">
             <SaveIcon />
           </Button>
-          <Button variant="contained">Провести</Button>
+          <Button variant="contained" onClick={setPrices}>
+            Провести
+          </Button>
         </div>
         <hr />
         <div style={{ display: "flex", gap: "10px" }}>
@@ -119,7 +153,7 @@ function ProductLine(props: ProductLineProps) {
   const [price, setPrice] = createSignal(props.price);
 
   onMount(async () => {
-    setPrevPrice((await getProductPrice(props.product_id)).price);
+    setPrevPrice(await getProductPrice(props.product_id));
   });
   const changePrice: JSX.EventHandler<HTMLInputElement, InputEvent> = (
     event
@@ -137,7 +171,7 @@ function ProductLine(props: ProductLineProps) {
       }}
     >
       <TableCell style={{ width: "30px" }}>
-        <Checkbox />
+        <Checkbox size="small" />
       </TableCell>
       <TableCell style={{ width: "120px" }}>{props.product_id}</TableCell>
       <TableCell>{props.name}</TableCell>
