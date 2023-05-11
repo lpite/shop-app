@@ -1,6 +1,10 @@
 import { A, useNavigate, useParams } from "@solidjs/router";
+import { Save } from "@suid/icons-material";
 import {
   Button,
+  Divider,
+  Menu,
+  MenuItem,
   Table,
   TableBody,
   TableCell,
@@ -100,19 +104,6 @@ export default function IncomeDocument() {
     saveDocument();
   }
   function setPrices() {
-    // const headers = new Headers({
-    //   "Content-Type": "application/json",
-    // });
-    // incomeDocument().products.forEach(async (product) => {
-    //   await fetch(`${API_URL}/create/price/`, {
-    //     method: "POST",
-    //     body: JSON.stringify({
-    //       productId: product.product_id,
-    //       price: product.price,
-    //     }),
-    //     headers: headers,
-    //   });
-    // });
     navigate(
       `/set-prices/?products=${JSON.stringify(incomeDocument().products)}`
     );
@@ -127,21 +118,40 @@ export default function IncomeDocument() {
 
   return (
     <main class="page">
-      <Typography variant="h5">
-        Документ продажу {incomeDocument().document_id}
-      </Typography>
-      <Button variant="contained" onClick={saveDocument}>
-        Зберегти
-      </Button>
-      <Button variant="contained" onClick={postDocument}>
-        Провести
-      </Button>
-      <Button variant="contained" onClick={unPostDocument}>
-        Відмінити проведення
-      </Button>
-      <Button variant="contained" onClick={setPrices}>
-        Встановити ціни як у цьому документі
-      </Button>
+      <h1>Документ надходження {incomeDocument().document_id}</h1>
+      <div style={{ display: "flex" }}>
+        <div
+          style={{
+            display: "flex",
+            "justify-content": "flex-start",
+            width: "50%",
+          }}
+        >
+          <Button variant="contained">Провести та закрити</Button>
+          <Button variant="text" onClick={saveDocument}>
+            <Save />
+          </Button>
+          <Divider orientation="vertical" sx={{ margin: "0 5px" }} flexItem />
+          <Button variant="text" onClick={postDocument}>
+            Провести
+          </Button>
+          <Divider orientation="vertical" sx={{ margin: "0 5px" }} flexItem />
+          <CreateBasedOnMenu setPrices={setPrices} />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            "justify-content": "flex-end",
+            width: "50%",
+          }}
+        >
+          <AdditionalFunctionsMenu unPostDocument={unPostDocument} />
+          <Button variant="contained" onClick={unPostDocument}>
+            Відмінити проведення
+          </Button>
+        </div>
+      </div>
+
       <h1>час {incomeDocument()?.time}</h1>
       <h1>isPosted {incomeDocument()?.isPosted.toString()}</h1>
       <A href="/select-products/income">товари</A>
@@ -185,5 +195,77 @@ export default function IncomeDocument() {
         </Table>
       </TableContainer>
     </main>
+  );
+}
+
+type CreateBasedOnMenuProps = {
+  setPrices: () => void;
+};
+
+function CreateBasedOnMenu(props: CreateBasedOnMenuProps) {
+  const [anchorEl, setAnchorEl] = createSignal<null | HTMLElement>(null);
+  const open = () => Boolean(anchorEl());
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  return (
+    <div>
+      <Button
+        id="basic-button"
+        aria-controls={open() ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open() ? "true" : undefined}
+        onClick={(event) => {
+          setAnchorEl(event.currentTarget);
+        }}
+      >
+        Створити на основі
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl()}
+        open={open()}
+        onClose={handleClose}
+        MenuListProps={{ "aria-labelledby": "basic-button" }}
+      >
+        <MenuItem onClick={props.setPrices}>
+          Встановлення цін номенклатури
+        </MenuItem>
+      </Menu>
+    </div>
+  );
+}
+type AdditionalFunctionsMenuProps = {
+  unPostDocument: () => void;
+};
+function AdditionalFunctionsMenu(props: AdditionalFunctionsMenuProps) {
+  const [anchorEl, setAnchorEl] = createSignal<null | HTMLElement>(null);
+  const open = () => Boolean(anchorEl());
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  return (
+    <div>
+      <Button
+        id="basic-button"
+        aria-controls={open() ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open() ? "true" : undefined}
+        onClick={(event) => {
+          setAnchorEl(event.currentTarget);
+        }}
+      >
+        Додатково
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl()}
+        open={open()}
+        onClose={handleClose}
+        MenuListProps={{ "aria-labelledby": "basic-button" }}
+      >
+        <MenuItem onClick={()=>props.unPostDocument()}>Відмінити проведення</MenuItem>
+      </Menu>
+    </div>
   );
 }
