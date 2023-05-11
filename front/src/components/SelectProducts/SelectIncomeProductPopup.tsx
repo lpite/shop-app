@@ -1,5 +1,5 @@
 import { Box, Button, Modal, TextField } from "@suid/material";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import { Product } from "../../pages/SelectProducts";
 
 type SelectIncomeProductPopupProps = {
@@ -9,7 +9,7 @@ type SelectIncomeProductPopupProps = {
   productId: number;
   productName: string;
   selectProduct: (product: Product) => void;
-  product:any
+  product: any;
 };
 
 export default function SelectIncomeProductPopup(
@@ -28,10 +28,9 @@ export default function SelectIncomeProductPopup(
     closeModal();
   }
   function closeModal() {
+    setProductData({ quantity: 1, price: 0 });
     props.closeModal();
   }
-  
-  console.log(props.product())
   return (
     <Modal open={props.isOpen} onClose={props.closeModal}>
       <Box
@@ -54,51 +53,37 @@ export default function SelectIncomeProductPopup(
             display: "flex",
             "flex-direction": "column",
           }}
+          onSubmit={() => alert("1")}
         >
-          {/* <TextField
-            label="Ціна"
-            type="number"
-            defaultValue={props.productPrice}
-          /> */}
           <TextField
             type="number"
             value={productData().price}
             onChange={(e, val) =>
               setProductData({
                 ...productData(),
-                price: Number(val) || 1,
+                price: parseFloat(val),
               })
             }
-          />
-          <input
-            type="number"
-            value={productData().price}
-            onInput={({ currentTarget }) =>
-              setProductData({
-                ...productData(),
-                price: Number(currentTarget.value) || 1,
-              })
-            }
+            label="Ціна"
           />
 
           <hr />
-          <input
+          <TextField
             type="number"
             value={productData().quantity}
-            onInput={({ currentTarget }) =>
+            onChange={(e, val) =>
               setProductData({
                 ...productData(),
-                quantity: Number(currentTarget.value) || 1,
+                quantity: parseFloat(val),
               })
             }
+            label="Кількість"
           />
-          {/* <TextField label="Кількість" type="number" defaultValue={productCount()} /> */}
           <hr />
-
           <div>
             <Button
               variant="contained"
-              type="button"
+              type="submit"
               onClick={selectProductAndCloseModal}
             >
               Далі
