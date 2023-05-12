@@ -13,14 +13,7 @@ import Button from "@suid/material/Button";
 import { createSignal, For, onMount } from "solid-js";
 import ProductRow from "../components/ProductRow/ProductRow";
 import SelectIncomeProductPopup from "../components/SelectProducts/SelectIncomeProductPopup";
-import { API_URL } from "../config/config";
-
-export type Product = {
-  product_id: number;
-  name: string;
-  price: number;
-  quantity: number;
-};
+import getAllProducts, { Product } from "../utils/getAllProducts";
 
 export default function SelectProducts() {
   const [products, setProducts] = createSignal<Product[]>([]);
@@ -34,9 +27,7 @@ export default function SelectProducts() {
   const params = useParams();
   const navigate = useNavigate();
   onMount(async () => {
-    const prods = await fetch(`${API_URL}/get/products/`)
-      .then((res) => res.json())
-      .catch((err) => []);
+    const prods = await getAllProducts({});
     setProducts(prods);
   });
 
@@ -56,13 +47,9 @@ export default function SelectProducts() {
     } else {
       setSelectedProducts([
         ...selectedProducts(),
-        { product_id, name, price, quantity: quantity, isNew: true },
+        { product_id, name, price, quantity: quantity},
       ]);
     }
-    sessionStorage.setItem(
-      "selectedProducts",
-      JSON.stringify(selectedProducts())
-    );
   }
 
   function selectProductIncome({ name, price, product_id, quantity }: Product) {
@@ -76,6 +63,14 @@ export default function SelectProducts() {
     );
   }
   const [isOpen, setIsOpen] = createSignal(false);
+console.log(params.documentId)
+  function goBackToDocument() {
+    navigate(
+      `/${params.type}/${params.documentId}/?products=${JSON.stringify(
+        selectedProducts()
+      )}`
+    );
+  }
 
   return (
     <main class="page" style={{ height: "90%" }}>
@@ -89,7 +84,7 @@ export default function SelectProducts() {
         product={selectedProductData}
       />
       <div style={{ margin: "5px" }}>
-        <Button variant="contained" onClick={() => navigate(-1)}>
+        <Button variant="contained" onClick={goBackToDocument}>
           Додати в документ
         </Button>
         <hr />
@@ -193,11 +188,10 @@ export default function SelectProducts() {
 }
 
 type RowProductProps = {
-  productId:number,
-  name:string,
-  price:number,
-  quantity:number
-
+  productId: number;
+  name: string;
+  price: number;
+  quantity: number;
 };
 
 // function RowProduct(props: RowProductProps) {

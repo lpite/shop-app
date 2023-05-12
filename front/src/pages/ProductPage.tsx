@@ -1,61 +1,44 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import { Button } from "@suid/material";
 import { createSignal, onMount } from "solid-js";
-import { API_URL } from "../config/config";
 import SaveIcon from "@suid/icons-material/Save";
 import Divider from "@suid/material/Divider";
 import TextField from "@suid/material/TextField";
 import Select from "@suid/material/Select";
-import MenuItem from "@suid/material/MenuItem";
 import FormControl from "@suid/material/FormControl";
 import InputLabel from "@suid/material/InputLabel";
+import getOneProduct from "../utils/getOneProduct";
+import updateOneProduct from "../utils/updateOneProduct";
 
 export default function ProductPage() {
   const [product, setProduct] = createSignal({ product_id: 0, name: "" });
   const params = useParams();
   const navigate = useNavigate();
   onMount(async () => {
-    const prod = await fetch(
-      `${API_URL}/get/product/?productId=${params.productId}`
-    )
-      .then((res) => res.json())
-      .catch((err) => {});
+    const prod = await getOneProduct({ productId: params.productId });
     setProduct(prod);
   });
 
   async function updateProduct() {
-    const headers = new Headers({
-      "Content-Type": "application/json",
+    const res = await updateOneProduct({
+      productId: params.productId,
+      product: product(),
     });
-    const res = await fetch(
-      `${API_URL}/update/product/?productId=${params.productId}`,
-      {
-        headers: headers,
-        method: "PATCH",
-        body: JSON.stringify(product()),
-      }
-    ).then((res) => res.json());
     if (res.ok) {
+      alert("Success");
     } else {
-      alert("ne ok");
+      alert("Error");
     }
   }
   async function updateProductAndClose() {
-    const headers = new Headers({
-      "Content-Type": "application/json",
+    const res = await updateOneProduct({
+      productId: params.productId,
+      product: product(),
     });
-    const res = await fetch(
-      `${API_URL}/update/product/?productId=${params.productId}`,
-      {
-        headers: headers,
-        method: "PATCH",
-        body: JSON.stringify(product()),
-      }
-    ).then((res) => res.json());
     if (res.ok) {
       navigate("/nomenclature/");
     } else {
-      alert("ne ok");
+      alert("Error");
     }
   }
   return (

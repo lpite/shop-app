@@ -8,18 +8,18 @@ import {
   Button,
 } from "@suid/material";
 import { createSignal, For, onMount } from "solid-js";
-import { API_URL } from "../config/config";
+import getAllSaleDocuments, {
+  SaleDocuments,
+} from "../utils/getAllSaleDocuments";
 
-export default function SaleDocuments() {
-  const [documents, setDocuments] = createSignal<any[]>([]);
+export default function SaleDocumentsPage() {
+  const [documents, setDocuments] = createSignal<SaleDocuments>([]);
 
   const navigate = useNavigate();
 
   onMount(async () => {
-    const docs = await fetch(`${API_URL}/get/sale-documents/`)
-      .then((res) => res.json())
-      .catch((err) => []);
-    setDocuments(docs);
+    const documents = await getAllSaleDocuments();
+    setDocuments(documents);
   });
 
   function openSaleDocument(document_id: number | string) {
@@ -52,7 +52,7 @@ export default function SaleDocuments() {
                 </TableCell>
                 <TableCell align="left">{doc.document_id}</TableCell>
                 <TableCell align="left">
-                  {new Date(doc.time).toLocaleString()}
+                  {new Date(doc.createdAt).toLocaleString()}
                 </TableCell>
               </TableRow>
             )}
