@@ -47,7 +47,7 @@ export default function SelectProducts() {
     } else {
       setSelectedProducts([
         ...selectedProducts(),
-        { product_id, name, price, quantity: quantity},
+        { product_id, name, price: price || 0, quantity: quantity },
       ]);
     }
   }
@@ -63,7 +63,7 @@ export default function SelectProducts() {
     );
   }
   const [isOpen, setIsOpen] = createSignal(false);
-console.log(params.documentId)
+  console.log(params.documentId);
   function goBackToDocument() {
     navigate(
       `/${params.type}/${params.documentId}/?products=${JSON.stringify(

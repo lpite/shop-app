@@ -26,7 +26,7 @@ export default function IncomeDocument() {
     isPosted: false,
     createdAt: new Date(),
     updatedAt: new Date(),
-    DocumentProducts: [],
+    products: [],
   });
 
   const navigate = useNavigate();
@@ -41,11 +41,11 @@ export default function IncomeDocument() {
       setIncomeDocument(document);
     }
     const selectedProducts = JSON.parse(searchParams.products || "[]");
+    console.log(selectedProducts)
     if (selectedProducts.length) {
-      setSearchParams({ products: "[]" });
       setIncomeDocument({
         ...incomeDocument(),
-        DocumentProducts: [...incomeDocument().DocumentProducts, ...selectedProducts],
+        products: [...incomeDocument().products, ...selectedProducts],
       });
     }
   });
@@ -94,13 +94,13 @@ export default function IncomeDocument() {
   function setPrices() {
     navigate(
       `/set-prices/?products=${JSON.stringify(
-        incomeDocument().DocumentProducts
+        incomeDocument().products
       )}`
     );
   }
 
   function deleteProduct(index: number) {
-    const newProducts = incomeDocument().DocumentProducts.filter(
+    const newProducts = incomeDocument().products.filter(
       (prod, i) => i !== index
     );
     setIncomeDocument({ ...incomeDocument(), products: newProducts });
@@ -142,10 +142,10 @@ export default function IncomeDocument() {
         </div>
       </div>
 
-      {/* <h1>час {incomeDocument()?.createdAt.toDateString()}</h1> */}
+      <h1>час {incomeDocument()?.createdAt?.toDateString()}</h1>
       <h1>isPosted {incomeDocument()?.isPosted.toString()}</h1>
-      <A href={`/select-products/income/${incomeDocument().document_id}`}>
-        товари
+      <A href={`/select-products/income/${incomeDocument().document_id || "new"}`}>
+        Підібрати товари
       </A>
       <TableContainer>
         <Table sx={{ width: "95%", margin: "0 auto" }} size="small">
@@ -158,7 +158,7 @@ export default function IncomeDocument() {
             </TableRow>
           </TableHead>
           <TableBody>
-            <For each={incomeDocument().DocumentProducts}>
+            <For each={incomeDocument().products}>
               {({ product_id, name, price, quantity }, i) => (
                 <>
                   <ProductRow
@@ -166,7 +166,6 @@ export default function IncomeDocument() {
                     name={name}
                     price={price}
                     quantity={quantity}
-                    // error={serverQuantity !== undefined}
                     contextMenuItems={
                       <>
                         <Button

@@ -23,7 +23,7 @@ export default function SaleDocument() {
     isPosted: false,
     createdAt: new Date(),
     updatedAt: new Date(),
-    DocumentProducts: [],
+    products: [],
   });
   const navigate = useNavigate();
   const params = useParams();
@@ -42,20 +42,20 @@ export default function SaleDocument() {
       setSearchParams({ products: "[]" });
       setSaleDocument({
         ...saleDocument(),
-        DocumentProducts: [...saleDocument().DocumentProducts, ...selectedProducts],
+        products: [...saleDocument().products, ...selectedProducts],
       });
     }
   });
 
   function deleteProduct(index: number) {
-    const newProducts = saleDocument().DocumentProducts.filter(
+    const newProducts = saleDocument().products.filter(
       (prod, i) => i !== index
     );
-    setSaleDocument({ ...saleDocument(), DocumentProducts: newProducts });
+    setSaleDocument({ ...saleDocument(), products: newProducts });
   }
 
   function changeProductCount(product_id: number, quantity: number) {
-    const newProducts = saleDocument().DocumentProducts.map((prod) => {
+    const newProducts = saleDocument().products.map((prod) => {
       return {
         ...prod,
         quantity: product_id === prod.product_id ? quantity : prod.quantity,
@@ -160,7 +160,7 @@ export default function SaleDocument() {
       </Button>
       <h1>час {saleDocument()?.createdAt.toString()}</h1>
       <h1>isPosted {saleDocument().isPosted.toString()}</h1>
-      <A href={`/select-products/sale/${saleDocument().document_id}`}>
+      <A href={`/select-products/sale/${saleDocument().document_id || "new"}`}>
         Підібрати товари
       </A>
       <TableContainer>
@@ -174,7 +174,7 @@ export default function SaleDocument() {
             </TableRow>
           </TableHead>
           <TableBody>
-            <For each={saleDocument().DocumentProducts}>
+            <For each={saleDocument().products}>
               {({ product_id, name, price, quantity }, i) => (
                 <>
                   <ProductRow
