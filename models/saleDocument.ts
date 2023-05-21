@@ -1,42 +1,54 @@
+import { DataTypes, Optional } from "sequelize";
+
 import {
-  DataTypes,
-  InferCreationAttributes,
-  CreationOptional,
-  InferAttributes,
+  Column,
+  CreatedAt,
   Model,
-} from "sequelize";
-
-import { sequelize } from "../lib/sequelize";
-
-interface SaleDocumentModel
-  extends Model<
-    InferAttributes<SaleDocumentModel>,
-    InferCreationAttributes<SaleDocumentModel>
-  > {
-  document_id: CreationOptional<number>;
+  Table,
+  UpdatedAt,
+  HasMany,
+} from "sequelize-typescript";
+import {
+  DocumentProductModel,
+  saleDocumentProductModel,
+} from "./documentProduct";
+export interface SaleDocument {
+  document_id: number;
   isPosted: boolean;
-  createdAt: CreationOptional<Date>;
-  updatedAt: CreationOptional<Date>;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export const saleDocumentModel = sequelize.define<SaleDocumentModel>(
-  "SaleDocument",
-  {
-    document_id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      unique: true,
-    },
-    isPosted: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
-  },
-  {
-    tableName: "sale_document",
-    timestamps: true,
-  }
-);
+interface SaleDocumentModelCreationAttributes
+  extends Optional<SaleDocument, "document_id" | "createdAt" | "updatedAt"> {}
+
+@Table({
+  tableName: "sale_document",
+})
+export class saleDocumentModel extends Model<
+  SaleDocument,
+  SaleDocumentModelCreationAttributes
+> {
+  @Column({
+    primaryKey: true,
+    autoIncrement: true,
+  })
+  document_id!: number;
+
+  @Column({
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+  })
+  isPosted!: boolean;
+
+  @CreatedAt
+  @Column
+  createdAt!: Date;
+
+  @UpdatedAt
+  @Column
+  updatedAt!: Date;
+
+  @HasMany(() => saleDocumentProductModel)
+  products?: DocumentProductModel[];
+}

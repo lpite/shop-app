@@ -1,42 +1,55 @@
+import { DataTypes, Optional } from "sequelize";
+
 import {
-  DataTypes,
-  InferCreationAttributes,
-  CreationOptional,
-  InferAttributes,
+  Column,
+  CreatedAt,
+  Table,
+  UpdatedAt,
   Model,
-} from "sequelize";
+  HasMany,
+} from "sequelize-typescript";
+import {
+  DocumentProductModel,
+  incomeDocumentProductModel,
+} from "./documentProduct";
 
-import { sequelize } from "../lib/sequelize";
-
-interface IncomeDocumentModel
-  extends Model<
-    InferAttributes<IncomeDocumentModel>,
-    InferCreationAttributes<IncomeDocumentModel>
-  > {
-  document_id: CreationOptional<number>;
+interface IncomeDocument {
+  document_id: number;
   isPosted: boolean;
-  createdAt: CreationOptional<Date>;
-  updatedAt: CreationOptional<Date>;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export const incomeDocumentModel = sequelize.define<IncomeDocumentModel>(
-  "IncomeDocument",
-  {
-    document_id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      unique: true,
-    },
-    isPosted: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
-  },
-  {
-    tableName: "income_document",
-    timestamps: true,
-  }
-);
+interface IncomeDocumentCreationAttributes
+  extends Optional<IncomeDocument, "document_id" | "createdAt" | "updatedAt"> {}
+
+@Table({
+  tableName: "income_document",
+})
+export class incomeDocumentModel extends Model<
+  IncomeDocument,
+  IncomeDocumentCreationAttributes
+> {
+  @Column({
+    primaryKey: true,
+    autoIncrement: true,
+  })
+  document_id!: number;
+
+  @Column({
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+  })
+  isPosted!: boolean;
+
+  @CreatedAt
+  @Column
+  createdAt!: Date;
+
+  @UpdatedAt
+  @Column
+  updatedAt!: Date;
+
+  @HasMany(() => incomeDocumentProductModel)
+  products?: DocumentProductModel[];
+}

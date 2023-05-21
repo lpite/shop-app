@@ -1,48 +1,53 @@
 import {
-  DataTypes,
-  InferCreationAttributes,
-  CreationOptional,
-  InferAttributes,
+  Table,
+  Column,
   Model,
-} from "sequelize";
+  CreatedAt,
+  UpdatedAt,
+} from "sequelize-typescript";
 
-import { sequelize } from "../lib/sequelize";
+import { DataTypes, Optional } from "sequelize";
 
-export interface ProductModel
-  extends Model<
-    InferAttributes<ProductModel>,
-    InferCreationAttributes<ProductModel>
-  > {
-  product_id: CreationOptional<number>;
+export interface ProductModel {
+  product_id: number;
   name: string;
-  price:CreationOptional<number>;
-  createdAt: CreationOptional<Date>;
-  updatedAt: CreationOptional<Date>;
+  price: number;
+  createdAt: Date;
+  updatedAt: Date;
+  quantity?: number;
 }
+interface ProductCreationAttributes
+  extends Optional<
+    ProductModel,
+    "product_id" | "price" | "createdAt" | "updatedAt"
+  > {}
 
-export const productModel = sequelize.define<ProductModel>(
-  "Product",
-  {
-    // Model attributes are defined here
-    product_id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      unique: true,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    price: {
-      type: DataTypes.REAL,
-      defaultValue:0
-    },
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
-  },
-  {
-    tableName: "product",
-    timestamps: true,
-  }
-);
+@Table({
+  tableName: "product",
+})
+export class productModel extends Model<
+  ProductModel,
+  ProductCreationAttributes
+> {
+  @Column({
+    primaryKey: true,
+    autoIncrement: true,
+  })
+  product_id!: number;
+
+  @Column({
+    type: DataTypes.TEXT,
+    allowNull: false,
+  })
+  name!: string;
+
+  @Column price!: number;
+  
+  @CreatedAt
+  @Column
+  createdAt!: Date;
+
+  @UpdatedAt
+  @Column
+  updatedAt!: Date;
+}

@@ -1,58 +1,62 @@
+import { DataTypes } from "sequelize";
+
 import {
-  DataTypes,
-  InferCreationAttributes,
-  InferAttributes,
+  Column,
+  ForeignKey,
   Model,
-} from "sequelize";
+  Table,
+} from "sequelize-typescript";
+import { incomeDocumentModel } from "./incomeDocument";
+import { productModel } from "./product";
+import { saleDocumentModel } from "./saleDocument";
 
-import { sequelize } from "../lib/sequelize";
-
-interface DocumentProductModel
-  extends Model<
-    InferAttributes<DocumentProductModel>,
-    InferCreationAttributes<DocumentProductModel>
-  > {
+export interface DocumentProductModel {
   document_id: number;
   product_id: number;
   name: string;
   price: number;
   quantity: number;
-  document_type: "income" | "sale";
 }
 
-export const documentProductModel = sequelize.define<DocumentProductModel>(
-  "DocumentProduct",
-  {
-    document_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    product_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    name: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    price: {
-      type: DataTypes.REAL,
-      allowNull: false,
-    },
-    quantity: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    document_type: {
-      type: DataTypes.STRING(10),
-      allowNull: false,
-      validate: {
-        isIn: [["income", "sale"]],
-      },
-    },
-  },
-  {
-    tableName: "document_product",
-    timestamps: false,
-  }
-);
+@Table({
+  tableName: "document_product",
+  timestamps: false,
+})
+class documentProductModel extends Model<DocumentProductModel> {
+  @ForeignKey(() => productModel)
+  @Column
+  product_id!: number;
+
+  @Column({
+    type: DataTypes.TEXT,
+    allowNull: false,
+  })
+  name!: string;
+
+  @Column({
+    type: DataTypes.REAL,
+  })
+  price!: number;
+
+  @Column({
+    type: DataTypes.REAL,
+  })
+  quantity!: number;
+}
+
+@Table({
+  tableName: "sale_document_product",
+})
+export class saleDocumentProductModel extends documentProductModel {
+  @ForeignKey(() => saleDocumentModel)
+  @Column
+  document_id!: number;
+}
+@Table({
+  tableName: "income_document_product",
+})
+export class incomeDocumentProductModel extends documentProductModel {
+  @ForeignKey(() => incomeDocumentModel)
+  @Column
+  document_id!: number;
+}
