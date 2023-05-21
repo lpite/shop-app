@@ -9,7 +9,7 @@ export type IncomeDocument = {
   isPosted: boolean;
   createdAt: Date;
   updatedAt: Date;
-  DocumentProducts: DocumentProduct[];
+  products: DocumentProduct[];
 };
 
 export type DocumentProduct = {

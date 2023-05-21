@@ -10,7 +10,7 @@ export type SaleDocument = {
   isPosted: boolean;
   createdAt: Date;
   updatedAt: Date;
-  DocumentProducts: DocumentProduct[];
+  products: DocumentProduct[];
 };
 
 export default async function getOneSaleDocument({
