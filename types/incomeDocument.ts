@@ -1,7 +1,6 @@
 
 export type IncomeDocument = {
 	document_id: number,
-	time: number,
 	isPosted: boolean,
 	products: IncomeDocumentProduct[]| string
 }
