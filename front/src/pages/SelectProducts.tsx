@@ -18,10 +18,11 @@ import getAllProducts, { Product } from "../utils/getAllProducts";
 export default function SelectProducts() {
   const [products, setProducts] = createSignal<Product[]>([]);
   const [selectedProducts, setSelectedProducts] = createSignal<Product[]>([]);
-  const [selectedProductData, setSelectedProductData] = createSignal({
+  const [selectedProductData, setSelectedProductData] = createSignal<Product>({
+    product_id: 1,
     price: 0,
-    id: 1,
     name: "",
+    quantity: 1,
   });
 
   const params = useParams();
@@ -53,7 +54,7 @@ export default function SelectProducts() {
   }
 
   function selectProductIncome({ name, price, product_id, quantity }: Product) {
-    setSelectedProductData({ price: price, id: product_id, name: name });
+    setSelectedProductData({ price, product_id, name, quantity });
     setIsOpen(true);
   }
 
@@ -77,11 +78,8 @@ export default function SelectProducts() {
       <SelectIncomeProductPopup
         isOpen={isOpen()}
         closeModal={() => setIsOpen(false)}
-        productPrice={selectedProductData().price}
-        productId={selectedProductData().id}
-        productName={selectedProductData().name}
         selectProduct={selectProduct}
-        product={selectedProductData}
+        product={selectedProductData()}
       />
       <div style={{ margin: "5px" }}>
         <Button variant="contained" onClick={goBackToDocument}>
@@ -186,32 +184,3 @@ export default function SelectProducts() {
     </main>
   );
 }
-
-type RowProductProps = {
-  productId: number;
-  name: string;
-  price: number;
-  quantity: number;
-};
-
-// function RowProduct(props: RowProductProps) {
-//   const params = useParams();
-
-//   function onDoubleClick() {
-//     if (params.type === "income") {
-//       selectProductIncome({
-//         name:props.name,
-//       });
-//     } else {
-//       selectProduct({ name, product_id, price, quantity: 1 });
-//     }
-//   }
-//   return (
-//     <TableRow onDblClick={onDoubleClick}>
-//       <TableCell align="left">{product_id}</TableCell>
-//       <TableCell align="left">{name}</TableCell>
-//       <TableCell align="right">{price}</TableCell>
-//       <TableCell align="center">{quantity}</TableCell>
-//     </TableRow>
-//   );
-// }
