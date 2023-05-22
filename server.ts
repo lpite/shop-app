@@ -25,7 +25,6 @@ app.register(require("@fastify/static"), {
 
 app.get<{
   Querystring: { productId?: string };
-  // Reply: Product | {}; for now
 }>("/get/product/", async (req, res) => {
   try {
     const queryValidator = zod.object({
@@ -124,6 +123,40 @@ app.patch<{
   } catch (error) {
     console.error(error);
     res.send({ ok: false });
+  }
+});
+
+app.put("/set/price/", async (req, res) => {
+  try {
+    const queryValidator = zod.object({
+      product_id: zod.string().transform((val) => parseInt(val)),
+    });
+
+    const bodyValidator = zod.object({
+      newPrice: zod.number(),
+    });
+
+    const query = queryValidator.parse(req.query);
+    const body = bodyValidator.parse(req.body);
+
+    const result = await productModel.update(
+      {
+        price: body.newPrice,
+      },
+      {
+        where: {
+          product_id: query.product_id,
+        },
+      }
+    );
+    if (!result[0]) {
+      throw "Немає такого товару";
+    }
+
+    res.send({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.send({ success: false });
   }
 });
 
