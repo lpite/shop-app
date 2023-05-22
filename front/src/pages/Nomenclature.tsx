@@ -10,19 +10,17 @@ import {
 } from "@suid/material";
 import { createSignal, For, JSX, onMount } from "solid-js";
 import NewProductPopup from "../components/Nomenclature/NewProductPopup/NewProductPopup";
-import { API_URL } from "../config/config";
+import getAllProducts, { Product } from "../utils/getAllProducts";
 
 export default function Nomenclature() {
-  const [products, setProducts] = createSignal<any[]>([]);
+  const [products, setProducts] = createSignal<Product[]>([]);
   const [isFetching, setIsFetching] = createSignal(false);
   const [openModal, setOpenModal] = createSignal(false);
   const navigate = useNavigate();
 
   onMount(async () => {
-    const prods = await fetch(`${API_URL}/get/products/`)
-      .then((res) => res.json())
-      .catch((err) => []);
-    setProducts(prods);
+    const products = await getAllProducts({});
+    setProducts(products);
   });
 
   function openProduct(product_id: number) {
@@ -34,11 +32,7 @@ export default function Nomenclature() {
     if (!isFetching()) {
       if (e.currentTarget.scrollHeight / 2 - 600 < e.currentTarget.scrollTop) {
         setIsFetching(true);
-        const prods = await fetch(
-          `${API_URL}/get/products/?skip=${products().length}`
-        )
-          .then((res) => res.json())
-          .catch((err) => []);
+        const prods = await getAllProducts({ skip: products.length });
         setProducts([...products(), ...prods]);
         setIsFetching(false);
       }
@@ -73,8 +67,8 @@ export default function Nomenclature() {
                 <TableRow onDblClick={() => openProduct(prod.product_id)}>
                   <TableCell>{prod.product_id}</TableCell>
                   <TableCell>{prod.name}</TableCell>
-                  <TableCell>{prod.price}</TableCell>
-                  <TableCell>{prod.quantity}</TableCell>
+                  <TableCell>{prod.price || "Немає"}</TableCell>
+                  <TableCell>{prod.quantity || "Немає"}</TableCell>
                 </TableRow>
               )}
             </For>

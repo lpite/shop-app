@@ -13,30 +13,22 @@ import Button from "@suid/material/Button";
 import { createSignal, For, onMount } from "solid-js";
 import ProductRow from "../components/ProductRow/ProductRow";
 import SelectIncomeProductPopup from "../components/SelectProducts/SelectIncomeProductPopup";
-import { API_URL } from "../config/config";
-
-export type Product = {
-  product_id: number;
-  name: string;
-  price: number;
-  quantity: number;
-};
+import getAllProducts, { Product } from "../utils/getAllProducts";
 
 export default function SelectProducts() {
   const [products, setProducts] = createSignal<Product[]>([]);
   const [selectedProducts, setSelectedProducts] = createSignal<Product[]>([]);
-  const [selectedProductData, setSelectedProductData] = createSignal({
+  const [selectedProductData, setSelectedProductData] = createSignal<Product>({
+    product_id: 1,
     price: 0,
-    id: 1,
     name: "",
+    quantity: 1,
   });
 
   const params = useParams();
   const navigate = useNavigate();
   onMount(async () => {
-    const prods = await fetch(`${API_URL}/get/products/`)
-      .then((res) => res.json())
-      .catch((err) => []);
+    const prods = await getAllProducts({});
     setProducts(prods);
   });
 
@@ -56,17 +48,13 @@ export default function SelectProducts() {
     } else {
       setSelectedProducts([
         ...selectedProducts(),
-        { product_id, name, price, quantity: quantity, isNew: true },
+        { product_id, name, price: price || 0, quantity: quantity },
       ]);
     }
-    sessionStorage.setItem(
-      "selectedProducts",
-      JSON.stringify(selectedProducts())
-    );
   }
 
   function selectProductIncome({ name, price, product_id, quantity }: Product) {
-    setSelectedProductData({ price: price, id: product_id, name: name });
+    setSelectedProductData({ price, product_id, name, quantity });
     setIsOpen(true);
   }
 
@@ -76,20 +64,25 @@ export default function SelectProducts() {
     );
   }
   const [isOpen, setIsOpen] = createSignal(false);
+  console.log(params.documentId);
+  function goBackToDocument() {
+    navigate(
+      `/${params.type}/${params.documentId}/?products=${JSON.stringify(
+        selectedProducts()
+      )}`
+    );
+  }
 
   return (
     <main class="page" style={{ height: "90%" }}>
       <SelectIncomeProductPopup
         isOpen={isOpen()}
         closeModal={() => setIsOpen(false)}
-        productPrice={selectedProductData().price}
-        productId={selectedProductData().id}
-        productName={selectedProductData().name}
         selectProduct={selectProduct}
-        product={selectedProductData}
+        product={selectedProductData()}
       />
       <div style={{ margin: "5px" }}>
-        <Button variant="contained" onClick={() => navigate(-1)}>
+        <Button variant="contained" onClick={goBackToDocument}>
           Додати в документ
         </Button>
         <hr />
@@ -191,33 +184,3 @@ export default function SelectProducts() {
     </main>
   );
 }
-
-type RowProductProps = {
-  productId:number,
-  name:string,
-  price:number,
-  quantity:number
-
-};
-
-// function RowProduct(props: RowProductProps) {
-//   const params = useParams();
-
-//   function onDoubleClick() {
-//     if (params.type === "income") {
-//       selectProductIncome({
-//         name:props.name,
-//       });
-//     } else {
-//       selectProduct({ name, product_id, price, quantity: 1 });
-//     }
-//   }
-//   return (
-//     <TableRow onDblClick={onDoubleClick}>
-//       <TableCell align="left">{product_id}</TableCell>
-//       <TableCell align="left">{name}</TableCell>
-//       <TableCell align="right">{price}</TableCell>
-//       <TableCell align="center">{quantity}</TableCell>
-//     </TableRow>
-//   );
-// }

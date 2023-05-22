@@ -1,4 +1,4 @@
-import { A, useNavigate, useParams } from "@solidjs/router";
+import { A, useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { createSignal, For, onMount } from "solid-js";
 import { API_URL } from "../config/config";
 import SaveIcon from "@suid/icons-material/Save";
@@ -13,46 +13,33 @@ import {
   Typography,
 } from "@suid/material";
 import ProductRow from "../components/ProductRow/ProductRow";
+import getOneSaleDocument from "../utils/getOneSaleDocument";
 
-type SaleDocument = {
-  document_id: number;
-  time: number;
-  isPosted: boolean;
-  products: Product[];
-};
-type Product = {
-  product_id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  serverQuantity?: number;
-  isNew?: boolean;
-};
+import type { SaleDocument } from "../utils/getOneSaleDocument";
 
 export default function SaleDocument() {
   const [saleDocument, setSaleDocument] = createSignal<SaleDocument>({
-    time: 0,
     document_id: 0,
-    products: [],
     isPosted: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    products: [],
   });
-  const params = useParams();
   const navigate = useNavigate();
+  const params = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   onMount(async () => {
     if (params.documentId !== "new") {
-      const doc = await fetch(
-        `${API_URL}/get/sale-document/?document_id=${params.documentId}`
-      )
-        .then((res) => res.json())
-        .catch((err) => {});
-      setSaleDocument(doc);
+      const document = await getOneSaleDocument({
+        documentId: params.documentId,
+      });
+      setSaleDocument(document);
     }
-    const selectedProducts = JSON.parse(
-      sessionStorage.getItem("selectedProducts") || "[]"
-    );
+    const selectedProducts = JSON.parse(searchParams.products || "[]");
+
     if (selectedProducts.length) {
-      sessionStorage.removeItem("selectedProducts");
+      setSearchParams({ products: "[]" });
       setSaleDocument({
         ...saleDocument(),
         products: [...saleDocument().products, ...selectedProducts],
@@ -74,7 +61,7 @@ export default function SaleDocument() {
         quantity: product_id === prod.product_id ? quantity : prod.quantity,
       };
     });
-    setSaleDocument({ ...saleDocument(), products: newProducts });
+    setSaleDocument({ ...saleDocument(), DocumentProducts: newProducts });
   }
 
   async function saveDocument() {
@@ -130,7 +117,7 @@ export default function SaleDocument() {
     | {
         ok: false;
         msg: string;
-        outOfStock: Product[];
+        outOfStock: any[];
       };
   async function updateOrCreateDocument(
     document: SaleDocument
@@ -171,9 +158,11 @@ export default function SaleDocument() {
       <Button variant="contained" onClick={unPostDocument}>
         Відмінити проведення
       </Button>
-      <h1>час {saleDocument().time}</h1>
+      <h1>час {saleDocument()?.createdAt.toString()}</h1>
       <h1>isPosted {saleDocument().isPosted.toString()}</h1>
-      <A href="/select-products/sale">Підібрати товари</A>
+      <A href={`/select-products/sale/${saleDocument().document_id || "new"}`}>
+        Підібрати товари
+      </A>
       <TableContainer>
         <Table sx={{ width: "95%", margin: "0 auto" }} size="small">
           <TableHead>
@@ -186,14 +175,13 @@ export default function SaleDocument() {
           </TableHead>
           <TableBody>
             <For each={saleDocument().products}>
-              {({ product_id, name, price, quantity, serverQuantity }, i) => (
+              {({ product_id, name, price, quantity }, i) => (
                 <>
                   <ProductRow
                     product_id={product_id}
                     name={name}
                     price={price}
                     quantity={quantity}
-                    error={serverQuantity !== undefined}
                     contextMenuItems={
                       <>
                         <Button

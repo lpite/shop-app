@@ -1,4 +1,4 @@
-import { A, useNavigate, useParams } from "@solidjs/router";
+import { A, useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { Save } from "@suid/icons-material";
 import {
   Button,
@@ -16,45 +16,33 @@ import {
 import { createSignal, For, onMount } from "solid-js";
 import ProductRow from "../components/ProductRow/ProductRow";
 import { API_URL } from "../config/config";
+import getOneIncomeDocument from "../utils/getOneIncomeDocument";
 
-type IncomeDocument = {
-  document_id: number;
-  time: number;
-  isPosted: boolean;
-  products: Product[];
-};
-type Product = {
-  product_id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  serverQuantity?: number;
-};
+import type { IncomeDocument } from "../utils/getOneIncomeDocument";
+
 export default function IncomeDocument() {
   const [incomeDocument, setIncomeDocument] = createSignal<IncomeDocument>({
-    time: 0,
     document_id: 0,
-    products: [],
     isPosted: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    products: [],
   });
 
   const navigate = useNavigate();
   const params = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   onMount(async () => {
     if (params.documentId !== "new") {
-      const doc = await fetch(
-        `${API_URL}/get/income-document/?document_id=${params.documentId}`
-      )
-        .then((res) => res.json())
-        .catch((err) => {});
-      setIncomeDocument(doc);
+      const document = await getOneIncomeDocument({
+        documentId: params.documentId,
+      });
+      setIncomeDocument(document);
     }
-    const selectedProducts = JSON.parse(
-      sessionStorage.getItem("selectedProducts") || "[]"
-    );
+    const selectedProducts = JSON.parse(searchParams.products || "[]");
+    console.log(selectedProducts)
     if (selectedProducts.length) {
-      sessionStorage.removeItem("selectedProducts");
       setIncomeDocument({
         ...incomeDocument(),
         products: [...incomeDocument().products, ...selectedProducts],
@@ -105,7 +93,9 @@ export default function IncomeDocument() {
   }
   function setPrices() {
     navigate(
-      `/set-prices/?products=${JSON.stringify(incomeDocument().products)}`
+      `/set-prices/?products=${JSON.stringify(
+        incomeDocument().products
+      )}`
     );
   }
 
@@ -152,9 +142,11 @@ export default function IncomeDocument() {
         </div>
       </div>
 
-      <h1>час {incomeDocument()?.time}</h1>
+      <h1>час {incomeDocument()?.createdAt?.toDateString()}</h1>
       <h1>isPosted {incomeDocument()?.isPosted.toString()}</h1>
-      <A href="/select-products/income">товари</A>
+      <A href={`/select-products/income/${incomeDocument().document_id || "new"}`}>
+        Підібрати товари
+      </A>
       <TableContainer>
         <Table sx={{ width: "95%", margin: "0 auto" }} size="small">
           <TableHead>
@@ -167,14 +159,13 @@ export default function IncomeDocument() {
           </TableHead>
           <TableBody>
             <For each={incomeDocument().products}>
-              {({ product_id, name, price, quantity, serverQuantity }, i) => (
+              {({ product_id, name, price, quantity }, i) => (
                 <>
                   <ProductRow
                     product_id={product_id}
                     name={name}
                     price={price}
                     quantity={quantity}
-                    error={serverQuantity !== undefined}
                     contextMenuItems={
                       <>
                         <Button
@@ -264,7 +255,9 @@ function AdditionalFunctionsMenu(props: AdditionalFunctionsMenuProps) {
         onClose={handleClose}
         MenuListProps={{ "aria-labelledby": "basic-button" }}
       >
-        <MenuItem onClick={()=>props.unPostDocument()}>Відмінити проведення</MenuItem>
+        <MenuItem onClick={() => props.unPostDocument()}>
+          Відмінити проведення
+        </MenuItem>
       </Menu>
     </div>
   );

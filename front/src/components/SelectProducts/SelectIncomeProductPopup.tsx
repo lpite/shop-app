@@ -1,15 +1,12 @@
 import { Box, Button, Modal, TextField } from "@suid/material";
-import { createEffect, createSignal } from "solid-js";
-import { Product } from "../../pages/SelectProducts";
+import { createEffect, createSignal, onMount } from "solid-js";
+import { Product } from "../../utils/getAllProducts";
 
 type SelectIncomeProductPopupProps = {
   isOpen: boolean;
   closeModal: () => void;
-  productPrice: number | undefined;
-  productId: number;
-  productName: string;
   selectProduct: (product: Product) => void;
-  product: any;
+  product: Product;
 };
 
 export default function SelectIncomeProductPopup(
@@ -17,13 +14,13 @@ export default function SelectIncomeProductPopup(
 ) {
   const [productData, setProductData] = createSignal({
     quantity: 1,
-    price: props.product.price || 0,
+    price: 0,
   });
   function selectProductAndCloseModal() {
     props.selectProduct({
       ...productData(),
-      product_id: props.productId,
-      name: props.productName,
+      product_id: props.product.product_id,
+      name: props.product.name,
     });
     closeModal();
   }
@@ -31,6 +28,17 @@ export default function SelectIncomeProductPopup(
     setProductData({ quantity: 1, price: 0 });
     props.closeModal();
   }
+  createEffect(() => {
+    setProductData({
+      price: props.product.price,
+      quantity: 1,
+    });
+  });
+  function onChangePrice(e: unknown, val: string) {
+    const numberValue = parseFloat(val.replace(/e/, "")) || 0;
+    setProductData({ price: numberValue, quantity: productData().quantity });
+  }
+
   return (
     <Modal open={props.isOpen} onClose={props.closeModal}>
       <Box
@@ -56,21 +64,16 @@ export default function SelectIncomeProductPopup(
           onSubmit={() => alert("1")}
         >
           <TextField
-            type="number"
+            type="text"
             value={productData().price}
-            onChange={(e, val) =>
-              setProductData({
-                ...productData(),
-                price: parseFloat(val),
-              })
-            }
+            onChange={onChangePrice}
             label="Ціна"
           />
 
           <hr />
           <TextField
-            type="number"
-            value={productData().quantity}
+            type="text"
+            defaultValue={1}
             onChange={(e, val) =>
               setProductData({
                 ...productData(),

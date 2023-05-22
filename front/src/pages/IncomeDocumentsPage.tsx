@@ -1,35 +1,35 @@
 import { useNavigate } from "@solidjs/router";
 import {
+  Button,
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableRow,
-  TableCell,
-  Button,
 } from "@suid/material";
 import { createSignal, For, onMount } from "solid-js";
-import getAllSaleDocuments, {
-  SaleDocuments,
-} from "../utils/getAllSaleDocuments";
+import getAllIncomeDocuments, {
+  IncomeDocuments,
+} from "../utils/getAllIncomeDocuments";
 
-export default function SaleDocumentsPage() {
-  const [documents, setDocuments] = createSignal<SaleDocuments>([]);
+export default function IncomeDocumentsPage() {
+  const [documents, setDocuments] = createSignal<IncomeDocuments>([]);
 
   const navigate = useNavigate();
 
   onMount(async () => {
-    const documents = await getAllSaleDocuments();
-    setDocuments(documents);
+    const docs = await getAllIncomeDocuments();
+    setDocuments(docs);
   });
 
-  function openSaleDocument(document_id: number | string) {
-    navigate(`/sale/${document_id}`);
+  function openIncomeDocument(document_id: number | string) {
+    navigate(`/income/${document_id}`);
   }
 
   return (
     <main class="page">
-      <h1>Продаж</h1>
-      <Button onClick={() => openSaleDocument("new")} variant="contained">
+      <h1>Надходження</h1>
+      <Button onClick={() => openIncomeDocument("new")} variant="contained">
         Новий
       </Button>
       <Table size="small">
@@ -44,7 +44,7 @@ export default function SaleDocumentsPage() {
           <For each={documents()}>
             {(doc) => (
               <TableRow
-                onDblClick={() => openSaleDocument(doc.document_id)}
+                onDblClick={() => openIncomeDocument(doc.document_id)}
                 sx={{ userSelect: "none" }}
               >
                 <TableCell align="left">
