@@ -1,0 +1,1 @@
+async function i({url:e,method:n,query:o,body:c}){const s=localStorage.getItem("ip"),t=await fetch(`http://${s}/1c_connector/index.php`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:e,method:n,query:o,body:c})}).then(a=>a.json());return console.log(t),t}export{i as f};
