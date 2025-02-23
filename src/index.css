@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+	height: 100%;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+input[type="number"] {
+	-moz-appearance: textfield;
+}
+
+@keyframes jumping_octocat {
+	0% {
+		transform: translateX(100px);
+	}
+	49% {
+		transform: translateX(-100px) rotateY(0);
+	}
+	50% {
+		transform: translateX(-100px) rotateY(180deg);
+	}
+	/*51% {
+		transform: rotateY(180deg);
+	}*/
+	99% {
+		transform: translateX(100px) rotateY(180deg);
+	}
+	100% {
+		transform: translateX(100px);
+	}
+}
+
+.octocat {
+	animation: jumping_octocat 3s infinite;
+}
