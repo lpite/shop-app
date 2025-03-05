@@ -34,6 +34,7 @@ createRoot(document.getElementById("root")!).render(
 			<Route path="/stats/" component={StatsPage} />
 			<Route path="/reports/" component={Reports} />
 			<Route path="/category-editor/" component={CategoryEditor} />
+			<Route path="/suppliers-search/" component={SuppliersSearch} />
 		</Switch>
 	</StrictMode>,
 );
