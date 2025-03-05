@@ -174,7 +174,9 @@ export default function ProductsSection({
 						</div>
 					))}
 				{filteredProducts.length > 100 ? (
-					<div className="h-24 flex items-center justify-center text-3xl">Запит дуже неточний</div>
+					<div className="h-24 flex items-center justify-center text-3xl">
+						Запит дуже неточний
+					</div>
 				) : null}
 			</div>
 		</div>

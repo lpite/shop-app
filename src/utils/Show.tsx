@@ -1,7 +1,7 @@
-import React from "react"
+import { ReactNode } from "react"
 
 type ShowProps = {
-	children: React.ReactNode,
+	children: ReactNode,
 	when: boolean
 }
 

@@ -6,7 +6,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import convertToId from "../utils/convertToId";
 import { fetcher } from "../utils/fetcher";
 import useSWR from "swr";
-import { Link, Route } from "wouter";
+import { Link, Route, Switch } from "wouter";
 
 function ReplaceForm({ items }: any) {
 	const {
@@ -68,11 +68,11 @@ function SetForm({ items }: any) {
 
 export default function Test2() {
 	return (
-		<>
+		<Switch>
 			<Route path="1" component={Step1} />
 			<Route path="edit" component={StepEdit} />
 			<Route path="set-category" component={SetCategory} />
-		</>
+		</Switch>
 	);
 }
 
@@ -252,13 +252,13 @@ function Step1Dialog() {
 				<Dialog.Content className="fixed min-w-80 min-h-80 bg-white shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 py-5 px-8">
 					<Dialog.Title className="text-3xl pb-4">Next step?</Dialog.Title>
 					<Link
-						to="/test2/edit"
+						to="/edit"
 						className="h-full border-2 flex items-center justify-center rounded-xl py-2 px-4 shadow-sm hover:shadow-md"
 					>
 						Edit
 					</Link>
 					<Link
-						to="/test2/set-category"
+						to="/set-category"
 						className="mt-2 h-full border-2 flex items-center justify-center rounded-xl py-2 px-4 shadow-sm hover:shadow-md"
 					>
 						set category
