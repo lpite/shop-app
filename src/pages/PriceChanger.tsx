@@ -1,11 +1,5 @@
 import useSWR from "swr";
-import {
-	Dispatch,
-	FormEvent,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { Dispatch, FormEvent, useEffect, useRef, useState } from "react";
 import useSWRMutation from "swr/mutation";
 
 import * as Dialog from "@radix-ui/react-dialog";
@@ -113,7 +107,7 @@ export default function PriceChanger() {
 
 	return (
 		<main className="flex items-center justify-center flex-col h-full">
-			<h1 className="text-3xl mb-2 font-medium">Змінювалка цін</h1>
+			<h1 className="text-3xl mb-2 font-medium">мяу мяу</h1>
 			<button
 				onClick={() => setIsOpenCMDK(true)}
 				disabled={isMutating || isLoadingPrices || isValidatingPrices}
@@ -205,7 +199,6 @@ type CMDKProps = {
 	onFormSubmit?: () => void;
 	closeOnSelect?: boolean;
 };
-
 
 function CMDK({
 	search,

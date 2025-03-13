@@ -52,7 +52,6 @@ function Day({ day, documents }: { day: string; documents: any[] }) {
 							<>
 								<span className="text-xl mr-2">Повернення</span>
 								<span className="text-xl font-bold">{doc.sum} грн</span>
-
 							</>
 						)}
 					</div>

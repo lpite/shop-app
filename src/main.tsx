@@ -5,6 +5,8 @@ import "./index.css";
 import { Route, Switch } from "wouter";
 import StartPage from "./pages/StartPage.tsx";
 import DocumentPage from "./pages/DocumentPage.tsx";
+import TestPage from "./pages/Test.tsx";
+import SuppliersSearch from "./pages/SuppliersSearch.tsx";
 
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const Test2 = lazy(() => import("./pages/Test2.tsx"));
@@ -28,8 +30,8 @@ createRoot(document.getElementById("root")!).render(
 				)}
 			/>
 			<Route path="/document/:partnerId/:type" component={DocumentPage} />
-			{/*<Route path="/test" element={<TestPage />} />*/}
-			<Route path="/test2/*" component={Test2} />
+			<Route path="/test" component={TestPage} />
+			<Route path="/test2/" component={Test2} nest />
 			<Route path="/price-changer/" component={PriceChanger} />
 			<Route path="/stats/" component={StatsPage} />
 			<Route path="/reports/" component={Reports} />

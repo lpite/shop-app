@@ -58,8 +58,16 @@ export default function SuppliersSearch() {
 
 			<div className="mt-24">
 				{items.map((item, i) => (
-					<div key={item.id} className="border-2 px-4 py-2 rounded-xl mt-1 flex items-center">
-						<img src="" width={80} height={80} className="mr-2 my-1 rounded-lg" />
+					<div
+						key={item.id}
+						className="border-2 px-4 py-2 rounded-xl mt-1 flex items-center"
+					>
+						<img
+							src=""
+							width={80}
+							height={80}
+							className="mr-2 my-1 rounded-lg"
+						/>
 						<div className="">
 							{item.article}
 							<br />

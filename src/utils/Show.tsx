@@ -1,16 +1,13 @@
-import { ReactNode } from "react"
+import { ReactNode } from "react";
 
 type ShowProps = {
-	children: ReactNode,
-	when: boolean
-}
+	children: ReactNode;
+	when: boolean;
+};
 
-export default function Show({
-	children,
-	when
-}: ShowProps) {
-	if(when){
-		return children
+export default function Show({ children, when }: ShowProps) {
+	if (when) {
+		return children;
 	}
-	return null
+	return null;
 }

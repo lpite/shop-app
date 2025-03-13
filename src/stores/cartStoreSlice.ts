@@ -27,20 +27,24 @@ export const cartSlice: StateCreator<CartStore, [], [], CartStore> = (set) => ({
 			}
 			return { cartProducts: [...state.cartProducts, p] };
 		}),
-	removeFromCart: (s) => set((state) => {
-		const newProducts = state.cartProducts.filter(el => el.searchCode !== s);
-		return { ...state, cartProducts: newProducts }
-	}),
-	editCart: (s, q) => set((state) => {
-		if (q < 0) {
-			return state;
-		}
-		const newProducts = state.cartProducts.map((el) => {
-			if (el.searchCode === s) {
-				return { ...el, quantity: q }
+	removeFromCart: (s) =>
+		set((state) => {
+			const newProducts = state.cartProducts.filter(
+				(el) => el.searchCode !== s,
+			);
+			return { ...state, cartProducts: newProducts };
+		}),
+	editCart: (s, q) =>
+		set((state) => {
+			if (q < 0) {
+				return state;
 			}
-			return el;
-		})
-		return { ...state, cartProducts: newProducts }
-	})
+			const newProducts = state.cartProducts.map((el) => {
+				if (el.searchCode === s) {
+					return { ...el, quantity: q };
+				}
+				return el;
+			});
+			return { ...state, cartProducts: newProducts };
+		}),
 });
