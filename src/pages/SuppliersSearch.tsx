@@ -1,30 +1,50 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 export default function SuppliersSearch() {
 	const [searchValue, setSearchValue] = useState("");
 	const [items, seItems] = useState<
 		{
-			id: string;
+			uuid: string;
 			name: string;
 			article: string;
-			description: string;
 			brand: string;
+			default_image: string;
 		}[]
 	>([]);
 
 	async function search(e: FormEvent) {
 		e.preventDefault();
-		const result = await fetch(
-			`http://localhost:8090/api/collections/product/records?filter=(article~'${searchValue}' || name~'${searchValue}' || description~'${searchValue}')&fields=id,name,article,description,brand`,
-		)
+		const pb_hook_url = localStorage.getItem("pb_hook_url");
+		const cdn_url = localStorage.getItem("cdn_url");
+		if (!cdn_url) {
+			alert("no 'cdn_url' in localStorage");
+			return;
+		}
+		if (!pb_hook_url) {
+			alert("no 'pb_hook_url' in localStorage");
+			return;
+		}
+		const result = (await fetch(`${pb_hook_url}${searchValue}`)
 			.then((res) => res.json())
 			.catch((err) => {
 				console.log(err);
 				return null;
-			});
-		if (result?.items) {
-			console.log(result?.items);
-			seItems(result?.items);
+			})) as {
+			headers: any;
+			products: {
+				article: string;
+				avaible: boolean;
+				brand: string;
+				currency_name: string;
+				default_image: string;
+				name: string;
+				price: string;
+				uuid: string;
+			}[];
+		};
+		if (result?.products) {
+			console.log(result?.products);
+			seItems(result?.products);
 			// setFilteredProducts(result.items);
 		}
 	}
@@ -59,11 +79,11 @@ export default function SuppliersSearch() {
 			<div className="mt-24">
 				{items.map((item, i) => (
 					<div
-						key={item.id}
+						key={item.uuid}
 						className="border-2 px-4 py-2 rounded-xl mt-1 flex items-center"
 					>
 						<img
-							src=""
+							src={`${localStorage.getItem("cdn_url")}${item.default_image.replace(/\\/g, "/")}`}
 							width={80}
 							height={80}
 							className="mr-2 my-1 rounded-lg"
@@ -74,7 +94,7 @@ export default function SuppliersSearch() {
 							{item.name.replace(item.article, "").replace(item.brand, "")}{" "}
 							{item.brand}
 							<br />
-							{item.description}
+							{/*{item.description}*/}
 						</div>
 					</div>
 				))}
