@@ -25,3 +25,12 @@ dist-ssr
 
 stats.html
 .env
+
+pocketbase/pb_data/*
+pocketbase/pb_migrations/*
+pocketbase/pb_hooks/cfg.js
+pocketbase/pocketbase
+pocketbase/pocketbase.exe
+
+
+
