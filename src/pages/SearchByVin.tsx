@@ -197,7 +197,9 @@ export default function SearchByVin() {
 						placeholder="VIN"
 						onChange={(e) => setSearchValue(e.target.value)}
 						value={searchValue}
+						maxLength={17}
 					/>
+					<span className="text-gray-400 pr-4">{17-searchValue.length}</span>
 					<button className="h-10 w-10 text-gray-600 flex items-center justify-center hover:bg-black hover:bg-opacity-20 rounded-lg">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
