@@ -69,7 +69,7 @@ export default function Header({ setFilteredProducts }: HeaderProps) {
 
 	return (
 		<header className="w-full gap-2 p-2 grid grid-rows-2 grid-cols-12 h-38 bg-slate-100">
-			<div className="flex gap-2 col-start-1 col-span-4">
+			<div className="flex gap-2 col-start-1 col-span-3">
 				<Link
 					to={"/"}
 					className="px-4 h-10 border-2 rounded-lg bg-slate-300 flex items-center hover:bg-sky-200"
@@ -91,7 +91,13 @@ export default function Header({ setFilteredProducts }: HeaderProps) {
 					Статистика
 				</a>
 			</div>
-			<div className="col-start-6 col-end-13 w-full flex justify-end gap-4">
+			<div className="col-start-4 col-end-13 w-full flex justify-end gap-4">
+				<Link
+					to="/vin-demo"
+					className="flex items-center px-2 border-2 h-10 rounded-lg"
+				>
+					Vin
+				</Link>
 				<SearchHistoryPopup />
 				<CatalogPopup />
 				<CommentPopup partnerId={partnerId || ""} buttonText="Коментар" />
