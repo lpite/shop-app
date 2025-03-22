@@ -79,6 +79,8 @@ export default function SearchByVin() {
 		ssd: "",
 	});
 
+	const [isLoading, setIsLoading] = useState(false);
+
 	const { pb_base_url } = useSettings();
 
 	useEffect(() => {
@@ -90,12 +92,14 @@ export default function SearchByVin() {
 	}, []);
 	async function search(e: FormEvent) {
 		e.preventDefault();
+		setIsLoading(true);
 		const vinResponse = (await fetch(
 			`${pb_base_url}/api/vin/search/${searchValue}`,
 		)
 			.then((r) => r.json())
 			.catch((err) => {
 				console.error(err);
+				setIsLoading(false);
 				alert("Сталася помилка (пошук VIN)");
 			})) as VinSearchResponse | undefined;
 		if (!vinResponse || !vinResponse.vehicle) {
@@ -119,12 +123,16 @@ export default function SearchByVin() {
 			.catch((err) => {
 				console.error(err);
 				alert("Сталася помилка (Групи)");
+			})
+			.finally(() => {
+				setIsLoading(false);
 			})) as GroupsResponse | undefined;
 
 		setGroups(groups);
 	}
 
 	async function getItems(id: string) {
+		setIsLoading(true);
 		const group = (await fetch(`${pb_base_url}/api/vin/quick_group`, {
 			method: "POST",
 			headers: {
@@ -136,12 +144,15 @@ export default function SearchByVin() {
 				ssd: vehicle.ssd,
 				quick_group_id: id,
 			}),
-		}).then((r) =>
-			r.json().catch((err) => {
+		})
+			.then((r) => r.json())
+			.catch((err) => {
 				console.error(err);
 				alert("Сталася помилка (Група)");
-			}),
-		)) as GroupResponse | undefined;
+			})
+			.finally(() => {
+				setIsLoading(false);
+			})) as GroupResponse | undefined;
 		if (!group) {
 			return;
 		}
@@ -151,6 +162,12 @@ export default function SearchByVin() {
 	const [showPopup, setShowPopup] = useState(false);
 	return (
 		<main className="py-4 flex flex-col items-center w-full">
+			{isLoading ? (
+				<div className="fixed start-0 top-0 end-0 right-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-20">
+					<div className="w-24 h-24 border-8 border-sky-500 rounded-full border-t-transparent animate-spin"></div>
+				</div>
+			) : null}
+
 			<Dialog.Root open={showPopup} onOpenChange={setShowPopup}>
 				<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-25 z-10" />
 				<Dialog.Content className="fixed w-3/6 h-4/6 bg-white shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 pt-5 pb-4 px-4 rounded-lg flex flex-col z-20">
@@ -199,8 +216,11 @@ export default function SearchByVin() {
 						value={searchValue}
 						maxLength={17}
 					/>
-					<span className="text-gray-400 pr-4">{17-searchValue.length}</span>
-					<button className="h-10 w-10 text-gray-600 flex items-center justify-center hover:bg-black hover:bg-opacity-20 rounded-lg">
+					<span className="text-gray-400 pr-4">{17 - searchValue.length}</span>
+					<button
+						className="h-10 w-10 text-gray-600 flex items-center justify-center hover:bg-black hover:bg-opacity-20 rounded-lg disabled:bg-gray-400"
+						disabled={isLoading}
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="20"
