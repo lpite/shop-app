@@ -7,6 +7,9 @@ import StartPage from "./pages/StartPage.tsx";
 import DocumentPage from "./pages/DocumentPage.tsx";
 import TestPage from "./pages/Test.tsx";
 import SuppliersSearch from "./pages/SuppliersSearch.tsx";
+import FiltersDemo from "./pages/filters-demo.tsx";
+import { SWRConfig } from "swr";
+import SearchByVin from "./pages/SearchByVin.tsx";
 
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const Test2 = lazy(() => import("./pages/Test2.tsx"));
@@ -19,24 +22,28 @@ const CategoryEditor = lazy(() => import("./pages/CategoryEditor.tsx"));
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
-		<Switch>
-			<Route path="/" component={StartPage} />
-			<Route
-				path="/clients/"
-				component={() => (
-					<Suspense fallback="...">
-						<ClientSelectionPage />
-					</Suspense>
-				)}
-			/>
-			<Route path="/document/:partnerId/:type" component={DocumentPage} />
-			<Route path="/test" component={TestPage} />
-			<Route path="/test2/" component={Test2} nest />
-			<Route path="/price-changer/" component={PriceChanger} />
-			<Route path="/stats/" component={StatsPage} />
-			<Route path="/reports/" component={Reports} />
-			<Route path="/category-editor/" component={CategoryEditor} />
-			<Route path="/suppliers-search/" component={SuppliersSearch} />
-		</Switch>
+		<SWRConfig value={{ provider: () => new Map() }}>
+			<Switch>
+				<Route path="/" component={StartPage} />
+				<Route
+					path="/clients/"
+					component={() => (
+						<Suspense fallback="...">
+							<ClientSelectionPage />
+						</Suspense>
+					)}
+				/>
+				<Route path="/document/:partnerId/:type" component={DocumentPage} />
+				<Route path="/test" component={TestPage} />
+				<Route path="/test2/" component={Test2} nest />
+				<Route path="/price-changer/" component={PriceChanger} />
+				<Route path="/stats/" component={StatsPage} />
+				<Route path="/reports/" component={Reports} />
+				<Route path="/category-editor/" component={CategoryEditor} />
+				<Route path="/suppliers-search/" component={SuppliersSearch} />
+				<Route path="/demo/" component={FiltersDemo} />
+				<Route path="/vin-demo/" component={SearchByVin} />
+			</Switch>
+		</SWRConfig>
 	</StrictMode>,
 );
