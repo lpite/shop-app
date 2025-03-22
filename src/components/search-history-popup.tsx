@@ -47,6 +47,12 @@ export default function SearchHistoryPopup() {
 			url: `/shop/hs/app/last-documents/${searchValue}`,
 			method: "GET",
 		})) as any;
+
+		if (!response) {
+			alert("Немає відповіді");
+			return;
+		}
+
 		setList(response);
 		console.log(response);
 	}
@@ -102,7 +108,7 @@ export default function SearchHistoryPopup() {
 						</button>
 					</form>
 					<div className="h-full overflow-y-auto mt-3 py-3">
-						{list.map((item, i) => {
+						{list?.map((item, i) => {
 							const days = Math.abs(
 								//@ts-expect-error just ts fun
 								(new Date(item.documentDate) - new Date()) /

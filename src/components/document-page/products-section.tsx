@@ -134,7 +134,7 @@ export default function ProductsSection({
 								className={cellStyles + " flex justify-between"}
 							>
 								{product.name}
-								{product.description.length ? (
+								{product?.description?.length ? (
 									<button onClick={() => State.openPopup(product)}>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
@@ -160,16 +160,16 @@ export default function ProductsSection({
 								)}
 							</div>
 							<div style={{ width: columnsWidth[5] }} className={cellStyles}>
-								{product.units}
+								{product?.units}
 							</div>
 							<div style={{ width: columnsWidth[6] }} className={cellStyles}>
-								{product.place1}
+								{product?.place1}
 							</div>
 							<div style={{ width: columnsWidth[7] }} className={cellStyles}>
-								{product.place2}
+								{product?.place2}
 							</div>
 							<div style={{ width: columnsWidth[8] }} className={cellStyles}>
-								{product.place3}
+								{product?.place3}
 							</div>
 						</div>
 					))}

@@ -43,9 +43,9 @@ function searchThroughProducts(
 
 	if (
 		product.name.includes(trimmedSearchValue) ||
-		product.vendorCode.includes(trimmedSearchValue) ||
+		product.vendorCode?.includes(trimmedSearchValue) ||
 		product.code.includes(trimmedSearchValue) ||
-		product.description.includes(trimmedSearchValue)
+		product.description?.includes(trimmedSearchValue)
 	) {
 		return true;
 	}
