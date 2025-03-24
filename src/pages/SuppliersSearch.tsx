@@ -34,17 +34,13 @@ export default function SuppliersSearch() {
 
 	async function search(e: FormEvent) {
 		e.preventDefault();
-		setIsLoading(true);
 		const pb_hook_url = localStorage.getItem("pb_hook_url");
-		const cdn_url = localStorage.getItem("cdn_url");
-		if (!cdn_url) {
-			alert("no 'cdn_url' in localStorage");
-			return;
-		}
+	
 		if (!pb_hook_url) {
 			alert("no 'pb_hook_url' in localStorage");
 			return;
 		}
+		setIsLoading(true);
 		if (!selectedBrand) {
 			const brands = await fetch(
 				`http://localhost:8090/api/sup/brands/${searchValue.replace(/\s+/g, "")}`,
