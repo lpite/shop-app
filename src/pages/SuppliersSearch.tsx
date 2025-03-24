@@ -4,6 +4,8 @@ import { useAppStore } from "../stores/useAppStore";
 import { useLocation, useSearchParams } from "wouter";
 import { useSWRConfig } from "swr";
 
+import * as Dialog from "@radix-ui/react-dialog";
+
 type SupplierProduct = {
 	supId: string;
 	article: string;
@@ -19,15 +21,20 @@ type SupplierProduct = {
 };
 
 export default function SuppliersSearch() {
-	const [searchParams, setSearchParams] = useSearchParams();
+	const [searchParams] = useSearchParams();
 	const [searchValue, setSearchValue] = useState(searchParams.get("q") || "");
 	const [items, seItems] = useState<SupplierProduct[]>([]);
+	const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+	const [brands, setBrands] = useState<any[]>([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [isOpenBrands, setIsOpenBrands] = useState(false);
 	const { mutate } = useSWRConfig();
 
 	const _ = useProducts({});
 
 	async function search(e: FormEvent) {
 		e.preventDefault();
+		setIsLoading(true);
 		const pb_hook_url = localStorage.getItem("pb_hook_url");
 		const cdn_url = localStorage.getItem("cdn_url");
 		if (!cdn_url) {
@@ -38,16 +45,58 @@ export default function SuppliersSearch() {
 			alert("no 'pb_hook_url' in localStorage");
 			return;
 		}
+		if (!selectedBrand) {
+			const brands = await fetch(
+				`http://localhost:8090/api/sup/brands/${searchValue.replace(/\s+/g, "")}`,
+			)
+				.then(
+					(r) =>
+						r.json() as Promise<{
+							success: boolean;
+							online: boolean;
+							list: {
+								title: string;
+								value: string;
+								description: { articleNumber: string; generic: string };
+								logo: string;
+								mfrId: number;
+							}[];
+						}>,
+				)
+				.catch((err) => {
+					console.error(err);
+					alert("Сталася помилка отримання виробників");
+					return null;
+				})
+				.finally(() => {
+					setIsLoading(false);
+				});
+
+			if (brands?.list.length) {
+				setBrands(brands.list);
+				setIsOpenBrands(true);
+				return;
+			}
+		}
 		mutate("/products/");
 
-		const result = (await fetch(
-			`${pb_hook_url}${searchValue.replace(/\s+/g, "")}`,
+		const result = await fetch(
+			`${pb_hook_url}${searchValue.replace(/\s+/g, "")}?brand-id=${selectedBrand}`,
 		)
-			.then((res) => res.json())
+			.then((r) => {
+				if (r.status !== 200) {
+					return null;
+				}
+				return r;
+			})
+			.then((res) => res?.json() as Promise<SupplierProduct[]>)
 			.catch((err) => {
 				console.error(err);
 				return null;
-			})) as SupplierProduct[];
+			})
+			.finally(() => {
+				setIsLoading(false);
+			});
 		if (result) {
 			seItems(result);
 		}
@@ -55,6 +104,17 @@ export default function SuppliersSearch() {
 
 	return (
 		<main className="py-4 flex flex-col items-center w-full">
+			{isLoading ? (
+				<div className="fixed start-0 top-0 end-0 right-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center z-20">
+					<div className="w-24 h-24 border-8 border-sky-500 rounded-full border-t-transparent animate-spin"></div>
+				</div>
+			) : null}
+			<SelectBrandPopup
+				onOpenChange={setIsOpenBrands}
+				open={isOpenBrands}
+				brands={brands}
+				setBrand={setSelectedBrand}
+			/>
 			<div className="fixed top-0 bg-white w-full flex justify-center">
 				<form
 					className="border-2 mt-8 w-2/6 px-2 rounded-xl flex items-center"
@@ -63,7 +123,10 @@ export default function SuppliersSearch() {
 					<input
 						className="w-full h-12 text-xl rounded-xl outline-none"
 						placeholder="пошук..."
-						onChange={(e) => setSearchValue(e.target.value)}
+						onChange={(e) => {
+							setSearchValue(e.target.value);
+							setSelectedBrand(null);
+						}}
 						value={searchValue}
 					/>
 					<button className="h-10 w-10 text-gray-600 flex items-center justify-center hover:bg-black hover:bg-opacity-20 rounded-lg">
@@ -82,7 +145,7 @@ export default function SuppliersSearch() {
 
 			<div className="mt-24 w-full px-3">
 				{items.map((item) => (
-					<Item {...item} key={item.article} />
+					<Item {...item} key={item.article + item.brand} />
 				))}
 			</div>
 		</main>
@@ -102,7 +165,7 @@ function Item({ article, name, brand, stocks, photo }: SupplierProduct) {
 	return (
 		<div className="border-2 px-4 py-2 rounded-xl mt-1 flex w-full">
 			<img
-				src={`${localStorage.getItem("cdn_url")}${photo?.replace(/\\/g, "/")}`}
+				src={photo}
 				width={112}
 				height={112}
 				className="mr-2 my-1 rounded-lg object-cover h-24"
@@ -169,5 +232,38 @@ function SupplierButton({
 				<span className="bg-red-200">Немає</span>
 			)}
 		</button>
+	);
+}
+
+function SelectBrandPopup({
+	open,
+	onOpenChange,
+	brands,
+	setBrand,
+}: {
+	open: boolean;
+	onOpenChange: (o: boolean) => void;
+	setBrand: (b: string) => void;
+	brands: any[];
+}) {
+	return (
+		<Dialog.Root open={open} onOpenChange={onOpenChange}>
+			<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-25 z-10" />
+			<Dialog.Content className="fixed w-3/6 h-4/6 bg-white shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 pt-5 pb-4 px-4 rounded-lg flex flex-col z-20">
+				<Dialog.Title className="text-2xl pb-3 font-medium">
+					Обери виробника
+				</Dialog.Title>
+				{brands.map((brand) => (
+					<button
+						onClick={() => {
+							setBrand(brand.value);
+							onOpenChange(false);
+						}}
+					>
+						{brand.title}
+					</button>
+				))}
+			</Dialog.Content>
+		</Dialog.Root>
 	);
 }

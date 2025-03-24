@@ -1,7 +1,6 @@
 import { FormEvent, Fragment, useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useSettings } from "../stores/settingsStore";
-import { Link, useLocation } from "wouter";
 
 type VinSearchResponse = {
 	found_by: string;
