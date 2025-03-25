@@ -35,7 +35,7 @@ export default function SuppliersSearch() {
 	async function search(e: FormEvent) {
 		e.preventDefault();
 		const pb_hook_url = localStorage.getItem("pb_hook_url");
-	
+
 		if (!pb_hook_url) {
 			alert("no 'pb_hook_url' in localStorage");
 			return;
@@ -105,6 +105,12 @@ export default function SuppliersSearch() {
 					<div className="w-24 h-24 border-8 border-sky-500 rounded-full border-t-transparent animate-spin"></div>
 				</div>
 			) : null}
+			<button
+				onClick={() => history.go(-1)}
+				className="fixed top-0 left-8 bg-sky-300 h-12 mt-8 mr-12 flex items-center px-8 z-10 rounded-lg"
+			>
+				назад
+			</button>
 			<SelectBrandPopup
 				onOpenChange={setIsOpenBrands}
 				open={isOpenBrands}
@@ -118,7 +124,7 @@ export default function SuppliersSearch() {
 				>
 					<input
 						className="w-full h-12 text-xl rounded-xl outline-none"
-						placeholder="пошук..."
+						placeholder="пошук по постачальникам..."
 						onChange={(e) => {
 							setSearchValue(e.target.value);
 							setSelectedBrand(null);
@@ -249,16 +255,19 @@ function SelectBrandPopup({
 				<Dialog.Title className="text-2xl pb-3 font-medium">
 					Обери виробника
 				</Dialog.Title>
-				{brands.map((brand) => (
-					<button
-						onClick={() => {
-							setBrand(brand.value);
-							onOpenChange(false);
-						}}
-					>
-						{brand.title}
-					</button>
-				))}
+				<div className="flex flex-wrap gap-3">
+					{brands.map((brand) => (
+						<button
+							className="border-2 grow text-lg py-2 rounded-lg hover:bg-black hover:bg-opacity-10"
+							onClick={() => {
+								setBrand(brand.value);
+								onOpenChange(false);
+							}}
+						>
+							{brand.title}
+						</button>
+					))}
+				</div>
 			</Dialog.Content>
 		</Dialog.Root>
 	);

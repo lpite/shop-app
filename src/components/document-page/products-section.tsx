@@ -50,7 +50,7 @@ export default function ProductsSection({
 						width:
 							(pageRef.current?.clientWidth || 0) -
 							columnsWidth.reduce((prev, el) => prev + el, 0) -
-							26,
+							48,
 					}}
 					className={cellStyles}
 				>
@@ -129,7 +129,7 @@ export default function ProductsSection({
 									width:
 										(pageRef.current?.clientWidth || 0) -
 										columnsWidth.reduce((prev, el) => prev + el, 0) -
-										26,
+										48,
 								}}
 								className={cellStyles + " flex justify-between"}
 							>

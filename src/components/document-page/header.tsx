@@ -93,6 +93,12 @@ export default function Header({ setFilteredProducts }: HeaderProps) {
 			</div>
 			<div className="col-start-4 col-end-13 w-full flex justify-end gap-4">
 				<Link
+					to="/suppliers-search"
+					className="flex items-center px-2 border-2 h-10 rounded-lg"
+				>
+					Постачальники
+				</Link>
+				<Link
 					to="/vin-demo"
 					className="flex items-center px-2 border-2 h-10 rounded-lg"
 				>

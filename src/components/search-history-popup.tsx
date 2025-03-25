@@ -72,7 +72,7 @@ export default function SearchHistoryPopup() {
 						<path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z" />
 						<path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5" />
 					</svg>
-					Історія продажу
+					Історія
 				</button>
 			</Dialog.Trigger>
 			<Dialog.Portal>
