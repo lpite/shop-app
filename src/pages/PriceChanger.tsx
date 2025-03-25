@@ -107,7 +107,7 @@ export default function PriceChanger() {
 
 	return (
 		<main className="flex items-center justify-center flex-col h-full">
-			<h1 className="text-3xl mb-2 font-medium">мяу мяу</h1>
+			<h1 className="text-3xl mb-2 font-medium"></h1>
 			<button
 				onClick={() => setIsOpenCMDK(true)}
 				disabled={isMutating || isLoadingPrices || isValidatingPrices}
