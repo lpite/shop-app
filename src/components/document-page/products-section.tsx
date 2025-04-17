@@ -91,7 +91,7 @@ export default function ProductsSection({
 				{!isValidatingProducts &&
 					filteredProducts?.slice(0, 100)?.map((product, i) => (
 						<div
-							className={`flex select-none ${product.searchCode === selectedProduct ? "bg-slate-300" : ""}`}
+							className={`flex select-none ${product.needToSell ? "bg-green-200" : ""} ${product.searchCode === selectedProduct ? "bg-slate-300" : ""}`}
 							key={i}
 							onDoubleClick={() => onDoubleClick(product)}
 							onMouseDown={() => setSelectedProduct(product.searchCode)}

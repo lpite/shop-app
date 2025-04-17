@@ -12,4 +12,5 @@ export type Product = {
 	photo: string;
 	photoPath: string;
 	description: string;
+	needToSell: boolean;
 };
