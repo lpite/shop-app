@@ -81,7 +81,6 @@ export async function fetcher<T>({
 			try {
 				r = await res.clone().json();
 			} catch (err) {
-				console.error(err);
 				r = await res.clone().text();
 			}
 			return r;

@@ -5,6 +5,7 @@ import { useLocation, useSearchParams } from "wouter";
 import { useSWRConfig } from "swr";
 
 import * as Dialog from "@radix-ui/react-dialog";
+import Show from "../utils/Show";
 
 type SupplierProduct = {
 	supId: string;
@@ -164,14 +165,28 @@ function Item({ article, name, brand, stocks, photo }: SupplierProduct) {
 			el.code.replace(/-/g, "").toLowerCase().trim() === article.toLowerCase(),
 	);
 	const [_, navigate] = useLocation();
+
+	const [showPhoto, setShowPhoto] = useState(false);
+
 	return (
 		<div className="border-2 px-4 py-2 rounded-xl mt-1 flex w-full">
-			<img
-				src={photo}
-				width={112}
-				height={112}
-				className="mr-2 my-1 rounded-lg object-cover h-24"
-			/>
+			<Show when={showPhoto}>
+				<img
+					src={photo}
+					width={112}
+					height={112}
+					className="mr-2 my-1 rounded-lg object-cover h-24"
+				/>
+			</Show>
+			<Show when={!showPhoto}>
+				<div
+					style={{ height: 96, width: 112 }}
+					className="mr-2 my-1 h-24"
+					onClick={() => setShowPhoto(true)}
+				>
+					натисни
+				</div>
+			</Show>
 			<div className="w-3/6">
 				{article} <b>{brand}</b>
 				<br />
