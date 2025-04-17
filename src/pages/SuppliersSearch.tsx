@@ -181,7 +181,7 @@ function Item({ article, name, brand, stocks, photo }: SupplierProduct) {
 			<Show when={!showPhoto}>
 				<div
 					style={{ height: 96, width: 112 }}
-					className="mr-2 my-1 h-24"
+					className="mr-2 my-1 h-24 cursor-pointer flex items-center justify-center font-medium"
 					onClick={() => setShowPhoto(true)}
 				>
 					натисни
