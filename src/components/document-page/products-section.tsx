@@ -8,17 +8,15 @@ const cellStyles = "border p-1 shrink-0 box-border";
 const columnsWidth = [48, 200, 0, 79, 60, 80, 200, 200, 200];
 
 type ProductSectionProps = {
-	pageRef: RefObject<HTMLDivElement>;
-	isValidatingProducts: boolean;
-	isLoadingProducts: boolean;
-	filteredProducts: Product[];
+	pageWidth?: number;
+	items:Product[];
+	isLoading:boolean;
 };
 
 export default function ProductsSection({
-	pageRef,
-	filteredProducts,
-	isValidatingProducts,
-	isLoadingProducts,
+	pageWidth,
+	items,
+	isLoading
 }: ProductSectionProps) {
 	const cartHeight = useAppStore((state) => state.cartHeight);
 	const addToCart = useAppStore((state) => state.addToCart);
@@ -29,6 +27,11 @@ export default function ProductsSection({
 	function onDoubleClick(product: Product) {
 		addToCart({ ...product, quantity: 1 });
 	}
+
+	const elementWidth =
+		(pageWidth || 0) -
+		columnsWidth.reduce((prev, el) => prev + el, 0) -
+		48;
 
 	return (
 		<div
@@ -47,10 +50,7 @@ export default function ProductsSection({
 				</div>
 				<div
 					style={{
-						width:
-							(pageRef.current?.clientWidth || 0) -
-							columnsWidth.reduce((prev, el) => prev + el, 0) -
-							48,
+						width: elementWidth,
 					}}
 					className={cellStyles}
 				>
@@ -75,21 +75,20 @@ export default function ProductsSection({
 					Місце 3
 				</div>
 			</div>
-			{isValidatingProducts && !isLoadingProducts ? (
+			{isLoading ? (
 				<div className="h-full w-full flex items-center justify-center ">
 					<img className="octocat" src="/octocat.gif" height={40} width={40} />
 				</div>
 			) : null}
-			{!isValidatingProducts &&
-			!isLoadingProducts &&
-			!filteredProducts.length ? (
+			{!isLoading &&
+			!items.length ? (
 				<div className="h-full w-full flex items-center justify-center">
 					<span className="text-3xl">Нічого не знайдено</span>
 				</div>
 			) : null}
 			<div style={{ overflowY: "auto", flexGrow: 1 }}>
-				{!isValidatingProducts &&
-					filteredProducts?.slice(0, 100)?.map((product, i) => (
+				{!isLoading &&
+					items?.slice(0, 100)?.map((product, i) => (
 						<div
 							className={`flex select-none ${product.needToSell ? "bg-green-200" : ""} ${product.searchCode === selectedProduct ? "bg-slate-300" : ""}`}
 							key={i}
@@ -119,17 +118,17 @@ export default function ProductsSection({
 							<div style={{ width: columnsWidth[0] }} className={cellStyles}>
 								{product.searchCode}
 							</div>
-							<div style={{ width: columnsWidth[1] }} className={cellStyles}>
+							<div
+								style={{ width: columnsWidth[1], wordWrap: "break-word" }}
+								className={cellStyles}
+							>
 								{product.code}
 								<br />
 								{product.vendorCode}
 							</div>
 							<div
 								style={{
-									width:
-										(pageRef.current?.clientWidth || 0) -
-										columnsWidth.reduce((prev, el) => prev + el, 0) -
-										48,
+									width: elementWidth,
 								}}
 								className={cellStyles + " flex justify-between"}
 							>
@@ -152,7 +151,7 @@ export default function ProductsSection({
 								) : null}
 							</div>
 							<div style={{ width: columnsWidth[3] }} className={cellStyles}>
-								{product.price.toFixed(2)}
+								{product.price?.toFixed(2)}
 							</div>
 							<div style={{ width: columnsWidth[4] }} className={cellStyles}>
 								{product.quantity || (
@@ -173,7 +172,7 @@ export default function ProductsSection({
 							</div>
 						</div>
 					))}
-				{filteredProducts.length > 100 ? (
+				{items.length > 100 ? (
 					<div className="h-24 flex items-center justify-center text-3xl">
 						Запит дуже неточний
 					</div>

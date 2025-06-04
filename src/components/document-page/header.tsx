@@ -6,16 +6,15 @@ import CommentPopup from "../comment-popup";
 import CatalogPopup from "./catalog";
 import { Link, useParams } from "wouter";
 import SearchHistoryPopup from "../search-history-popup";
+import { useSearch } from "../../hooks/useSearch";
 
-type HeaderProps = {
-	setFilteredProducts: any;
-};
-
-export default function Header({ setFilteredProducts }: HeaderProps) {
+export default function Header() {
 	const { partnerId, type } = useParams();
 
 	const cartProducts = useAppStore((state) => state.cartProducts);
 	const clearCart = useAppStore((state) => state.clearCart);
+
+	const { setQuery } = useSearch({ fts: true });
 
 	const { data: agentAndPartner } = useSWR("/clients/", () =>
 		fetcher<AgentsAndPartnersGet["response"]>({
@@ -61,7 +60,7 @@ export default function Header({ setFilteredProducts }: HeaderProps) {
 		if (res === "Успешно") {
 			clearCart();
 			useAppStore.setState({ searchValue: "" });
-			setFilteredProducts([]);
+			setQuery("")
 		} else {
 			alert(res);
 		}
@@ -132,7 +131,7 @@ export default function Header({ setFilteredProducts }: HeaderProps) {
 					Перенести в документ
 				</button>
 			</div>
-			<SearchForm setFilteredProducts={setFilteredProducts} />
+			<SearchForm />
 		</header>
 	);
 }

@@ -1,31 +1,21 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useAppStore } from "../stores/useAppStore";
 import CartSection from "../components/document-page/cart-section";
-import { Product } from "../types/product";
-import useSWR from "swr";
-import { fetcher } from "../utils/fetcher";
 import ProductsSection from "../components/document-page/products-section";
 import Header from "../components/document-page/header";
 import ProductDetailsPopup from "../components/document-page/product-details/popup";
+import { useSearch } from "../hooks/useSearch";
 
 export default function DocumentPage() {
 	const pageRef = useRef<HTMLDivElement>(null);
 
-	const { isLoading: isLoadingProducts, isValidating: isValidatingProducts } =
-		useSWR(
-			"/products/",
-			() =>
-				fetcher<Product[]>({
-					url: "/shop/hs/app/product/",
-					method: "GET",
-				}),
-			{
-				revalidateOnFocus: false,
-				revalidateOnMount: false,
-				revalidateIfStale: false,
-				revalidateOnReconnect: false,
-			},
-		);
+	const {
+		data: products,
+		isLoading: isLoadingProducts,
+		isValidating: isValidatingProducts,
+	} = useSearch({
+		fts: true,
+	});
 
 	const resize = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
 		useAppStore.setState((state) => {
@@ -46,7 +36,6 @@ export default function DocumentPage() {
 			isResizing: false,
 		}));
 
-	const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
 	return (
 		<div
@@ -62,13 +51,12 @@ export default function DocumentPage() {
 				</div>
 			) : null}
 
-			<Header setFilteredProducts={setFilteredProducts} />
+			<Header/>
 			<main className="h-full shrink flex flex-col">
 				<ProductsSection
-					filteredProducts={filteredProducts}
-					isValidatingProducts={isValidatingProducts}
-					isLoadingProducts={isLoadingProducts}
-					pageRef={pageRef}
+					items={products || []}
+					isLoading={isValidatingProducts || isLoadingProducts}
+					pageWidth={pageRef.current?.clientWidth}
 				/>
 				<CartSection />
 			</main>

@@ -3,11 +3,12 @@ import { useState } from "react";
 import useSWR from "swr";
 import { fetcher } from "../../utils/fetcher";
 import { Product } from "../../types/product";
-import { useAppStore } from "../../stores/useAppStore";
+import { useSearch } from "../../hooks/useSearch";
 
 export default function CatalogPopup() {
 	const [page, setPage] = useState<"main" | "hex" | "spline" | "torx">("main");
 	const [isOpen, setIsOpen] = useState(false);
+
 	return (
 		<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
 			<Dialog.Trigger asChild>
@@ -59,6 +60,7 @@ function MainPage({
 	>;
 	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+	const { setQuery } = useSearch({});
 	return (
 		<>
 			{[
@@ -80,7 +82,7 @@ function MainPage({
 			].map(({ name, img, searchValue }) => (
 				<button
 					onClick={() => {
-						useAppStore.setState({ searchValue });
+						setQuery(searchValue);
 						setIsOpen(false);
 					}}
 					key={name}

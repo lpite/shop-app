@@ -166,7 +166,7 @@ function Item({ article, name, brand, stocks, photo }: SupplierProduct) {
 	);
 	const [_, navigate] = useLocation();
 
-	const [showPhoto, setShowPhoto] = useState(false);
+	const [showPhoto, setShowPhoto] = useState(true);
 
 	return (
 		<div className="border-2 px-4 py-2 rounded-xl mt-1 flex w-full">
