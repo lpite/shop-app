@@ -7,5 +7,6 @@ export default defineConfig({
 	plugins: [react(), splitVendorChunkPlugin(), visualizer()],
 	define: {
 		"process.env.NODE_ENV": '"production"',
+		__BUILD_ID__: JSON.stringify((new Date()).toLocaleString()),
 	},
 });
