@@ -55,7 +55,7 @@ export default function DocumentPage() {
 			<main className="h-full shrink flex flex-col">
 				<ProductsSection
 					items={products || []}
-					isLoading={isValidatingProducts || isLoadingProducts}
+					isLoading={isLoadingProducts}
 					pageWidth={pageRef.current?.clientWidth}
 				/>
 				<CartSection />

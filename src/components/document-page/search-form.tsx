@@ -65,10 +65,6 @@ function createQueryForFTS(searchValue: string) {
 		.join(" AND ");
 }
 
-type SearchFormProps = {
-	setFilteredProducts: any;
-};
-
 export default function SearchForm() {
 	// const { searchValue } = useAppStore();
 	// const [searchValue, setSearchValue] = useState("");
@@ -88,9 +84,9 @@ export default function SearchForm() {
 		// isLoading: isLoadingProducts,
 		// isValidating: isValidatingProducts,
 	} = useSearch({
-		fts: true,
+		fts: backendSearch,
+		exact: exactSearch,
 	});
-	// console.log("result",result)
 
 	async function filterProducts(e: FormEvent) {
 		e.preventDefault();
@@ -214,8 +210,10 @@ export default function SearchForm() {
 				</label>
 			</div>
 			<div className="flex w-full mt-2 overflow-y-auto">
-				{history.slice(0,5).map((item) => (
-					<button className="mx-1" onClick={()=>setQuery(item)}>{item}</button>
+				{history.slice(0, 5).map((item) => (
+					<button className="mx-1" onClick={() => setQuery(item)}>
+						{item}
+					</button>
 				))}
 			</div>
 		</form>

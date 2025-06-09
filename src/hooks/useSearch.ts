@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWR, { mutate as globalMutate } from "swr";
 import { fetcher } from "../utils/fetcher";
 import { Product } from "../types/product";
 
@@ -17,25 +17,53 @@ export const searchStore = create<{ query: string; history: string[] }>()(
 	),
 );
 
-function createQueryForFTS(searchValue: string) {
-	return searchValue
+function createQueryForFTS(searchValue: string, exact: boolean) {
+
+	if(exact){
+		return `"${searchValue}"`
+	}
+
+	const queryString = searchValue
 		.trim()
 		.replace(/\s+/, " ")
 		.split(" ")
 		.map((w) => {
-			if (parseInt(w)) {
+			// if (parseInt(w)) {
+			// в теорії це більше не потрібно
+			// 	return w;
+			// }
+
+			if (w.length === 1) {
+				// не можна додавати зірочку коли один символ
+				return w;
+			}
+
+			if (w.match(/\d+мм/g)) {
+				return `(${w} OR Ф${w})`;
+			}
+
+			if (!isNaN(Number(w[w.length - 1]))) {
+				// не можна додавати зірочку в кінець коли останній символ цифра
 				return w;
 			}
 			return `(${w} OR ${w}*)`;
 		})
 		.join(" AND ");
+	if (!queryString.includes("AND")) {
+		// перевірка на одне пошукове слово
+		// так погана
+		return queryString;
+	}
+
+	return `(${queryString}) OR ${searchValue.replace(/\s+/g, "")}`;
 }
 
 interface UseSearch {
 	fts?: boolean;
+	exact?: boolean;
 }
 
-export function useSearch({ fts = false }: UseSearch) {
+export function useSearch({ fts = false, exact = false }: UseSearch) {
 	// const [query
 	const { query, history } = searchStore();
 	const { data, mutate, isLoading, isValidating } = useSWR(
@@ -45,8 +73,8 @@ export function useSearch({ fts = false }: UseSearch) {
 				? fetcher<Product[]>({
 						url: "/shop/hs/api/test",
 						method: "GET",
-						query: `?q=${createQueryForFTS(query)}`,
-					})
+						query: `?q=${createQueryForFTS(query,exact)}`,
+					}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name)))
 				: fetcher<Product[]>({
 						url: "/shop/hs/app/product/",
 						method: "GET",
@@ -55,10 +83,18 @@ export function useSearch({ fts = false }: UseSearch) {
 			revalidateOnMount: false,
 			revalidateIfStale: false,
 			revalidateOnFocus: false,
+			revalidateOnReconnect: false,
+			errorRetryCount: 0,
 		},
 	);
 	const setQuery = (query: string) => {
 		searchStore.setState({ query: query });
+	};
+
+	const clearData = () => {
+		mutate([], {
+			revalidate: false,
+		});
 	};
 
 	const search = () => {
@@ -72,11 +108,12 @@ export function useSearch({ fts = false }: UseSearch) {
 
 	return {
 		query,
-		data,
+		data: data || [],
 		setQuery,
 		search,
 		isLoading,
 		isValidating,
 		history,
+		clearData,
 	};
 }
