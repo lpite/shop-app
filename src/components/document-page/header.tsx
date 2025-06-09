@@ -14,7 +14,7 @@ export default function Header() {
 	const cartProducts = useAppStore((state) => state.cartProducts);
 	const clearCart = useAppStore((state) => state.clearCart);
 
-	const { setQuery } = useSearch({ fts: true });
+	const { setQuery, clearData } = useSearch({ fts: true });
 
 	const { data: agentAndPartner } = useSWR("/clients/", () =>
 		fetcher<AgentsAndPartnersGet["response"]>({
@@ -60,7 +60,8 @@ export default function Header() {
 		if (res === "Успешно") {
 			clearCart();
 			useAppStore.setState({ searchValue: "" });
-			setQuery("")
+			setQuery("");
+			clearData();
 		} else {
 			alert(res);
 		}
