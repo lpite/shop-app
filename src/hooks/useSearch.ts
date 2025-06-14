@@ -28,11 +28,6 @@ function createQueryForFTS(searchValue: string, exact: boolean) {
 		.replace(/\s+/, " ")
 		.split(" ")
 		.map((w) => {
-			// if (parseInt(w)) {
-			// в теорії це більше не потрібно
-			// 	return w;
-			// }
-
 			if (w.length === 1) {
 				// не можна додавати зірочку коли один символ
 				return w;

@@ -188,7 +188,7 @@ export default function SearchForm() {
 						onChange={() => setExactSearch(!exactSearch)}
 						disabled={isValidatingProducts || isLoadingProducts || isLoadingFTS}
 					/>
-					по коду
+					точний збіг
 				</label>
 				<label className="shrink-0 flex gap-2 items-center h-10 mr-2">
 					<input
