@@ -84,12 +84,12 @@ export default function Header() {
 						Клієнти
 					</Link>
 				) : null}
-				<a
-					href={"/stats.php"}
+				<Link
+					to="/stats"
 					className="px-3 h-10 border-2 rounded-lg bg-slate-300 flex items-center hover:bg-sky-200"
 				>
 					Статистика
-				</a>
+				</Link>
 			</div>
 			<div className="col-start-4 col-end-13 w-full flex justify-end gap-4">
 				<Link
