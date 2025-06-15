@@ -103,12 +103,9 @@ function ProductsPopup({
 	documentType,
 	documentClient,
 }: ProductsPopupProps) {
-	// цей стейт потрібен бо якщо не використовувати то буде крашити
-	const [open, onOpenChange] = useState(false);
-
 	return (
 		<>
-			<Dialog.Root open={open} onOpenChange={onOpenChange}>
+			<Dialog.Root>
 				<Dialog.Trigger asChild>
 					<button className="border-2 px-2 py-1 mt-3 rounded-md hover:bg-gray-200">
 						Показати товари
@@ -136,7 +133,7 @@ function ProductsPopup({
 								<div className="border-2 rounded-lg my-4 px-2 py-2" key={time}>
 									<div className="flex gap-2 mb-2">
 										<span>{new Date(time).toLocaleString()}</span>
-										<span>
+										<span className="font-semibold">
 											Сума: {product.reduce((ac, c) => ac + c.sum, 0)} грн
 										</span>
 									</div>

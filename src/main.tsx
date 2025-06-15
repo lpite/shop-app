@@ -10,6 +10,7 @@ import SuppliersSearch from "./pages/SuppliersSearch.tsx";
 import FiltersDemo from "./pages/filters-demo.tsx";
 import { SWRConfig } from "swr";
 import SearchByVin from "./pages/SearchByVin.tsx";
+import { Spinner } from "./components/spinner.tsx";
 
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const Test2 = lazy(() => import("./pages/Test2.tsx"));
@@ -37,7 +38,14 @@ createRoot(document.getElementById("root")!).render(
 				<Route path="/test" component={TestPage} />
 				<Route path="/test2/" component={Test2} nest />
 				<Route path="/price-changer/" component={PriceChanger} />
-				<Route path="/stats/" component={StatsPage} />
+				<Route
+					path="/stats/"
+					component={() => (
+						<Suspense fallback={<Spinner size={30} />}>
+							<StatsPage />
+						</Suspense>
+					)}
+				/>
 				<Route path="/reports/" component={Reports} />
 				<Route path="/category-editor/" component={CategoryEditor} />
 				<Route path="/suppliers-search/" component={SuppliersSearch} />
