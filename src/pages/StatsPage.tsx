@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { fetcher } from "../utils/fetcher";
 import CommentPopup from "../components/comment-popup";
 import { Link } from "wouter";
+import { Suspense, useState } from "react";
 
 export default function StatsPage() {
 	const { data: stats, isLoading } = useSWR(
@@ -30,7 +31,6 @@ export default function StatsPage() {
 						const documents = stats?.filter((el: any) => el.day === day);
 						return <Day day={day} documents={documents} key={day} />;
 					})}
-				<div></div>
 			</main>
 		</>
 	);
@@ -103,9 +103,12 @@ function ProductsPopup({
 	documentType,
 	documentClient,
 }: ProductsPopupProps) {
+	// цей стейт потрібен бо якщо не використовувати то буде крашити
+	const [open, onOpenChange] = useState(false);
+
 	return (
 		<>
-			<Dialog.Root>
+			<Dialog.Root open={open} onOpenChange={onOpenChange}>
 				<Dialog.Trigger asChild>
 					<button className="border-2 px-2 py-1 mt-3 rounded-md hover:bg-gray-200">
 						Показати товари
@@ -113,7 +116,7 @@ function ProductsPopup({
 				</Dialog.Trigger>
 				<Dialog.Portal>
 					<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-25" />
-					<Dialog.Content className="fixed min-w-96 w-4/6 min-h-96 h-4/6 bg-white shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 pt-5 pb-4 px-4 rounded-lg flex flex-col">
+					<Dialog.Content className="fixed min-w-96 w-5/6 min-h-96 h-4/6 bg-white shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 pt-5 pb-4 px-4 rounded-lg flex flex-col">
 						<Dialog.Title className="text-xl mb-5">
 							{documentType} {documentClient} {documentDay}
 						</Dialog.Title>

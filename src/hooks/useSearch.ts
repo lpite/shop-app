@@ -1,4 +1,4 @@
-import useSWR, { mutate as globalMutate } from "swr";
+import useSWR from "swr";
 import { fetcher } from "../utils/fetcher";
 import { Product } from "../types/product";
 
@@ -18,9 +18,8 @@ export const searchStore = create<{ query: string; history: string[] }>()(
 );
 
 function createQueryForFTS(searchValue: string, exact: boolean) {
-
-	if(exact){
-		return `"${searchValue}"`
+	if (exact) {
+		return `"${searchValue}"`;
 	}
 
 	const queryString = searchValue
@@ -68,7 +67,7 @@ export function useSearch({ fts = false, exact = false }: UseSearch) {
 				? fetcher<Product[]>({
 						url: "/shop/hs/api/test",
 						method: "GET",
-						query: `?q=${createQueryForFTS(query,exact)}`,
+						query: `?q=${createQueryForFTS(query, exact)}`,
 					}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name)))
 				: fetcher<Product[]>({
 						url: "/shop/hs/app/product/",

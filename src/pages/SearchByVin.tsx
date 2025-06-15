@@ -102,6 +102,7 @@ export default function SearchByVin() {
 				alert("Сталася помилка (пошук VIN)");
 			})) as VinSearchResponse | undefined;
 		if (!vinResponse || !vinResponse.vehicle) {
+			setIsLoading(true);
 			return;
 		}
 		const vehicle = vinResponse.vehicle;
