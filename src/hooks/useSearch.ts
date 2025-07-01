@@ -36,6 +36,10 @@ function createQueryForFTS(searchValue: string, exact: boolean) {
 				return `(${w} OR Ф${w})`;
 			}
 
+			if(w.match(/Ф\d+/gi)){
+				return `(${w} OR Ф${w}мм)`;
+			}
+
 			if (!isNaN(Number(w[w.length - 1]))) {
 				// не можна додавати зірочку в кінець коли останній символ цифра
 				return w;

@@ -1,4 +1,4 @@
-import { RefObject, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppStore } from "../../stores/useAppStore";
 import { Product } from "../../types/product";
 import PhotoViewer from "../photo-viewer";
@@ -9,14 +9,14 @@ const columnsWidth = [48, 200, 0, 79, 60, 80, 200, 200, 200];
 
 type ProductSectionProps = {
 	pageWidth?: number;
-	items:Product[];
-	isLoading:boolean;
+	items: Product[];
+	isLoading: boolean;
 };
 
 export default function ProductsSection({
 	pageWidth,
 	items,
-	isLoading
+	isLoading,
 }: ProductSectionProps) {
 	const cartHeight = useAppStore((state) => state.cartHeight);
 	const addToCart = useAppStore((state) => state.addToCart);
@@ -29,9 +29,39 @@ export default function ProductsSection({
 	}
 
 	const elementWidth =
-		(pageWidth || 0) -
-		columnsWidth.reduce((prev, el) => prev + el, 0) -
-		48;
+		(pageWidth || 0) - columnsWidth.reduce((prev, el) => prev + el, 0) - 48;
+
+	useEffect(() => {
+		const handler = (event: KeyboardEvent) => {
+			let direction = 1;
+			if (event.key === "ArrowDown") {
+			} else if (event.key === "ArrowUp") {
+				direction = -1;
+			} else {
+				return;
+			}
+
+			setSelectedProduct((p) => {
+				if (!p) {
+					return p;
+				}
+				if (!items) {
+					return p;
+				}
+				const index = items?.findIndex((el) => el.searchCode === p) || 0;
+				if (
+					(index === items.length - 1 && direction === 1) ||
+					(index === 0 && direction === -1)
+				) {
+					return p;
+				}
+
+				return items[index + direction].searchCode;
+			});
+		};
+		window.addEventListener("keydown", handler);
+		return () => window.removeEventListener("keydown", handler);
+	}, [items]);
 
 	return (
 		<div
@@ -80,8 +110,7 @@ export default function ProductsSection({
 					<img className="octocat" src="/octocat.gif" height={40} width={40} />
 				</div>
 			) : null}
-			{!isLoading &&
-			!items.length ? (
+			{!isLoading && !items.length ? (
 				<div className="h-full w-full flex items-center justify-center">
 					<span className="text-3xl">Нічого не знайдено</span>
 				</div>
