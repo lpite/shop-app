@@ -3,9 +3,10 @@ import { useAppStore } from "../../stores/useAppStore";
 import { Product } from "../../types/product";
 import PhotoViewer from "../photo-viewer";
 import { State } from "./product-details/state";
+import Show from "../../utils/Show";
 
-const cellStyles = "border p-1 shrink-0 box-border";
-const columnsWidth = [48, 200, 0, 79, 60, 80, 200, 200, 200];
+const cellStyles = "border px-1 py-1.5 shrink-0 box-border";
+const columnsWidth = [48, 200, 0, 79, 60, 80, 200, 200];
 
 type ProductSectionProps = {
 	pageWidth?: number;
@@ -101,9 +102,9 @@ export default function ProductsSection({
 				<div style={{ width: columnsWidth[7] }} className={cellStyles}>
 					Місце 2
 				</div>
-				<div style={{ width: columnsWidth[8] }} className={cellStyles}>
+				{/*<div style={{ width: columnsWidth[8] }} className={cellStyles}>
 					Місце 3
-				</div>
+				</div>*/}
 			</div>
 			{isLoading ? (
 				<div className="h-full w-full flex items-center justify-center ">
@@ -192,11 +193,17 @@ export default function ProductsSection({
 							</div>
 							<div style={{ width: columnsWidth[6] }} className={cellStyles}>
 								{product?.place1}
+								<br />
 							</div>
 							<div style={{ width: columnsWidth[7] }} className={cellStyles}>
 								{product?.place2}
-							</div>
-							<div style={{ width: columnsWidth[8] }} className={cellStyles}>
+								<Show
+									when={
+										product?.place3?.length !== 0 && product?.place2?.length !== 0
+									}
+								>
+									<br />
+								</Show>
 								{product?.place3}
 							</div>
 						</div>
