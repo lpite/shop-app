@@ -4,7 +4,6 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { fetcher } from "../utils/fetcher";
 import CommentPopup from "../components/comment-popup";
 import { Link } from "wouter";
-import { Suspense, useState } from "react";
 
 export default function StatsPage() {
 	const { data: stats, isLoading } = useSWR(

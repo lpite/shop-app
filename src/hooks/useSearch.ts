@@ -62,7 +62,6 @@ interface UseSearch {
 }
 
 export function useSearch({ fts = false, exact = false }: UseSearch) {
-	// const [query
 	const { query, history } = searchStore();
 	const { data, mutate, isLoading, isValidating } = useSWR(
 		`search`,

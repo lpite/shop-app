@@ -107,7 +107,7 @@ export default function Header() {
 				<SearchHistoryPopup />
 				<CatalogPopup />
 				<CommentPopup partnerId={partnerId || ""} buttonText="Коментар" />
-				<span className="text-xl">
+				<div className="text-xl w-96 flex flex-col items-end">
 					{type === "sell" ? (
 						<b>
 							Продаж -{" "}
@@ -121,7 +121,7 @@ export default function Header() {
 					)}
 					<br />
 					<span>Сума - {documentSum}₴</span>
-				</span>
+				</div>
 			</div>
 			<div className="col-start-10 col-end-13 justify-self-end">
 				<button
