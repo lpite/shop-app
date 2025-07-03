@@ -1,6 +1,7 @@
 export type Product = {
 	searchCode: string;
 	name: string;
+	brand:string;
 	vendorCode: string;
 	code: string;
 	price: number;

@@ -77,7 +77,7 @@ export default function SearchForm() {
 			</div>
 			<div className="flex w-full mt-2 overflow-y-auto">
 				{history.slice(0, 5).map((item) => (
-					<button className="mx-1" onClick={() => setQuery(item)}>
+					<button key={item} className="mx-1" onClick={() => setQuery(item)}>
 						{item}
 					</button>
 				))}
