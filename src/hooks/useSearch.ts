@@ -33,7 +33,7 @@ function createQueryForFTS(searchValue: string, exact: boolean) {
 			}
 
 			if (w.match(/\d+мм/g)) {
-				return `(${w} OR Ф${w})`;
+				return `(${w} OR Ф${w} OR М${w})`;
 			}
 
 			if (w.match(/Ф\d+/gi)) {
