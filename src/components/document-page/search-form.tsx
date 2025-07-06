@@ -26,7 +26,6 @@ export default function SearchForm() {
 			return;
 		}
 		search();
-	
 	}, [onlyInStock, exactSearch]);
 
 	return (
@@ -41,9 +40,7 @@ export default function SearchForm() {
 					onChange={({ target }) => setQuery(target.value)}
 				/>
 				<button
-					disabled={
-						isValidatingProducts || isValidatingProducts
-					}
+					disabled={isValidatingProducts || isValidatingProducts}
 					className="mx-2 border-2 h-10 px-3 rounded-lg bg-sky-600 text-white hover:bg-sky-500 disabled:bg-slate-400"
 				>
 					<svg
@@ -76,8 +73,8 @@ export default function SearchForm() {
 				</label>
 			</div>
 			<div className="flex w-full mt-2 overflow-y-auto">
-				{history.slice(0, 5).map((item) => (
-					<button key={item} className="mx-1" onClick={() => setQuery(item)}>
+				{history.slice(0, 5).map((item, i) => (
+					<button key={i} className="mx-1" onClick={() => setQuery(item)}>
 						{item}
 					</button>
 				))}

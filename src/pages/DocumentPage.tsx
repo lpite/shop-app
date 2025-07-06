@@ -36,7 +36,6 @@ export default function DocumentPage() {
 			isResizing: false,
 		}));
 
-
 	return (
 		<div
 			className="h-full overflow-hidden flex flex-col"
@@ -51,7 +50,7 @@ export default function DocumentPage() {
 				</div>
 			) : null}
 
-			<Header/>
+			<Header />
 			<main className="h-full shrink flex flex-col">
 				<ProductsSection
 					items={products || []}

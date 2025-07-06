@@ -6,7 +6,7 @@ import { State } from "./product-details/state";
 import Show from "../../utils/Show";
 
 const cellStyles = "border px-1 py-2 shrink-0 box-border";
-const columnsWidth = [48, 200, 0, 150, 79, 90, 0, 200, 200];
+const columnsWidth = [48, 200, 0, 150, 79, 100, 0, 200, 200];
 
 type ProductSectionProps = {
 	pageWidth?: number;
@@ -177,8 +177,12 @@ export default function ProductsSection({
 									</button>
 								) : null}
 							</div>
-							<div style={{ width: columnsWidth[3] }} className={cellStyles}>
-								{product.brand}
+							<div
+								style={{ width: columnsWidth[3] }}
+								className={cellStyles}
+								title={product.brand}
+							>
+								<span className="line-clamp-1">{product.brand}</span>
 							</div>
 							<div style={{ width: columnsWidth[4] }} className={cellStyles}>
 								{product.price?.toFixed(2)}
@@ -186,7 +190,8 @@ export default function ProductsSection({
 							<div style={{ width: columnsWidth[5] }} className={cellStyles}>
 								{product.quantity ? (
 									<>
-										<span className="font-semibold">{product.quantity}</span> {product?.units}
+										<span className="font-semibold">{product.quantity}</span>{" "}
+										{product?.units}
 									</>
 								) : (
 									<span className="text-red-700 font-bold">Немає</span>
