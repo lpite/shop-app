@@ -150,7 +150,9 @@ export default function ProductsSection({
 								className={cellStyles}
 							>
 								{product.code}
-								<br />
+								<Show when={product.vendorCode.length && product.code.length}>
+									<br />
+								</Show>
 								{product.vendorCode}
 							</div>
 							<div

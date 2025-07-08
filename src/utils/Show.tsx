@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 
 type ShowProps = {
 	children: ReactNode;
-	when: boolean;
+	when: boolean | number;
 };
 
 export default function Show({ children, when }: ShowProps) {
