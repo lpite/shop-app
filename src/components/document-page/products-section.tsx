@@ -66,8 +66,8 @@ export default function ProductsSection({
 
 	return (
 		<div
-			className="px-1 flex flex-col"
-			style={{ height: `calc(100% - ${cartHeight - 10}px)` }}
+			className="px-1 flex flex-col overflow-y-auto"
+			style={{ paddingBottom: `${cartHeight}px` }}
 		>
 			<PhotoViewer photo={photo} />
 

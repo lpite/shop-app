@@ -43,12 +43,18 @@ export default function CartSection() {
 	}
 
 	return (
-		<div className="bg-sky-100 px-2" style={{ height: cartHeight }}>
+		<div
+			className="bg-sky-100 px-2 rounded-t-xl flex flex-col fixed bottom-0 start-0 end-0"
+			style={{ height: cartHeight }}
+		>
 			<div
-				className="bg-black h-1.5 cursor-row-resize"
+				className="cursor-row-resize h-2 border-t-4 border-slate-500 w-full"
 				onMouseDown={startResize}
-			></div>
-			<div className="text-xl select-none">
+			>
+				<div className="h-1.5 bg-slate-300"></div>
+			</div>
+
+			<div className="text-xl select-none py-2 pb-1">
 				Підібрано {cartTotalCount.toFixed(2)} на суму{" "}
 				<b>{cartTotalPrice.toFixed(2)}</b> грн
 			</div>
@@ -61,12 +67,12 @@ export default function CartSection() {
 							onClick={onRemoveClick}
 							className="px-5 py-3 bg-red-500 rounded-lg font-medium text-white"
 						>
-							видалити
+							Видалити
 						</button>
 					</Dialog.Content>
 				</Dialog.Portal>
 			</Dialog.Root>
-			<div className="flex w-full">
+			<div className="flex w-full select-none">
 				<div className="w-12 border border-slate-500 p-1 shrink-0 box-border">
 					Код
 				</div>
@@ -75,6 +81,9 @@ export default function CartSection() {
 				</div>
 				<div className="flex-1 border border-slate-500 p-1 box-border">
 					Назва
+				</div>
+				<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
+					Виробник
 				</div>
 				<div className="w-16 flex items-center border border-slate-500 p-1 shrink-0 box-border">
 					Кі-сть
@@ -91,11 +100,8 @@ export default function CartSection() {
 				<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
 					Місце
 				</div>
-				<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
-					Місце
-				</div>
 			</div>
-			<div className="overflow-auto h-full pb-56">
+			<div className="overflow-y-auto flex-1 pb-2">
 				{cartProducts.map((el) => {
 					return (
 						<div
@@ -111,6 +117,9 @@ export default function CartSection() {
 							</div>
 							<div className="flex-1 border border-slate-500 p-1 box-border">
 								{el.name}
+							</div>
+							<div className="w-48 border border-slate-500 p-1 box-border">
+								{el.brand}
 							</div>
 							<div className="w-16 flex items-center border border-slate-500 p-1 shrink-0 box-border">
 								<input
@@ -170,9 +179,9 @@ export default function CartSection() {
 							<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
 								{el.place1 ? el.place2 || el.place3 : null}
 							</div>
-							<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
+							{/*<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
 								{el.place1 && el.place2 ? el.place3 : null}
-							</div>
+							</div>*/}
 						</div>
 					);
 				})}

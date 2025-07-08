@@ -12,7 +12,7 @@ export default function PhotoViewer({ photo }: PhotoViewerProps) {
 	}
 
 	return (
-		<div className="fixed end-0 top-20 bottom-20 w-3/6 bg-black bg-opacity-20 flex items-center justify-center">
+		<div className="fixed z-10 end-0 top-20 bottom-20 w-3/6 bg-black bg-opacity-20 flex items-center justify-center">
 			{isLoading ? (
 				<div className="fixed start-60 top-0 end-0 right-0 bg-black bg-opacity-30 w-full h-full flex items-center justify-center">
 					<div className="w-12 h-12 border-4 border-sky-800 rounded-full border-t-transparent animate-spin"></div>

@@ -22,7 +22,7 @@ export default function DocumentPage() {
 			if (state.isResizing) {
 				const pageHeight = pageRef?.current?.clientHeight || 0;
 				const newHeigh = state.startCartHeight + (state.startY - e.clientY);
-				if (newHeigh < 100 || pageHeight - newHeigh < 200) {
+				if (newHeigh < 200 || pageHeight - newHeigh < 300) {
 					return {};
 				}
 
@@ -51,7 +51,7 @@ export default function DocumentPage() {
 			) : null}
 
 			<Header />
-			<main className="h-full shrink flex flex-col">
+			<main className="flex flex-col overflow-hidden">
 				<ProductsSection
 					items={products || []}
 					isLoading={isLoadingProducts}
