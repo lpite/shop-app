@@ -31,9 +31,17 @@ export default function ProductDetailsPopup() {
 				<Dialog.Title className="text-3xl pb-8 font-medium">
 					Докладніше про товар
 				</Dialog.Title>
-				<div className="h-full shrink overflow-y-auto">
-					<span className="font-medium">Опис / Додаткова інформація - </span>
-					<span> {product?.description}</span>
+				<div className="h-full shrink overflow-y-auto flex flex-col">
+					<span className="font-medium">Опис / Додаткова інформація</span>
+					<span>
+						{product?.description.split("\n").map((el) => (
+							<>
+								{el}
+								<br />
+								<hr />
+							</>
+						))}
+					</span>
 				</div>
 			</Dialog.Content>
 		</Dialog.Root>
