@@ -7,7 +7,7 @@ interface Settings {
 
 export const useSettings = create<Settings>()(
 	persist(
-		(set) => ({
+		() => ({
 			pb_base_url: "",
 		}),
 		{
