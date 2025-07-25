@@ -11,12 +11,13 @@ import FiltersDemo from "./pages/filters-demo.tsx";
 import { SWRConfig } from "swr";
 import SearchByVin from "./pages/SearchByVin.tsx";
 import { Spinner } from "./components/spinner.tsx";
+import { IncomeDocument } from "./pages/IncomeDocument.tsx";
+import { IncomePriceHelper } from "./pages/IncomePriceHelper.tsx";
+import { TempPage } from "./pages/temp-page.tsx";
+import ClientSelectionPage from "./pages/ClientSelectionPage.tsx";
 
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const Test2 = lazy(() => import("./pages/Test2.tsx"));
-const ClientSelectionPage = lazy(
-	() => import("./pages/ClientSelectionPage.tsx"),
-);
 const StatsPage = lazy(() => import("./pages/StatsPage.tsx"));
 const Reports = lazy(() => import("./pages/Reports.tsx"));
 const CategoryEditor = lazy(() => import("./pages/CategoryEditor.tsx"));
@@ -28,11 +29,7 @@ createRoot(document.getElementById("root")!).render(
 				<Route path="/" component={StartPage} />
 				<Route
 					path="/clients/"
-					component={() => (
-						<Suspense fallback="...">
-							<ClientSelectionPage />
-						</Suspense>
-					)}
+					component={ClientSelectionPage}
 				/>
 				<Route path="/document/:partnerId/:type" component={DocumentPage} />
 				<Route path="/test" component={TestPage} />
@@ -51,6 +48,12 @@ createRoot(document.getElementById("root")!).render(
 				<Route path="/suppliers-search/" component={SuppliersSearch} />
 				<Route path="/demo/" component={FiltersDemo} />
 				<Route path="/vin-demo/" component={SearchByVin} />
+				<Route
+					path="/document-helper/income/:number?/:date?"
+					component={IncomeDocument}
+				/>
+				<Route path="/price-helper" component={IncomePriceHelper} />
+				<Route path="/temp" component={TempPage} />
 			</Switch>
 		</SWRConfig>
 	</StrictMode>,
