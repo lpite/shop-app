@@ -5,7 +5,7 @@ import { Product } from "../types/product";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export const searchStore = create<{ query: string; history: string[] }>()(
+export const useSearchStore = create<{ query: string; history: string[] }>()(
 	persist(
 		(set) => ({
 			query: "",
@@ -62,8 +62,8 @@ interface UseSearch {
 }
 
 export function useSearch({ fts = false, exact = false }: UseSearch) {
-	const { query, history } = searchStore();
-	const { data, mutate, isLoading, isValidating } = useSWR(
+	const { query, history } = useSearchStore();
+	const { data, mutate, isLoading, isValidating, error } = useSWR(
 		`search`,
 		() =>
 			fts
@@ -85,7 +85,7 @@ export function useSearch({ fts = false, exact = false }: UseSearch) {
 		},
 	);
 	const setQuery = (query: string) => {
-		searchStore.setState({ query: query });
+		useSearchStore.setState({ query: query });
 	};
 
 	const clearData = () => {
@@ -96,7 +96,7 @@ export function useSearch({ fts = false, exact = false }: UseSearch) {
 
 	const search = () => {
 		if (history[0] !== query) {
-			searchStore.setState({
+			useSearchStore.setState({
 				history: [query, ...history.slice(0, 10)],
 			});
 		}
@@ -112,5 +112,6 @@ export function useSearch({ fts = false, exact = false }: UseSearch) {
 		isValidating,
 		history,
 		clearData,
+		error,
 	};
 }
