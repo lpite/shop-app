@@ -14,67 +14,6 @@ import { ProductImport } from "../components/income-document/product-import";
 import Show from "../utils/Show";
 import { DocumentInformation } from "../components/income-document/document-information";
 
-const documentData = {
-	documentType: "Надходження товарів та послуг",
-	number: "000000001",
-	date: "15.01.2024",
-	time: "14:30:25",
-	organization: 'ООО "ТехКорп"',
-	counterparty: 'ООО "Клиент Компани"',
-	contract: "Основной договор от 01.01.2024",
-	warehouse: "Основной склад",
-	currency: "RUB",
-	responsible: "Иванов И.И.",
-	comment: "Реализация товаров по договору",
-	posted: true,
-
-	// Tabular section - Products
-	products: [
-		{
-			id: 1,
-			nomenclature: 'Программное обеспечение "1С:Предприятие"',
-			characteristic: "Базовая версия",
-			unit: "шт",
-			quantity: 5,
-			price: 25000.0,
-			amount: 125000.0,
-			vatRate: 20,
-			vatAmount: 25000.0,
-			total: 150000.0,
-		},
-		{
-			id: 2,
-			nomenclature: "Услуги технической поддержки",
-			characteristic: "Годовое обслуживание",
-			unit: "услуга",
-			quantity: 1,
-			price: 50000.0,
-			amount: 50000.0,
-			vatRate: 20,
-			vatAmount: 10000.0,
-			total: 60000.0,
-		},
-		{
-			id: 3,
-			nomenclature: "Обучение пользователей",
-			characteristic: "Базовый курс",
-			unit: "час",
-			quantity: 16,
-			price: 2500.0,
-			amount: 40000.0,
-			vatRate: 20,
-			vatAmount: 8000.0,
-			total: 48000.0,
-		},
-	],
-
-	// Totals
-	totalQuantity: 22,
-	totalAmount: 215000.0,
-	totalVAT: 43000.0,
-	totalWithVAT: 258000.0,
-};
-
 const setIsPosted = (m: any) => true;
 
 interface IncomeDocumentProduct {
@@ -82,7 +21,7 @@ interface IncomeDocumentProduct {
 	price: number;
 	quantity: number;
 	name: string;
-	selected?: boolean | null;
+	selected?: boolean;
 }
 
 export interface IncomeDocument {
@@ -97,11 +36,10 @@ export interface IncomeDocument {
 }
 
 export function IncomeDocument() {
-	const [allowEditing, setAllowEditing] = useState(false);
 	const { number, date } = useParams();
-	const [location, navigate] = useLocation();
-	console.log(number, date);
-	const isNew = !number || !date;
+	const [_, navigate] = useLocation();
+
+	const [allowEditing, setAllowEditing] = useState(false);
 	const [document, setDocument] = useState<IncomeDocument>({
 		products: [],
 		number: "",
@@ -112,6 +50,8 @@ export function IncomeDocument() {
 		counterPartyRef: "",
 		warehouseRef: "",
 	});
+
+	const isNew = !number || !date;
 
 	useEffect(() => {
 		if (!isNew) {
@@ -159,7 +99,6 @@ export function IncomeDocument() {
 	}
 
 	function setDocumentProducts(products: IncomeDocument["products"]) {
-		console.log(products);
 		setDocument((d) => ({ ...d, products: products }));
 	}
 	const [searchParams] = useSearchParams();
@@ -177,6 +116,35 @@ export function IncomeDocument() {
 				Контрагент_Key: document.counterPartyRef,
 				Склад_Key: document.warehouseRef,
 				Подразделение_Key: "04dec983-6247-11e3-9715-00e04c395324", // склад
+				Товары: document.products.map((el, i) => ({
+					Номенклатура_Key: el.ref,
+					Количество: el.quantity,
+					КоличествоУпаковок: el.quantity,
+					Склад_Key: "37b78b0d-25ac-11e3-874f-00e04c395324",
+					ВидЗапасов_Key: "fdb1b86b-1f65-11e3-8a27-00e04c395324",
+					LineNumber: (i + 1).toString(),
+					Цена: el.price,
+					Сума: el.price * el.quantity,
+					СтавкаНДС: "НеНДС",
+					СуммаНДС: 0,
+					СуммаСНДС: el.price * el.quantity,
+					НоменклатураПоставщика_Key: "00000000-0000-0000-0000-000000000000",
+					Характеристика_Key: "00000000-0000-0000-0000-000000000000",
+					Упаковка_Key: "00000000-0000-0000-0000-000000000000",
+					УсловиеЦеныПоставщика_Key: "00000000-0000-0000-0000-000000000000",
+					ПроцентРучнойСкидки: 0,
+					СуммаРучнойСкидки: 0,
+					СтатьяРасходов_Key: "00000000-0000-0000-0000-000000000000",
+					АналитикаРасходов: "",
+					КодСтроки: "0",
+					СуммаВзаиморасчето: el.price * el.quantity,
+					НомерСтрокиДокументаПоставщика: "0",
+					Сертификат: "",
+					НомерПаспорта: "",
+					СтатусУказанияСерий: 0,
+					Сделка_Key: "00000000-0000-0000-0000-000000000000",
+					АналитикаРасходов_Type: "StandardODATA.Undefined",
+				})),
 			},
 		});
 		if (response.Number && response.Date) {
@@ -184,10 +152,7 @@ export function IncomeDocument() {
 				replace: true,
 			});
 		}
-		console.log(response);
 	}
-	console.log(location);
-
 	return (
 		<>
 			<div className="bg-white border-b-2 border-blue-600">
@@ -196,9 +161,7 @@ export function IncomeDocument() {
 						<div className="flex items-center space-x-4">
 							<FileText className="h-8 w-8 text-blue-600" />
 							<div>
-								<h1 className="text-xl font-bold text-gray-900">
-									{documentData.documentType}
-								</h1>
+								<h1 className="text-xl font-bold text-gray-900">Надходження</h1>
 								<div className="flex items-center space-x-4 text-sm text-gray-600">
 									<span>№ {document?.number || "-"}</span>
 									<span>від {document?.date || "-"}</span>
@@ -305,7 +268,6 @@ export function IncomeDocument() {
 										onChange={() => toggleRowSelection(i)}
 										checked={el.selected}
 									/>
-									{/*<span className="flex-1">{el.productName}</span>*/}
 
 									<span className="flex-1">{el.name}</span>
 									<span>{el.quantity}</span>

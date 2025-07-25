@@ -10,7 +10,10 @@ interface ImportState {
 	setRawText: (text: string) => void;
 	parseText: () => void;
 	setImportedProducts: (products: ImportedProduct[]) => void;
-	setSuggestedProduct: (index: number, product: BackendProduct | null) => void;
+	setSuggestedProduct: (
+		index: number,
+		product: (BackendProduct & { ref: string }) | null,
+	) => void;
 	reset: () => void;
 }
 

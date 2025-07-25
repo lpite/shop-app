@@ -5,5 +5,5 @@ export interface ImportedProduct {
 	name: string;
 	quantity: string;
 	price: string;
-	suggestedProduct?: BackendProduct | null;
+	suggestedProduct?: (BackendProduct & { ref: string }) | null;
 }
