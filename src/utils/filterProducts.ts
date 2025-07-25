@@ -22,6 +22,10 @@ export function filterProducts(
 		return true;
 	}
 
+	if (product.code.replace("-", "") === trimmedSearchValue) {
+		return true;
+	}
+
 	if (product.vendorCode === trimmedSearchValue) {
 		return true;
 	}
