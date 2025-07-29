@@ -13,8 +13,8 @@ export default function ProductDetailsPopup() {
 
 	return (
 		<Dialog.Root open={open} onOpenChange={setOpen}>
-			<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-25" />
-			<Dialog.Content className="fixed w-3/6 h-4/6 bg-white shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 pt-5 pb-4 px-4 rounded-lg flex flex-col">
+			<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-25 z-10" />
+			<Dialog.Content className="fixed z-20 w-3/6 h-4/6 bg-white shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 pt-5 pb-4 px-4 rounded-lg flex flex-col">
 				<Dialog.Close asChild>
 					<button className="absolute right-5 top-5">
 						<svg
