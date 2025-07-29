@@ -10,7 +10,7 @@ import { filterProducts } from "../../../utils/filterProducts";
 import { Check } from "lucide-react";
 
 interface ProductSelectorDialogProps {
-	selectProduct: (product: Product & { ref: string }, index: number) => void;
+	selectProduct: (product: Product, index: number) => void;
 	q: string;
 	row: ImportedProduct;
 	rowIndex: number;
@@ -24,7 +24,7 @@ export function ProductSelectorDialog({
 }: ProductSelectorDialogProps) {
 	const [query, setQuery] = useState(q);
 	const { data: products } = useSWR("/app/product", () =>
-		fetcher<Array<Product & { ref: string }>>({
+		fetcher<Product[]>({
 			url: "/shop/hs/app/product/",
 			method: "GET",
 		}),

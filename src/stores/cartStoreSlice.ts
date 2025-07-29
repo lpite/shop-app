@@ -1,9 +1,9 @@
 import { StateCreator } from "zustand";
-import { Product } from "../types/product";
+import { FTSProduct } from "../types/product";
 
 export type CartStore = {
-	cartProducts: Product[];
-	addToCart: (p: Product) => void;
+	cartProducts: FTSProduct[];
+	addToCart: (p: FTSProduct) => void;
 	removeFromCart: (searchCode: string) => void;
 	editCart: (searchCode: string, q: number) => void;
 	clearCart: () => void;

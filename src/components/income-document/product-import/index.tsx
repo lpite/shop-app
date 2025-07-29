@@ -14,10 +14,7 @@ export function ProductImport({ setDocumentProducts }: ProductImportProps) {
 	const { importedProducts, setImportedProducts } = useImportStore();
 	const [dialog, setDialog] = useState(false);
 
-	function selectSuggestedProduct(
-		product: (Product & { ref: string }) | null,
-		index: number,
-	) {
+	function selectSuggestedProduct(product: Product | null, index: number) {
 		const newImportedProducts = [...importedProducts];
 		newImportedProducts[index] = {
 			...newImportedProducts[index],

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppStore } from "../../stores/useAppStore";
-import { Product } from "../../types/product";
+import { FTSProduct } from "../../types/product";
 import PhotoViewer from "../photo-viewer";
 import { State } from "./product-details/state";
 import Show from "../../utils/Show";
@@ -10,14 +10,35 @@ const columnsWidth = [48, 200, 0, 150, 79, 100, 0, 200, 200];
 
 type ProductSectionProps = {
 	pageWidth?: number;
-	items: Product[];
+	items: FTSProduct[];
 	isLoading: boolean;
+	error: any;
 };
+
+function extractFoundByValue(text: string) {
+	const indexOfDots = text.indexOf(":");
+	const startPos = text.indexOf("<b>");
+	const endPos = text.lastIndexOf("</b>");
+	// return text;
+	if (text.includes("Код")) {
+		return text.replace(":", "");
+	}
+	// if(endPos - startPos > 20){
+	// 	const firstEnd = text.indexOf("</b>");
+	// 	const lastEnd = text.indexOf("<b>");
+
+	// 	return text.slice(0,indexOfDots) + " " + text.slice(startPos,firstEnd) + " ... "+ text.slice(lastEnd, endPos);
+
+	// }
+
+	return text.slice(0, indexOfDots) + " " + text.slice(startPos, endPos);
+}
 
 export default function ProductsSection({
 	pageWidth,
 	items,
 	isLoading,
+	error,
 }: ProductSectionProps) {
 	const cartHeight = useAppStore((state) => state.cartHeight);
 	const addToCart = useAppStore((state) => state.addToCart);
@@ -25,7 +46,7 @@ export default function ProductsSection({
 	const [selectedProduct, setSelectedProduct] = useState<string | undefined>();
 	const [photo, setPhoto] = useState<string | undefined>();
 
-	function onDoubleClick(product: Product) {
+	function onDoubleClick(product: FTSProduct) {
 		addToCart({ ...product, quantity: 1 });
 	}
 
@@ -63,7 +84,6 @@ export default function ProductsSection({
 		window.addEventListener("keydown", handler);
 		return () => window.removeEventListener("keydown", handler);
 	}, [items]);
-
 	return (
 		<div
 			className="px-1 flex flex-col overflow-y-auto"

@@ -1,11 +1,11 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useImportStore } from "./use-import-store";
-import { Plus, Save } from "lucide-react";
+import { Plus } from "lucide-react";
 import { ImportedProduct } from "./types";
 import { useState } from "react";
 
 interface ImportDialogProps {
-	setDialog: any;
+	setDialog: (o: boolean) => void;
 	dialog: boolean;
 }
 

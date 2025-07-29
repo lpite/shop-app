@@ -1,13 +1,13 @@
 import useSWR from "swr";
 import { fetcher } from "../utils/fetcher";
-import { Product } from "../types/product";
+import { FTSProduct } from "../types/product";
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export const useSearchStore = create<{ query: string; history: string[] }>()(
 	persist(
-		(set) => ({
+		(_) => ({
 			query: "",
 			history: [],
 		}),
@@ -39,8 +39,9 @@ function createQueryForFTS(searchValue: string, exact: boolean) {
 			if (w.match(/Ф\d+/gi)) {
 				return `(${w} OR Ф${w}мм)`;
 			}
-			// if()
-			if (!isNaN(Number(w[w.length - 1])) && w.length < 3) {
+
+			// if (!isNaN(Number(w[w.length - 1])) && w.length < 3) {
+			if (!isNaN(Number(w[w.length - 1]))) {
 				// не можна додавати зірочку в кінець коли останній символ цифра
 				return w;
 			}
@@ -61,21 +62,21 @@ interface UseSearch {
 	exact?: boolean;
 }
 
-export function useSearch({ fts = false, exact = false }: UseSearch) {
+/**
+ * @param {number} [fts] - do not use
+ * @deprecated fts
+ */
+
+export function useSearch({ exact = false }: UseSearch) {
 	const { query, history } = useSearchStore();
 	const { data, mutate, isLoading, isValidating, error } = useSWR(
 		`search`,
 		() =>
-			fts
-				? fetcher<Product[]>({
-						url: "/shop/hs/api/test",
-						method: "GET",
-						query: `?q=${createQueryForFTS(query, exact)}`,
-					}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name)))
-				: fetcher<Product[]>({
-						url: "/shop/hs/app/product/",
-						method: "GET",
-					}),
+			fetcher<FTSProduct[]>({
+				url: "/shop/hs/api/test",
+				method: "GET",
+				query: `?q=${createQueryForFTS(query, exact)}`,
+			}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name))),
 		{
 			revalidateOnMount: false,
 			revalidateIfStale: false,
