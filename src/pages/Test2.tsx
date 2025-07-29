@@ -315,11 +315,17 @@ function SetCategory() {
 				className="py-4 px-6 text-xl"
 				onChange={(e) => setSelectedCategory(e.target.value)}
 			>
-				{categories?.map((c) => (
-					<option value={c.id}>
-						{c.parent.name} - {c.name}
-					</option>
-				))}
+				{categories
+					?.sort((a, b) =>
+						`${a.parent.name} - ${a.name}`.localeCompare(
+							`${b.parent.name} - ${b.name}`,
+						),
+					)
+					.map((c) => (
+						<option key={c.id} value={c.id}>
+							{c.parent.name} - {c.name}
+						</option>
+					))}
 			</select>
 			<button className="py-4 px-6 text-xl bg-green-300" onClick={set}>
 				set category

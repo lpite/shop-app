@@ -13,6 +13,7 @@ export default function DocumentPage() {
 		data: products,
 		isLoading: isLoadingProducts,
 		isValidating: isValidatingProducts,
+		error,
 	} = useSearch({
 		fts: true,
 	});
@@ -56,6 +57,7 @@ export default function DocumentPage() {
 					items={products || []}
 					isLoading={isLoadingProducts}
 					pageWidth={pageRef.current?.clientWidth}
+					error={error}
 				/>
 				<CartSection />
 			</main>

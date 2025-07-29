@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { Product } from "../../../types/product";
+import { FTSProduct } from "../../../types/product";
 
 class PopupState {
 	//@ts-expect-error its okay.
@@ -12,7 +12,7 @@ class PopupState {
 		this.productState = p;
 	}
 
-	openPopup(product: Product) {
+	openPopup(product: FTSProduct) {
 		if (this.changeOpenState) {
 			this.changeOpenState(true);
 			this.productState(product);

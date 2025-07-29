@@ -19,13 +19,7 @@ const columns = {
 const columnKeys = Object.keys(columns) as (keyof typeof columns)[];
 
 export function ImportDialog({ setDialog, dialog }: ImportDialogProps) {
-	const {
-		importedProducts,
-		rawText,
-		setRawText,
-		setSuggestedProduct,
-		setImportedProducts,
-	} = useImportStore();
+	const { rawText, setRawText, setImportedProducts } = useImportStore();
 	const [textareaFocus, setTextareaFocus] = useState(false);
 
 	return (

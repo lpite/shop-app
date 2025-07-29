@@ -27,10 +27,7 @@ createRoot(document.getElementById("root")!).render(
 		<SWRConfig value={{ provider: () => new Map() }}>
 			<Switch>
 				<Route path="/" component={StartPage} />
-				<Route
-					path="/clients/"
-					component={ClientSelectionPage}
-				/>
+				<Route path="/clients/" component={ClientSelectionPage} />
 				<Route path="/document/:partnerId/:type" component={DocumentPage} />
 				<Route path="/test" component={TestPage} />
 				<Route path="/test2/" component={Test2} nest />

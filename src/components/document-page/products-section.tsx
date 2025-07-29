@@ -128,9 +128,14 @@ export default function ProductsSection({
 					<img className="octocat" src="/octocat.gif" height={40} width={40} />
 				</div>
 			) : null}
-			{!isLoading && !items.length ? (
+			{!isLoading && !items.length && !error ? (
 				<div className="h-full w-full flex items-center justify-center">
 					<span className="text-3xl">Нічого не знайдено</span>
+				</div>
+			) : null}
+			{error ? (
+				<div className="h-full w-full flex items-center justify-center">
+					<span className="text-3xl">Помилка</span>
 				</div>
 			) : null}
 			<div style={{ overflowY: "auto", flexGrow: 1 }}>
@@ -179,25 +184,34 @@ export default function ProductsSection({
 								style={{
 									width: elementWidth,
 								}}
-								className={cellStyles + " flex justify-between"}
+								className={cellStyles + " flex flex-col justify-between"}
 							>
-								{product.name}
-								{product?.description?.length ? (
-									<button onClick={() => State.openPopup(product)}>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="16"
-											height="16"
-											fill="currentColor"
-											viewBox="0 0 16 16"
-										>
-											<path
-												fillRule="evenodd"
-												d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"
-											/>
-										</svg>
-									</button>
-								) : null}
+								<div className="flex justify-between">
+									{product.name}
+
+									{product?.description?.length ? (
+										<button onClick={() => State.openPopup(product)}>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												fill="currentColor"
+												viewBox="0 0 16 16"
+											>
+												<path
+													fillRule="evenodd"
+													d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"
+												/>
+											</svg>
+										</button>
+									) : null}
+								</div>
+								<span
+									className="text-xs line-clamp-1 text-gray-600 mt-1"
+									dangerouslySetInnerHTML={{
+										__html: `<span style="display:flex;gap:5px">Знайдено: ${extractFoundByValue(product.foundBy)}</span>`,
+									}}
+								></span>
 							</div>
 							<div
 								style={{ width: columnsWidth[3] }}

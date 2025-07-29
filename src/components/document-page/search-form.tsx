@@ -76,10 +76,10 @@ export default function SearchForm() {
 				{history.slice(0, 5).map((item, i) => (
 					<button
 						key={i + item}
-						className="mx-1"
+						className="mx-1 max-w-48 text-start overflow-y-hidden"
 						onClick={() => setQuery(item)}
 					>
-						{item}
+						<span className="line-clamp-1">{item}</span>
 					</button>
 				))}
 			</div>
