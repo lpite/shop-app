@@ -12,8 +12,6 @@ import { SWRConfig } from "swr";
 import SearchByVin from "./pages/SearchByVin.tsx";
 import { Spinner } from "./components/spinner.tsx";
 import { IncomeDocumentHelper } from "./pages/IncomeDocumentHelper.tsx";
-import { IncomePriceHelper } from "./pages/IncomePriceHelper.tsx";
-import { TempPage } from "./pages/temp-page.tsx";
 import ClientSelectionPage from "./pages/ClientSelectionPage.tsx";
 import { OrderNotifier } from "./components/order-notification";
 
@@ -48,7 +46,7 @@ createRoot(document.getElementById("root")!).render(
 				<Route path="/demo/" component={FiltersDemo} />
 				<Route path="/vin-demo/" component={SearchByVin} />
 				<Route
-					path="/document-helper/income/:number?/:date?"
+					path="/document-helper/income/:step"
 					component={IncomeDocumentHelper}
 				/>
 				<Route path="/price-helper" component={IncomePriceHelper} />
