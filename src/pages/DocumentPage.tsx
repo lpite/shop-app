@@ -9,14 +9,7 @@ import { useSearch } from "../hooks/useSearch";
 export default function DocumentPage() {
 	const pageRef = useRef<HTMLDivElement>(null);
 
-	const {
-		data: products,
-		isLoading: isLoadingProducts,
-		isValidating: isValidatingProducts,
-		error,
-	} = useSearch({
-		fts: true,
-	});
+	const { data: products, isLoading: isLoadingProducts, error } = useSearch({});
 
 	const resize = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
 		useAppStore.setState((state) => {
@@ -46,7 +39,7 @@ export default function DocumentPage() {
 		>
 			<ProductDetailsPopup />
 			{isLoadingProducts ? (
-				<div className="fixed start-0 top-0 end-0 right-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center">
+				<div className="fixed z-10 start-0 top-0 end-0 right-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center">
 					<div className="w-24 h-24 border-8 border-sky-500 rounded-full border-t-transparent animate-spin"></div>
 				</div>
 			) : null}

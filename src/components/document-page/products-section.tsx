@@ -123,11 +123,6 @@ export default function ProductsSection({
 					Місце 2
 				</div>
 			</div>
-			{isLoading ? (
-				<div className="h-full w-full flex items-center justify-center ">
-					<img className="octocat" src="/octocat.gif" height={40} width={40} />
-				</div>
-			) : null}
 			{!isLoading && !items.length && !error ? (
 				<div className="h-full w-full flex items-center justify-center">
 					<span className="text-3xl">Нічого не знайдено</span>
