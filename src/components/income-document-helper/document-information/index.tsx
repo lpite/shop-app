@@ -87,15 +87,6 @@ export function DocumentInformation({
 									))}
 							</select>
 						</div>
-
-						{/*						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Договір
-							</label>
-							<select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-								<option value="main">{document?.contract}</option>
-							</select>
-						</div>*/}
 					</div>
 
 					<div className="space-y-4">
@@ -117,26 +108,6 @@ export function DocumentInformation({
 								))}
 							</select>
 						</div>
-
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Валюта
-							</label>
-							<select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-								<option value="rub">RUB - Российский рубль</option>
-								<option value="usd">USD - Доллар США</option>
-								<option value="eur">EUR - Евро</option>
-							</select>
-						</div>
-
-						{/*<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Ответственный
-							</label>
-							<select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-								<option value="ivanov">{document?.responsible}</option>
-							</select>
-						</div>*/}
 					</div>
 				</div>
 
