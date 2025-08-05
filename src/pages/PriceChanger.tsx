@@ -93,14 +93,6 @@ export default function PriceChanger() {
 		selRowf(undefined);
 	}
 
-	function selectProduct(p: any) {
-		setIsOpenCMDK(false);
-		setSelectedProduct(p);
-		console.log(
-			"0".repeat(8 - selectedProduct.searchCode.length) +
-				selectedProduct.searchCode,
-		);
-	}
 	useEffect(() => {
 		mutate();
 	}, [selectedProduct, mutate]);
@@ -161,7 +153,6 @@ export default function PriceChanger() {
 										selRowf(i);
 										save(i);
 									}}
-									// onDoubleClick={save}
 									key={i}
 								>
 									<td
@@ -178,8 +169,6 @@ export default function PriceChanger() {
 										className={`${isLoadingPrices || isValidatingPrices ? "border-transparent" : ""} border-2`}
 									>
 										{el.price}
-
-										{/*<input type="number" value={el.price} onChange={(e) => prices[i].price = Number(e.target.value)} />*/}
 									</td>
 								</tr>
 							))}
@@ -198,6 +187,7 @@ type CMDKProps = {
 	items?: { id: string; name: string; onClick?: () => void }[];
 	onFormSubmit?: () => void;
 	closeOnSelect?: boolean;
+	title?: string;
 };
 
 function CMDK({
@@ -208,6 +198,7 @@ function CMDK({
 	onChangeOpen,
 	onFormSubmit,
 	closeOnSelect,
+	title,
 }: CMDKProps) {
 	const [focusedItem, setFocusedItem] = useState(0);
 	// щоб нормально достукуватися в обробнику натискань
@@ -260,7 +251,7 @@ function CMDK({
 				<Dialog.Portal>
 					<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-30" />
 					<Dialog.Content className="fixed w-4/6 bg-white shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg">
-						<Dialog.Title className="sr-only">пошук товарів</Dialog.Title>
+						<Dialog.Title className="sr-only">{title}</Dialog.Title>
 						<form
 							className="border-b-2 relative flex items-center"
 							onSubmit={onSubmit}

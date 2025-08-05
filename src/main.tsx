@@ -11,10 +11,11 @@ import FiltersDemo from "./pages/filters-demo.tsx";
 import { SWRConfig } from "swr";
 import SearchByVin from "./pages/SearchByVin.tsx";
 import { Spinner } from "./components/spinner.tsx";
-import { IncomeDocument } from "./pages/IncomeDocument.tsx";
+import { IncomeDocumentHelper } from "./pages/IncomeDocumentHelper.tsx";
 import { IncomePriceHelper } from "./pages/IncomePriceHelper.tsx";
 import { TempPage } from "./pages/temp-page.tsx";
 import ClientSelectionPage from "./pages/ClientSelectionPage.tsx";
+import { OrderNotifier } from "./components/order-notification";
 
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const Test2 = lazy(() => import("./pages/Test2.tsx"));
@@ -25,6 +26,7 @@ const CategoryEditor = lazy(() => import("./pages/CategoryEditor.tsx"));
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<SWRConfig value={{ provider: () => new Map() }}>
+			<OrderNotifier />
 			<Switch>
 				<Route path="/" component={StartPage} />
 				<Route path="/clients/" component={ClientSelectionPage} />
@@ -47,7 +49,7 @@ createRoot(document.getElementById("root")!).render(
 				<Route path="/vin-demo/" component={SearchByVin} />
 				<Route
 					path="/document-helper/income/:number?/:date?"
-					component={IncomeDocument}
+					component={IncomeDocumentHelper}
 				/>
 				<Route path="/price-helper" component={IncomePriceHelper} />
 				<Route path="/temp" component={TempPage} />

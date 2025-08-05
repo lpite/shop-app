@@ -10,9 +10,9 @@ import {
 	XCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ProductImport } from "../components/income-document/product-import";
+import { ProductImport } from "../components/income-document-helper/product-import";
 import Show from "../utils/Show";
-import { DocumentInformation } from "../components/income-document/document-information";
+import { DocumentInformation } from "../components/income-document-helper/document-information";
 
 const setIsPosted = (m: any) => true;
 
@@ -35,7 +35,7 @@ export interface IncomeDocument {
 	warehouseRef: string;
 }
 
-export function IncomeDocument() {
+export function IncomeDocumentHelper() {
 	const { number, date } = useParams();
 	const [_, navigate] = useLocation();
 
