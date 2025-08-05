@@ -49,8 +49,6 @@ createRoot(document.getElementById("root")!).render(
 					path="/document-helper/income/:step"
 					component={IncomeDocumentHelper}
 				/>
-				<Route path="/price-helper" component={IncomePriceHelper} />
-				<Route path="/temp" component={TempPage} />
 			</Switch>
 		</SWRConfig>
 	</StrictMode>,
