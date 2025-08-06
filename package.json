@@ -19,6 +19,7 @@
 		"react-dom": "^19.1.0",
 		"swr": "^2.3.0",
 		"wouter": "^3.6.0",
+		"zod": "^4.0.15",
 		"zustand": "^4.5.6"
 	},
 	"devDependencies": {
