@@ -24,8 +24,6 @@ export default function ClientSelectionPage() {
 		}),
 	);
 
-	const isEnabledReactDocumentPage = Boolean(localStorage.getItem("r_doc"));
-
 	return (
 		<main className="h-full flex flex-col items-center justify-center">
 			{isLoading ? (
@@ -58,47 +56,25 @@ export default function ClientSelectionPage() {
 							return 0;
 						})
 						.map(({ partnerId, partnerName }) => (
-							<Fragment key={partnerId}>
-								{!isEnabledReactDocumentPage ? (
-									<a
-										href={`/document.php?partnerId=${partnerId}&type=sale`}
-										className="w-72 h-24 p-2 border-2 rounded-lg flex items-center justify-between text-xl font-medium hover:shadow-lg"
-									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="24"
-											height="24"
-											fill="currentColor"
-											viewBox="0 0 16 16"
-										>
-											<path
-												fillRule="evenodd"
-												d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-											/>
-										</svg>
-										{partnerName}
-									</a>
-								) : (
-									<Link
-										to={`/document/${partnerId}/sell`}
-										className="w-72 h-24 p-2 border-2 rounded-lg flex items-center justify-between text-xl font-medium hover:shadow-lg"
-									>
-										{partnerName}
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="24"
-											height="24"
-											fill="currentColor"
-											viewBox="0 0 16 16"
-										>
-											<path
-												fillRule="evenodd"
-												d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-											/>
-										</svg>
-									</Link>
-								)}
-							</Fragment>
+							<Link
+								key={partnerId}
+								to={`/document/${partnerId}/sell`}
+								className="w-72 h-24 p-2 border-2 rounded-lg flex items-center justify-between text-xl font-medium hover:shadow-lg"
+							>
+								{partnerName}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+									fill="currentColor"
+									viewBox="0 0 16 16"
+								>
+									<path
+										fillRule="evenodd"
+										d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+									/>
+								</svg>
+							</Link>
 						))}
 				</div>
 				{data
