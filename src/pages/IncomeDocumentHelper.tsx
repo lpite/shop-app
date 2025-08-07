@@ -47,6 +47,8 @@ export interface IncomeDocument {
 	warehouseRef: string;
 }
 
+const STEPS = ["details", "import", "price", "final"];
+
 export function IncomeDocumentHelper() {
 	const [_, navigate] = useLocation();
 	const { document } = useIncomeDocumentHepler();
@@ -92,9 +94,6 @@ export function IncomeDocumentHelper() {
 			},
 		});
 		if (response.Number && response.Date) {
-			alert("Створено!");
-		} else {
-			alert("Не створено!");
 		}
 	}
 
@@ -200,6 +199,6 @@ export function IncomeDocumentHelper() {
 					<FinalStep saveDocument={saveDocument} />
 				</div>
 			);
-		}
+		
 	}
 }
