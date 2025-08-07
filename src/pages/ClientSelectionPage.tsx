@@ -94,23 +94,13 @@ export default function ClientSelectionPage() {
 					})
 
 					.map(({ partnerId, partnerName }) => (
-						<Fragment key={partnerId}>
-							{!isEnabledReactDocumentPage ? (
-								<a
-									href={`/document.php?partnerId=${partnerId}&type=sale`}
-									className="w-60 px-4 py-2 bg-sky-600 font-medium text-white rounded-lg my-1"
-								>
-									{partnerName}
-								</a>
-							) : (
-								<Link
-									to={`/document/${partnerId}/sell`}
-									className="w-60 px-4 py-2 bg-sky-600 font-medium text-white rounded-lg my-1"
-								>
-									{partnerName}
-								</Link>
-							)}
-						</Fragment>
+						<Link
+							key={partnerId}
+							to={`/document/${partnerId}/sell`}
+							className="w-60 px-4 py-2 bg-sky-600 font-medium text-white rounded-lg my-1"
+						>
+							{partnerName}
+						</Link>
 					))}
 			</Show>
 		</main>
