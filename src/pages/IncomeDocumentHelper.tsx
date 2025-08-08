@@ -45,13 +45,9 @@ export interface IncomeDocument {
 	warehouseRef: string;
 }
 
-const STEPS = ["details", "import", "price", "final"];
-
 export function IncomeDocumentHelper() {
-	const { number, date } = useParams();
 	const [_, navigate] = useLocation();
 
-	const [allowEditing, setAllowEditing] = useState(false);
 	const [document, setDocument] = useState<IncomeDocument>({
 		products: [],
 		number: "",
@@ -66,9 +62,9 @@ export function IncomeDocumentHelper() {
 	function setDocumentProducts(products: IncomeDocument["products"]) {
 		setDocument((d) => ({ ...d, products: products }));
 	}
-	const [searchParams] = useSearchParams();
 
 	const [step, setStep] = useState(0);
+	const [canProceed, setCanProceed] = useState(false);
 
 	async function saveDocument() {
 		const response = await fetcher<any>({
@@ -111,82 +107,129 @@ export function IncomeDocumentHelper() {
 		}
 	}
 
-	function nextStep() {}
+	function nextStep() {
+		setCanProceed(false);
+		setStep((p) => p + 1);
+	}
 
-	function prevStep() {}
+	function prevStep() {
+		setStep((p) => p - 1);
+	}
+
 	switch (step) {
 		case 0: {
+			const canProceed =
+				document.supplierRef.length &&
+				document.counterPartyRef.length &&
+				document.warehouseRef.length;
+				
 			return (
-				<div>
+				<div className="w-full max-w-[1300px] p-4 mx-auto">
+					<div className="flex justify-between py-2">
+						<button
+							onClick={prevStep}
+							disabled={step === 0}
+							className="border p-2 rounded-lg bg-white disabled:opacity-25"
+						>
+							<ChevronLeft />
+						</button>
+						<button
+							onClick={nextStep}
+							disabled={!canProceed}
+							className="border p-2 rounded-lg bg-white disabled:opacity-25"
+						>
+							<ChevronRight />
+						</button>
+					</div>
 					<DocumentInformation document={document} setDocument={setDocument} />
 				</div>
 			);
-			break;
 		}
-	}
-	return (
-		<>
-			<main className="px-3 py-8 bg-gray-100 h-full flex justify-center">
-				<div className="w-full max-w-[1300px]">
+		case 1: {
+			return (
+				<div className="w-full h-full max-w-[1300px] p-4 mx-auto flex flex-col">
 					<div className="flex justify-between py-2">
 						<button
-							disabled={true}
+							onClick={prevStep}
 							className="border p-2 rounded-lg bg-white disabled:bg-transparent"
 						>
 							<ChevronLeft />
 						</button>
-						<button>
+						<button
+							onClick={nextStep}
+							className="border p-2 rounded-lg bg-white disabled:bg-transparent"
+						>
 							<ChevronRight />
 						</button>
 					</div>
-
-					<Route path="/details">
-						<DocumentInformation
-							document={document}
-							setDocument={setDocument}
-						/>
-					</Route>
-					<Route path="/import">
-						<ProductImport setDocumentProducts={setDocumentProducts} />
-					</Route>
-					<Route path="/price"></Route>
-					<Route path="/final">
-						<FinalStep />
-					</Route>
-					{/*<Show when={activeTab === "products"}>
-					<div className="max-w-7xl mx-auto px-4">
-						<div className="px-3 pt-4 pb-2">
-							<label className="flex gap-2 select-none cursor-pointer">
-								Обрати усі
-							</label>
-						</div>
-						{document?.products?.map((el, i) => {
-							return (
-								<div
-									key={"document_product_" + i}
-									className="border shadow-sm my-2 py-1 px-1 flex items-center gap-2 rounded-md"
-								>
-									<input
-										type="checkbox"
-										className="ml-2"
-										checked={el.selected}
-									/>
-
-									<span className="flex-1">{el.name}</span>
-									<span>{el.quantity}</span>
-									<button
-										className="text-red-500 hover:bg-gray-200 p-2 rounded-md disabled:bg-gray-200 disabled:text-gray-700"
-										disabled={!allowEditing}
-									>
-										<Trash size={20} />
-									</button>
-								</div>
-							);
-						})}
-					</div>
-				</Show>*/}
+					<ProductImport setDocumentProducts={setDocumentProducts} />
 				</div>
-			</main>
-		</>
-	);
+			);
+		}
+	}
+	// return (
+	// 	<>
+	// 		<main className="px-3 py-8 bg-gray-100 h-full flex justify-center">
+	// 			<div className="w-full max-w-[1300px]">
+	// 				<div className="flex justify-between py-2">
+	// 					<button
+	// 						disabled={true}
+	// 						className="border p-2 rounded-lg bg-white disabled:bg-transparent"
+	// 					>
+	// 						<ChevronLeft />
+	// 					</button>
+	// 					<button>
+	// 						<ChevronRight />
+	// 					</button>
+	// 				</div>
+
+	// 				<Route path="/details">
+	// 					<DocumentInformation
+	// 						document={document}
+	// 						setDocument={setDocument}
+	// 					/>
+	// 				</Route>
+	// 				<Route path="/import">
+	// 					<ProductImport setDocumentProducts={setDocumentProducts} />
+	// 				</Route>
+	// 				<Route path="/price"></Route>
+	// 				<Route path="/final">
+	// 					<FinalStep />
+	// 				</Route>
+	// 				{/*<Show when={activeTab === "products"}>
+	// 				<div className="max-w-7xl mx-auto px-4">
+	// 					<div className="px-3 pt-4 pb-2">
+	// 						<label className="flex gap-2 select-none cursor-pointer">
+	// 							Обрати усі
+	// 						</label>
+	// 					</div>
+	// 					{document?.products?.map((el, i) => {
+	// 						return (
+	// 							<div
+	// 								key={"document_product_" + i}
+	// 								className="border shadow-sm my-2 py-1 px-1 flex items-center gap-2 rounded-md"
+	// 							>
+	// 								<input
+	// 									type="checkbox"
+	// 									className="ml-2"
+	// 									checked={el.selected}
+	// 								/>
+
+	// 								<span className="flex-1">{el.name}</span>
+	// 								<span>{el.quantity}</span>
+	// 								<button
+	// 									className="text-red-500 hover:bg-gray-200 p-2 rounded-md disabled:bg-gray-200 disabled:text-gray-700"
+	// 									disabled={!allowEditing}
+	// 								>
+	// 									<Trash size={20} />
+	// 								</button>
+	// 							</div>
+	// 						);
+	// 					})}
+	// 				</div>
+	// 			</Show>*/}
+	// 			</div>
+	// 		</main>
+	// 	</>
+	// );
 }

@@ -24,7 +24,12 @@ export function ProductImport({ setDocumentProducts }: ProductImportProps) {
 	}
 
 	return (
-		<>
+		<div className="flex flex-col flex-1 min-h-0">
+			<div className="px-6 py-4 mb-5 border-b border-gray-200">
+				<h3 className="text-lg font-medium text-gray-900 flex items-center">
+					Імопорт товарів
+				</h3>
+			</div>
 			<div className="mb-2">
 				<div className="flex gap-3 mb-6 ">
 					<button
@@ -52,34 +57,36 @@ export function ProductImport({ setDocumentProducts }: ProductImportProps) {
 					<ImportDialog dialog={dialog} setDialog={setDialog} />
 				</div>
 			</div>
-			{importedProducts.map((row, rowIndex) => {
-				return (
-					<div
-						key={row["article"] + row["name"]}
-						className={`flex gap-3 items-center border my-1 p-2 rounded-md duration-200 ${row.suggestedProduct ? "bg-green-200" : ""}`}
-					>
-						<div className="flex flex-col flex-1">
-							<span>{row["article"]}</span>
-							<span>{row["name"]}</span>
+			<div className="overflow-y-auto flex-1">
+				{importedProducts.map((row, rowIndex) => {
+					return (
+						<div
+							key={row["article"] + row["name"]}
+							className={`flex gap-3 items-center border my-1 p-2 rounded-md duration-200 ${row.suggestedProduct ? "bg-green-200" : ""}`}
+						>
+							<div className="flex flex-col flex-1">
+								<span>{row["article"]}</span>
+								<span>{row["name"]}</span>
+							</div>
+							<ArrowLeft />
+							<ProductSelectorDialog
+								rowIndex={rowIndex}
+								row={row}
+								selectProduct={selectSuggestedProduct}
+								q={row.article}
+							/>
+							{row.suggestedProduct && (
+								<button
+									className="hover:bg-gray-300 hover:bg-opacity-50 p-1 rounded-lg absolute end-6"
+									onClick={() => selectSuggestedProduct(null, rowIndex)}
+								>
+									<X />
+								</button>
+							)}
 						</div>
-						<ArrowLeft />
-						<ProductSelectorDialog
-							rowIndex={rowIndex}
-							row={row}
-							selectProduct={selectSuggestedProduct}
-							q={row.article}
-						/>
-						{row.suggestedProduct && (
-							<button
-								className="hover:bg-gray-300 hover:bg-opacity-50 p-1 rounded-lg absolute end-6"
-								onClick={() => selectSuggestedProduct(null, rowIndex)}
-							>
-								<X />
-							</button>
-						)}
-					</div>
-				);
-			})}
-		</>
+					);
+				})}
+			</div>
+		</div>
 	);
 }

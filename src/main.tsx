@@ -46,7 +46,7 @@ createRoot(document.getElementById("root")!).render(
 				<Route path="/demo/" component={FiltersDemo} />
 				<Route path="/vin-demo/" component={SearchByVin} />
 				<Route
-					path="/document-helper/income/:step"
+					path="/document-helper/income"
 					component={IncomeDocumentHelper}
 				/>
 			</Switch>

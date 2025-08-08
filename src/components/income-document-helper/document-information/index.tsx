@@ -1,11 +1,14 @@
+import { Dispatch, SetStateAction } from "react";
 import { Building2 } from "lucide-react";
-import { IncomeDocument } from "../../../pages/IncomeDocumentHelper";
 import useSWR from "swr";
+
+import { IncomeDocument } from "../../../pages/IncomeDocumentHelper";
 import { fetcher } from "../../../utils/fetcher";
 
 interface DocumentInformationProps {
 	document: IncomeDocument;
 	setDocument: (d: IncomeDocument) => void;
+	setCanProceed: Dispatch<SetStateAction<boolean>>;
 }
 
 export function DocumentInformation({
@@ -38,7 +41,7 @@ export function DocumentInformation({
 			<div className="px-6 py-4 border-b border-gray-200">
 				<h3 className="text-lg font-medium text-gray-900 flex items-center">
 					<Building2 className="h-5 w-5 mr-2" />
-					Основные реквизиты
+					Реквізити
 				</h3>
 			</div>
 			<div className="p-6 space-y-6">
@@ -69,6 +72,7 @@ export function DocumentInformation({
 								Контрагент
 							</label>
 							<select
+								value={document.counterPartyRef}
 								onChange={(e) =>
 									setDocument({ ...document, counterPartyRef: e.target.value })
 								}
@@ -95,6 +99,7 @@ export function DocumentInformation({
 								Склад
 							</label>
 							<select
+								value={document.warehouseRef}
 								onChange={(e) =>
 									setDocument({ ...document, warehouseRef: e.target.value })
 								}
@@ -113,7 +118,7 @@ export function DocumentInformation({
 
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-1">
-						Комментарий
+						Коментарій
 					</label>
 					<textarea
 						value={document.comment}
