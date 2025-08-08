@@ -29,7 +29,7 @@ createRoot(document.getElementById("root")!).render(
 			<Switch>
 				<Route path="/" component={StartPage} />
 				<Route path="/clients/" component={ClientSelectionPage} />
-				<Route path="/document/:partnerId/:type" component={DocumentPage} />
+				<Route path="/pos/:partnerId/:type" component={DocumentPage} />
 				<Route path="/test" component={TestPage} />
 				<Route path="/test2/" component={Test2} nest />
 				<Route path="/price-changer/" component={PriceChanger} />
