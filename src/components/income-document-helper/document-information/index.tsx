@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import { Building2 } from "lucide-react";
 import useSWR from "swr";
 

@@ -47,13 +47,12 @@ export interface IncomeDocument {
 	warehouseRef: string;
 }
 
-const STEPS = ["details", "import", "price", "final"];
-
 export function IncomeDocumentHelper() {
 	const [_, navigate] = useLocation();
 	const { document } = useIncomeDocumentHepler();
 
 	const [step, setStep] = useState(0);
+	const [canProceed, setCanProceed] = useState(false);
 
 	async function saveDocument() {
 		if (!confirm("Зберегти")) {
@@ -111,7 +110,6 @@ export function IncomeDocumentHelper() {
 				document.supplierRef.length &&
 				document.counterPartyRef.length &&
 				document.warehouseRef.length;
-
 			return (
 				<div className="w-full max-w-[1300px] p-4 mx-auto">
 					<div className="flex justify-between py-2">
