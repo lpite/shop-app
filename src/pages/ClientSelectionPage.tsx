@@ -58,7 +58,7 @@ export default function ClientSelectionPage() {
 						.map(({ partnerId, partnerName }) => (
 							<Link
 								key={partnerId}
-								to={`/document/${partnerId}/sell`}
+								to={`/pos/${partnerId}/sell`}
 								className="w-72 h-24 p-2 border-2 rounded-lg flex items-center justify-between text-xl font-medium hover:shadow-lg"
 							>
 								{partnerName}
@@ -96,7 +96,7 @@ export default function ClientSelectionPage() {
 					.map(({ partnerId, partnerName }) => (
 						<Link
 							key={partnerId}
-							to={`/document/${partnerId}/sell`}
+							to={`/pos/${partnerId}/sell`}
 							className="w-60 px-4 py-2 bg-sky-600 font-medium text-white rounded-lg my-1"
 						>
 							{partnerName}
