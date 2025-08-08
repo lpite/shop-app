@@ -6,7 +6,7 @@ import Header from "../components/document-page/header";
 import ProductDetailsPopup from "../components/document-page/product-details/popup";
 import { useSearch } from "../hooks/useSearch";
 
-export default function DocumentPage() {
+export default function PosPage() {
 	const pageRef = useRef<HTMLDivElement>(null);
 
 	const { data: products, isLoading: isLoadingProducts, error } = useSearch({});
