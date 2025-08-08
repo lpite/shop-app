@@ -14,6 +14,7 @@ import { Spinner } from "./components/spinner.tsx";
 import { IncomeDocumentHelper } from "./pages/IncomeDocumentHelper.tsx";
 import ClientSelectionPage from "./pages/ClientSelectionPage.tsx";
 import { OrderNotifier } from "./components/order-notification";
+import { ConfigPage } from "./pages/Config.tsx";
 
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const Test2 = lazy(() => import("./pages/Test2.tsx"));
@@ -45,9 +46,11 @@ createRoot(document.getElementById("root")!).render(
 				<Route path="/suppliers-search/" component={SuppliersSearch} />
 				<Route path="/demo/" component={FiltersDemo} />
 				<Route path="/vin-demo/" component={SearchByVin} />
+				<Route path="/config/" component={ConfigPage} />
 				<Route
-					path="/document-helper/income/:step"
+					path="/document-helper/income/"
 					component={IncomeDocumentHelper}
+					nest
 				/>
 			</Switch>
 		</SWRConfig>

@@ -1,6 +1,6 @@
 import { FormEvent, Fragment, useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useSettings } from "../stores/settingsStore";
+import { useConfig } from "../stores/configStore";
 
 type VinSearchResponse = {
 	found_by: string;
@@ -80,15 +80,16 @@ export default function SearchByVin() {
 
 	const [isLoading, setIsLoading] = useState(false);
 
-	const { pb_base_url } = useSettings();
+	const { pb_base_url } = useConfig();
 
 	useEffect(() => {
 		if (!pb_base_url) {
-			useSettings.setState({
+			useConfig.setState({
 				pb_base_url: "",
 			});
 		}
 	}, []);
+
 	async function search(e: FormEvent) {
 		e.preventDefault();
 		setIsLoading(true);

@@ -1,11 +1,11 @@
 import { Check, TriangleAlert, X } from "lucide-react";
-import { useSettings } from "../../stores/settingsStore";
+import { useConfig } from "../../stores/configStore";
 import { useOrderNotification } from "./store";
 import useSWR from "swr";
 import { useEffect, useState } from "react";
 
 export function OrderNotifier() {
-	const { order_notification_url } = useSettings();
+	const { order_notification_url } = useConfig();
 	const { orderCount } = useOrderNotification();
 	const [newOrder, setNewOrder] = useState(false);
 
@@ -39,7 +39,7 @@ export function OrderNotifier() {
 	}
 	useEffect(() => {
 		if (!order_notification_url) {
-			useSettings.setState({ order_notification_url: prompt() || "" });
+			useConfig.setState({ order_notification_url: prompt() || "" });
 		}
 	}, []);
 
