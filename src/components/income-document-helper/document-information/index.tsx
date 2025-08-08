@@ -1,5 +1,5 @@
 import { Building2 } from "lucide-react";
-import { IncomeDocument } from "../../../pages/IncomeDocument";
+import { IncomeDocument } from "../../../pages/IncomeDocumentHelper";
 import useSWR from "swr";
 import { fetcher } from "../../../utils/fetcher";
 

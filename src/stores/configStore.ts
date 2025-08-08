@@ -10,6 +10,7 @@ export const configSchema = z.object({
 });
 
 export type Config = z.infer<typeof configSchema>;
+export type ConfigKeys = keyof Config;
 
 export const useConfig = create<Config>()(
 	persist<Config>(
