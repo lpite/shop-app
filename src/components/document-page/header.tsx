@@ -7,6 +7,7 @@ import CatalogPopup from "./catalog";
 import { Link, useParams } from "wouter";
 import SearchHistoryPopup from "../search-history-popup";
 import { useSearch } from "../../hooks/useSearch";
+import { getPageColor } from "../../utils/getPageColor";
 
 export default function Header() {
 	const { partnerId, type } = useParams();
@@ -68,7 +69,9 @@ export default function Header() {
 	}
 
 	return (
-		<header className="w-full gap-2 p-2 grid grid-rows-2 grid-cols-12 h-38 bg-slate-100">
+		<header
+			className={`w-full gap-2 p-2 grid grid-rows-2 grid-cols-12 h-38 ${getPageColor(partnerId, type) || "bg-slate-100"}`}
+		>
 			<div className="flex gap-2 col-start-1 col-span-3">
 				<Link
 					to={"/"}
