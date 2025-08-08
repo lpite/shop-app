@@ -5,9 +5,12 @@ import ProductsSection from "../components/document-page/products-section";
 import Header from "../components/document-page/header";
 import ProductDetailsPopup from "../components/document-page/product-details/popup";
 import { useSearch } from "../hooks/useSearch";
+import { getPageColor } from "../utils/getPageColor";
+import { useParams } from "wouter";
 
 export default function PosPage() {
 	const pageRef = useRef<HTMLDivElement>(null);
+	const { partnerId, type } = useParams();
 
 	const { data: products, isLoading: isLoadingProducts, error } = useSearch({});
 
@@ -32,7 +35,7 @@ export default function PosPage() {
 
 	return (
 		<div
-			className="h-full overflow-hidden flex flex-col"
+			className={`h-full overflow-hidden flex flex-col ${getPageColor(partnerId, type)}`}
 			onMouseUp={endResize}
 			onMouseMove={resize}
 			ref={pageRef}
