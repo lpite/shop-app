@@ -205,7 +205,7 @@ function Item({ article, name, brand, stocks, photo }: SupplierProduct) {
 							useAppStore.setState({
 								searchValue: localProduct.searchCode,
 							});
-							navigate("/document/УТ-00000002/sell");
+							navigate("/pos/УТ-00000002/sell");
 						}
 					}}
 				/>

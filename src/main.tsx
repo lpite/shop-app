@@ -4,7 +4,7 @@ import "./index.css";
 
 import { Route, Switch } from "wouter";
 import StartPage from "./pages/StartPage.tsx";
-import DocumentPage from "./pages/DocumentPage.tsx";
+import PosPage from "./pages/PosPage.tsx";
 import TestPage from "./pages/Test.tsx";
 import SuppliersSearch from "./pages/SuppliersSearch.tsx";
 import FiltersDemo from "./pages/filters-demo.tsx";
@@ -29,7 +29,7 @@ createRoot(document.getElementById("root")!).render(
 			<Switch>
 				<Route path="/" component={StartPage} />
 				<Route path="/clients/" component={ClientSelectionPage} />
-				<Route path="/document/:partnerId/:type" component={DocumentPage} />
+				<Route path="/pos/:partnerId/:type" component={PosPage} />
 				<Route path="/test" component={TestPage} />
 				<Route path="/test2/" component={Test2} nest />
 				<Route path="/price-changer/" component={PriceChanger} />
