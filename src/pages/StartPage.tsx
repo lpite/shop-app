@@ -1,9 +1,13 @@
+import { Settings } from "lucide-react";
 import { Link } from "wouter";
 
 export default function StartPage() {
 	return (
 		<main className="flex items-center justify-center w-full h-full gap-4">
 			<span className="fixed top-3 start-3">{__BUILD_ID__}</span>
+			<Link to="/config" className="fixed end-3 top-3 p-2 hover:bg-slate-100 rounded-lg">
+				<Settings />
+			</Link>
 			<Link
 				to="/clients"
 				className="w-32 py-3 bg-sky-600 rounded-lg text-center text-white font-semibold"

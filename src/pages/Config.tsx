@@ -5,6 +5,8 @@ import {
 	configSchema,
 	type ConfigKeys,
 } from "../stores/configStore";
+import { Link } from "wouter";
+import { House } from "lucide-react";
 
 const shape = (configSchema as ZodObject<ZodRawShape>).shape;
 const fields = Object.entries(shape) as [ConfigKeys, ZodTypeAny][];
@@ -20,6 +22,7 @@ export function ConfigPage() {
 
 	return (
 		<main className="max-w-[1200px] mx-auto py-4 px-3">
+			<Link to="/" className="m-2 p-2 hover:bg-slate-100 block"><House /></Link>
 			<h1 className="text-3xl font-medium">Конфігурація</h1>
 			{fields.map(([name, field]) => {
 				const fieldType = field.def.type as string;
