@@ -9,10 +9,9 @@ import {
 const shape = (configSchema as ZodObject<ZodRawShape>).shape;
 const fields = Object.entries(shape) as [ConfigKeys, ZodTypeAny][];
 
-const defaultInputs = ["text", "number", "boolean", "url", "string"];
+const defaultInputs = ["text", "number", "url", "string"];
 const typesReplacement: Record<string, string> = {
 	string: "text",
-	boolean: "checkbox",
 	url: "string",
 };
 
@@ -24,6 +23,21 @@ export function ConfigPage() {
 			<h1 className="text-3xl font-medium">Конфігурація</h1>
 			{fields.map(([name, field]) => {
 				const fieldType = field.def.type as string;
+
+				if (fieldType === "boolean") {
+					return (
+						<div className="p-2 flex">
+							{name}
+							<input
+								type="checkbox"
+								checked={config[name] as boolean}
+								onChange={() => useConfig.setState({ [name]: !config[name] })}
+								className="border mx-1 w-full px-1"
+							/>
+						</div>
+					);
+				}
+
 				if (defaultInputs.indexOf(fieldType) !== -1) {
 					return (
 						<div className="p-2 flex">
