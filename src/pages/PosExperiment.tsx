@@ -238,7 +238,7 @@ export default function AutomotivePOS() {
 									{products.map((product) => (
 										<div
 											key={product.id}
-											className="flex items-center gap-3 p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+											className="flex items-start gap-3 p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
 										>
 											<div className="w-20 h-20">
 												<img
@@ -259,7 +259,7 @@ export default function AutomotivePOS() {
 															{product.name}
 														</h3>
 														<p className="text-sm text-gray-600">
-															{product.brand}
+															<b>{product.searchCode}</b> {product.brand}
 														</p>
 														<p className="text-xs text-gray-500">
 															{product.code.length || product.vendorCode.length
