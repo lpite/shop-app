@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { fetcher } from "../utils/fetcher";
 import { Fragment } from "react/jsx-runtime";
 import { Link } from "wouter";
+import { useConfig } from "../stores/configStore";
 
 const disabledClients = [
 	"00-00000059",
@@ -23,6 +24,10 @@ export default function ClientSelectionPage() {
 			method: "GET",
 		}),
 	);
+
+	const { use_fancy_pos } = useConfig();
+
+	const posUrl = use_fancy_pos ? "pos-new" : "pos";
 
 	return (
 		<main className="h-full flex flex-col items-center justify-center">
@@ -58,7 +63,7 @@ export default function ClientSelectionPage() {
 						.map(({ partnerId, partnerName }) => (
 							<Link
 								key={partnerId}
-								to={`/pos/${partnerId}/sell`}
+								to={`/${posUrl}/${partnerId}/sell`}
 								className="w-72 h-24 p-2 border-2 rounded-lg flex items-center justify-between text-xl font-medium hover:shadow-lg"
 							>
 								{partnerName}
@@ -96,7 +101,7 @@ export default function ClientSelectionPage() {
 					.map(({ partnerId, partnerName }) => (
 						<Link
 							key={partnerId}
-							to={`/pos/${partnerId}/sell`}
+							to={`/${posUrl}/${partnerId}/sell`}
 							className="w-60 px-4 py-2 bg-sky-600 font-medium text-white rounded-lg my-1"
 						>
 							{partnerName}
