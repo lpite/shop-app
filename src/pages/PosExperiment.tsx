@@ -18,6 +18,7 @@ import {
 	House,
 	Boxes,
 	Cat,
+	Plus,
 } from "lucide-react";
 
 interface Product {
@@ -257,24 +258,32 @@ export default function AutomotivePOS() {
 														<h3 className="font-medium text-sm text-gray-900">
 															{product.name}
 														</h3>
-														<p className="text-xs text-gray-600">
+														<p className="text-sm text-gray-600">
 															{product.brand}
 														</p>
 														<p className="text-xs text-gray-500">
-															SKU: {product.code} {product.vendorCode}
+															{product.code.length || product.vendorCode.length
+																? "SKU: "
+																: null}{" "}
+															{product.code} {product.vendorCode}
 														</p>
 														<p className="text-xs text-gray-500">
-															Location: {product.place1} {product.place2}{" "}
-															{product.place3}
+															{product.place1.length ||
+															product.place2.length ||
+															product.place3.length
+																? "Місце: "
+																: null}{" "}
+															{product.place1} {product.place2} {product.place3}
 														</p>
 													</div>
 													<div className="text-right flex flex-col">
-														<span className="text-base font-semibold text-green-600">
+														<span
+															className={`text-base font-semibold ${product.quantity ? "text-green-600" : "text-red-600"} `}
+														>
 															{product.price.toFixed(2)}
 														</span>
 														<span>
-															{product.quantity}
-															{product.units}
+															{product.quantity} {product.units}
 														</span>
 													</div>
 												</div>
@@ -309,21 +318,9 @@ export default function AutomotivePOS() {
 																addToCart({ ...product, quantity: 1 })
 															}
 															disabled={product.quantity <= 0}
-															className="px-2 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+															className="p-1 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
 														>
-															<svg
-																className="h-3.5 w-3.5"
-																fill="none"
-																stroke="currentColor"
-																viewBox="0 0 24 24"
-															>
-																<path
-																	strokeLinecap="round"
-																	strokeLinejoin="round"
-																	strokeWidth={2}
-																	d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-																/>
-															</svg>
+															<Plus className="h-4 w-4" />
 														</button>
 													</div>
 												</div>
@@ -519,7 +516,8 @@ export default function AutomotivePOS() {
 
 								<div className="grid grid-cols-2 gap-3 text-xs mb-3">
 									<div>
-										<strong>SKU:</strong> {selectedProduct.code} {selectedProduct.vendorCode}
+										<strong>SKU:</strong> {selectedProduct.code}{" "}
+										{selectedProduct.vendorCode}
 									</div>
 									<div>
 										<strong>Price:</strong> {selectedProduct.price.toFixed(2)}
