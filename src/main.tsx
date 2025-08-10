@@ -15,6 +15,7 @@ import { IncomeDocumentHelper } from "./pages/IncomeDocumentHelper.tsx";
 import ClientSelectionPage from "./pages/ClientSelectionPage.tsx";
 import { OrderNotifier } from "./components/order-notification";
 import { ConfigPage } from "./pages/Config.tsx";
+import AutomotivePOS from "./pages/PosExperiment.tsx";
 
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const Test2 = lazy(() => import("./pages/Test2.tsx"));
@@ -29,6 +30,7 @@ createRoot(document.getElementById("root")!).render(
 			<Switch>
 				<Route path="/" component={StartPage} />
 				<Route path="/clients/" component={ClientSelectionPage} />
+				<Route path="/pos-new/:partnerId/:type" component={AutomotivePOS} />
 				<Route path="/pos/:partnerId/:type" component={PosPage} />
 				<Route path="/test" component={TestPage} />
 				<Route path="/test2/" component={Test2} nest />
