@@ -19,6 +19,8 @@ import {
 	Boxes,
 	Cat,
 	Plus,
+    Minus,
+    Trash2,
 } from "lucide-react";
 
 interface Product {
@@ -348,8 +350,11 @@ export default function AutomotivePOS() {
 									{cartProducts.map((item) => (
 										<div
 											key={item.id}
-											className="flex items-center gap-2 p-2 border border-gray-200 rounded-lg"
+											className="relative flex items-center gap-2 p-2 border border-gray-200 rounded-lg"
 										>
+											<span className="absolute end-2 top-1 text-base">
+												{item.searchCode}
+											</span>
 											<img
 												src={
 													"http://" +
@@ -381,19 +386,7 @@ export default function AutomotivePOS() {
 													}
 													className="p-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
 												>
-													<svg
-														className="h-3 w-3"
-														fill="none"
-														stroke="currentColor"
-														viewBox="0 0 24 24"
-													>
-														<path
-															strokeLinecap="round"
-															strokeLinejoin="round"
-															strokeWidth={2}
-															d="M20 12H4"
-														/>
-													</svg>
+													<Minus className="w-4 h-4" />
 												</button>
 												<input
 													className="w-6 text-center text-xs"
@@ -412,37 +405,13 @@ export default function AutomotivePOS() {
 													}
 													className="p-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
 												>
-													<svg
-														className="h-3 w-3"
-														fill="none"
-														stroke="currentColor"
-														viewBox="0 0 24 24"
-													>
-														<path
-															strokeLinecap="round"
-															strokeLinejoin="round"
-															strokeWidth={2}
-															d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-														/>
-													</svg>
+													<Plus className="w-4 h-4" />
 												</button>
 												<button
 													onClick={() => removeFromCart(item.searchCode)}
 													className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors"
 												>
-													<svg
-														className="h-3 w-3"
-														fill="none"
-														stroke="currentColor"
-														viewBox="0 0 24 24"
-													>
-														<path
-															strokeLinecap="round"
-															strokeLinejoin="round"
-															strokeWidth={2}
-															d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-														/>
-													</svg>
+													<Trash2 className="w-4 h-4" />
 												</button>
 											</div>
 										</div>
