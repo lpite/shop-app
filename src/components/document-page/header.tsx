@@ -8,6 +8,7 @@ import { Link, useParams } from "wouter";
 import SearchHistoryPopup from "../search-history-popup";
 import { useSearch } from "../../hooks/useSearch";
 import { getPageColor } from "../../utils/getPageColor";
+import { useEffect } from "react";
 
 export default function Header() {
 	const { partnerId, type } = useParams();
@@ -31,6 +32,10 @@ export default function Header() {
 	);
 
 	async function saveCart() {
+		if (!cartProducts.length) {
+			return;
+		}
+
 		if (!confirm("Дійсно перенести?")) {
 			return;
 		}
@@ -67,6 +72,16 @@ export default function Header() {
 			alert(res);
 		}
 	}
+
+	useEffect(() => {
+		function listener(e: KeyboardEvent) {
+			if (e.key === "F9" && e.target === document.body) {
+				saveCart();
+			}
+		}
+		document.addEventListener("keydown", listener);
+		return () => document.removeEventListener("keydown", listener);
+	}, [saveCart]);
 
 	return (
 		<header
