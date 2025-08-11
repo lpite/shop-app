@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useSearch } from "../../hooks/useSearch";
 
 export default function SearchForm() {
@@ -28,6 +28,18 @@ export default function SearchForm() {
 		search();
 	}, [onlyInStock, exactSearch]);
 
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		function listener(e: KeyboardEvent) {
+			if (e.key === "F2" && e.target === document.body) {
+				inputRef.current?.focus();
+			}
+		}
+		document.addEventListener("keydown", listener);
+		return () => document.removeEventListener("keydown", listener);
+	}, []);
+
 	return (
 		<form
 			className="row-start-2 col-span-6 flex flex-col"
@@ -38,6 +50,7 @@ export default function SearchForm() {
 					className="border-2 w-full h-10 rounded-lg px-2"
 					value={query}
 					onChange={({ target }) => setQuery(target.value)}
+					ref={inputRef}
 				/>
 				<button
 					disabled={isValidatingProducts || isValidatingProducts}
