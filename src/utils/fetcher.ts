@@ -1,3 +1,4 @@
+import { ur } from "zod/locales";
 import { Product } from "../types/product";
 
 type FetchInputBase = {
@@ -56,6 +57,17 @@ type Fetcher = {
 	body?: any;
 };
 
+const URL_MAPPINGS = {
+	"GET: /shop/hs/app/agent-and-partner/": "/api/collections/client/records",
+	"GET: /shop/hs/app/sell-document/z5md57r6fce9fyb": "",
+} as Record<string, string>;
+
+const DATA_MAPPINGS = {
+	"GET: /shop/hs/app/agent-and-partner/": (data: any[]) =>
+		data.map((d) => ({ partnerName: d.name, partnerId: d.id })),
+	"GET: /shop/hs/app/sell-document/z5md57r6fce9fyb": (d) => d,
+} as Record<string, (s: any) => any>;
+
 export async function fetcher<T>({
 	url,
 	method,
@@ -64,30 +76,16 @@ export async function fetcher<T>({
 }: Fetcher): Promise<T> {
 	const ip = localStorage.getItem("ip");
 
-	const result = await fetch(`http://${ip}/1c_connector/index.php`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			url: url,
-			method: method,
-			query: query,
-			body: body,
-		}),
+	const mappedUrl = URL_MAPPINGS[`${method}: ${url}`];
+	const dataTransfromer = DATA_MAPPINGS[`${method}: ${url}`];
+	if (!mappedUrl || !dataTransfromer) {
+		console.log(url, method, body, query);
+	}
+	const result = fetch("http://localhost:8090" + mappedUrl, {
+		method: method,
 	})
-		.then(async (res) => {
-			let r = undefined;
-			try {
-				r = await res.clone().json();
-			} catch (err) {
-				r = await res.clone().text();
-			}
-			return r;
-		})
-		.catch((err) => {
-			console.error(err);
-			return undefined;
-		});
+		.then((r) => r.json())
+		.then((r) => r.items)
+		.then((r) => dataTransfromer(r));
 	return result;
 }

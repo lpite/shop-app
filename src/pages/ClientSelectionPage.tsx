@@ -2,7 +2,6 @@ import { AgentsAndPartnersGet } from "../utils/fetcher";
 import Show from "../utils/Show";
 import useSWR from "swr";
 import { fetcher } from "../utils/fetcher";
-import { Fragment } from "react/jsx-runtime";
 import { Link } from "wouter";
 import { useConfig } from "../stores/configStore";
 
