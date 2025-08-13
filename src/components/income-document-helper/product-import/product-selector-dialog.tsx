@@ -62,7 +62,7 @@ export function ProductSelectorDialog({
 			</div>
 			{filteredProducts.length === 1 && !row.suggestedProduct ? (
 				<button
-					className="hover:bg-gray-300 hover:bg-opacity-50 p-1 rounded-lg absolute end-6"
+					className="hover:bg-gray-300 hover:bg-opacity-50 p-1 rounded-lg absolute end-2"
 					onClick={() => selectProduct(filteredProducts[0], rowIndex)}
 				>
 					<Check />

@@ -62,7 +62,7 @@ export function ProductImport({ setDocumentProducts }: ProductImportProps) {
 					return (
 						<div
 							key={row["article"] + row["name"]}
-							className={`flex gap-3 items-center border my-1 p-2 rounded-md duration-200 ${row.suggestedProduct ? "bg-green-200" : ""}`}
+							className={`relative flex gap-3 items-center border my-1 p-2 rounded-md duration-200 ${row.suggestedProduct ? "bg-green-200" : ""}`}
 						>
 							<div className="flex flex-col flex-1">
 								<span>{row["article"]}</span>
@@ -77,7 +77,7 @@ export function ProductImport({ setDocumentProducts }: ProductImportProps) {
 							/>
 							{row.suggestedProduct && (
 								<button
-									className="hover:bg-gray-300 hover:bg-opacity-50 p-1 rounded-lg absolute end-6"
+									className="hover:bg-gray-300 hover:bg-opacity-50 p-1 rounded-lg absolute end-2"
 									onClick={() => selectSuggestedProduct(null, rowIndex)}
 								>
 									<X />
