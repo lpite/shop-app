@@ -17,6 +17,8 @@
 		"react": "^19.1.0",
 		"react-compiler-runtime": "^19.1.0-rc.2",
 		"react-dom": "^19.1.0",
+		"react-spreadsheet": "^0.10.1",
+		"scheduler": "^0.26.0",
 		"swr": "^2.3.0",
 		"wouter": "^3.6.0",
 		"zod": "^4.0.15",
