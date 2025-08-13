@@ -16,6 +16,7 @@ import ClientSelectionPage from "./pages/ClientSelectionPage.tsx";
 import { OrderNotifier } from "./components/order-notification";
 import { ConfigPage } from "./pages/Config.tsx";
 import AutomotivePOS from "./pages/PosExperiment.tsx";
+import { ReportsSpreadSheet } from "./pages/ReportsSpreadSheet.tsx";
 
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const Test2 = lazy(() => import("./pages/Test2.tsx"));
@@ -54,6 +55,7 @@ createRoot(document.getElementById("root")!).render(
 					component={IncomeDocumentHelper}
 					nest
 				/>
+				<Route path="/spreadsheet" component={ReportsSpreadSheet} />
 			</Switch>
 		</SWRConfig>
 	</StrictMode>,

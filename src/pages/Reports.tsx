@@ -45,8 +45,8 @@ export default function Reports() {
 			}),
 		{ revalidateOnMount: false },
 	);
-	console.log(searchParams);
-	return (
+
+		return (
 		<main className="flex items-center flex-col w-screen py-2 px-4">
 			<div className="flex gap-2 items-center justify-start pb-4 w-full ">
 				<div className="flex w-full items-center">

@@ -4,6 +4,7 @@ import { FTSProduct } from "../types/product";
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useConfig } from "../stores/configStore";
 
 export const useSearchStore = create<{ query: string; history: string[] }>()(
 	persist(
@@ -57,6 +58,17 @@ function createQueryForFTS(searchValue: string, exact: boolean) {
 	return `(${queryString}) OR ${searchValue.replace(/\s+/g, "")}`;
 }
 
+function createQueryForPB(searchValue: string, exact: boolean) {
+	const queryString = searchValue
+		.trim()
+		.replace(/\s+/, " ")
+		.split(" ")
+		.map((el) => `'${el}'`)
+		.join(" && for_search ~ ");
+		console.log(queryString)
+	return queryString;
+}
+
 interface UseSearch {
 	fts?: boolean;
 	exact?: boolean;
@@ -68,6 +80,7 @@ interface UseSearch {
  */
 
 export function useSearch({ exact = false }: UseSearch) {
+	const { use_pocket_base_search } = useConfig();
 	const { query, history } = useSearchStore();
 	const { data, mutate, isLoading, isValidating, error } = useSWR(
 		`search`,
@@ -75,7 +88,9 @@ export function useSearch({ exact = false }: UseSearch) {
 			fetcher<FTSProduct[]>({
 				url: "/shop/hs/api/test",
 				method: "GET",
-				query: `?q=${createQueryForFTS(query, exact)}`,
+				query: use_pocket_base_search
+					? `?filter=for_search ~ ${createQueryForPB(query, exact)}&perPage=120`
+					: `?q=${createQueryForFTS(query, exact)}`,
 			}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name))),
 		{
 			revalidateOnMount: false,

@@ -59,13 +59,31 @@ type Fetcher = {
 
 const URL_MAPPINGS = {
 	"GET: /shop/hs/app/agent-and-partner/": "/api/collections/client/records",
-	"GET: /shop/hs/app/sell-document/z5md57r6fce9fyb": "",
+	"GET: /shop/hs/app/sell-document/z5md57r6fce9fyb":
+		"/api/collections/sales_document/records?filter=client_id='z5md57r6fce9fyb'",
+	"GET: /shop/hs/api/test":
+		"/api/collections/products_with_stock_and_price/records",
+	"POST: /shop/hs/app/sale-document": "/sales_document",
 } as Record<string, string>;
 
 const DATA_MAPPINGS = {
-	"GET: /shop/hs/app/agent-and-partner/": (data: any[]) =>
-		data.map((d) => ({ partnerName: d.name, partnerId: d.id })),
-	"GET: /shop/hs/app/sell-document/z5md57r6fce9fyb": (d) => d,
+	"GET: /shop/hs/app/agent-and-partner/": (data: any) =>
+		data.items.map((d: any) => ({
+			partnerName: d.name,
+			partnerId: d.id,
+			agentName: d.name,
+		})),
+	"GET: /shop/hs/app/sell-document/z5md57r6fce9fyb": (d) => d.items[0].sum,
+	"GET: /shop/hs/api/test": (d) =>
+		d.items.map((el: any) => ({
+			...el,
+			code: "",
+			vendorCode: "",
+			place1: "",
+			place2: "",
+			place3: "",
+		})),
+	"POST: /shop/hs/app/sale-document": (r) => r,
 } as Record<string, (s: any) => any>;
 
 export async function fetcher<T>({
@@ -79,13 +97,27 @@ export async function fetcher<T>({
 	const mappedUrl = URL_MAPPINGS[`${method}: ${url}`];
 	const dataTransfromer = DATA_MAPPINGS[`${method}: ${url}`];
 	if (!mappedUrl || !dataTransfromer) {
-		console.log(url, method, body, query);
 	}
-	const result = fetch("http://localhost:8090" + mappedUrl, {
+	console.log(url, method, body, query);
+	const result = fetch("http://localhost:8090" + mappedUrl + (query || ""), {
 		method: method,
+		body: JSON.stringify(body),
+		headers: {
+			"Content-Type": "application/json",
+		},
 	})
-		.then((r) => r.json())
-		.then((r) => r.items)
-		.then((r) => dataTransfromer(r));
+		.then(async (res) => {
+			let r = undefined;
+			try {
+				r = await res.clone().json();
+			} catch (err) {
+				r = await res.clone().text();
+			}
+			return r;
+		})
+		.then((r) => {
+			console.log(r);
+			return dataTransfromer(r);
+		});
 	return result;
 }

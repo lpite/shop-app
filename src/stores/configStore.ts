@@ -8,6 +8,7 @@ export const configSchema = z.object({
 	use_fancy_pos: z.boolean(),
 	test: z.number(),
 	meow: z.array(z.object({ id: z.string(), color: z.string() })),
+	use_pocket_base_search: z.boolean(),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -21,6 +22,7 @@ export const useConfig = create<Config>()(
 			test: 0,
 			meow: [],
 			use_fancy_pos: false,
+			use_pocket_base_search: false,
 		}),
 		{
 			name: "settings",
