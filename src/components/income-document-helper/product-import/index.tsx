@@ -5,13 +5,11 @@ import type { Product } from "../../../types/product";
 import { useImportStore } from "./use-import-store";
 import { ProductSelectorDialog } from "./product-selector-dialog";
 import { ImportDialog } from "./import-dialog";
+import { useIncomeDocumentHepler } from "../../../stores/income-document-helper-store";
 
-interface ProductImportProps {
-	setDocumentProducts: (products: any[]) => void;
-}
-
-export function ProductImport({ setDocumentProducts }: ProductImportProps) {
+export function ProductImport() {
 	const { importedProducts, setImportedProducts } = useImportStore();
+	const { setDocumentProducts } = useIncomeDocumentHepler();
 	const [dialog, setDialog] = useState(false);
 
 	function selectSuggestedProduct(product: Product | null, index: number) {
@@ -27,21 +25,22 @@ export function ProductImport({ setDocumentProducts }: ProductImportProps) {
 		<div className="flex flex-col flex-1 min-h-0">
 			<div className="px-6 py-4 mb-5 border-b border-gray-200">
 				<h3 className="text-lg font-medium text-gray-900 flex items-center">
-					Імопорт товарів
+					Імпорт товарів
 				</h3>
 			</div>
 			<div className="mb-2">
 				<div className="flex gap-3 mb-6 ">
 					<button
-						className="flex gap-3 pl-2 pr-3 py-2 border rounded-lg disabled:bg-gray-200 disabled:text-gray-400"
+						className="flex gap-3 pl-2 pr-3 py-2 border rounded-lg hover:bg-sky-100 disabled:opacity-25 disabled:hover:bg-white"
 						onClick={() => {
 							const mapped = importedProducts
 								.filter((p) => p.suggestedProduct)
 								.map((p) => ({
 									searchCode: p.suggestedProduct?.searchCode,
-									name: p.suggestedProduct?.name,
+									name: p.suggestedProduct?.name || "?",
 									quantity: parseFloat(p.quantity.replace(",", ".")) || 0,
-									price: parseFloat(p.price.replace(",", ".")) || 0,
+									supplierPrice: parseFloat(p.price.replace(",", ".")) || 0,
+									retailPrice: p.suggestedProduct?.price || 0, 
 									ref: p.suggestedProduct?.ref || "",
 								}));
 

@@ -1,20 +1,12 @@
-import { Dispatch, SetStateAction } from "react";
 import { Building2 } from "lucide-react";
 import useSWR from "swr";
 
-import { IncomeDocument } from "../../../pages/IncomeDocumentHelper";
 import { fetcher } from "../../../utils/fetcher";
+import { useIncomeDocumentHepler } from "../../../stores/income-document-helper-store";
 
-interface DocumentInformationProps {
-	document: IncomeDocument;
-	setDocument: (d: IncomeDocument) => void;
-	setCanProceed: Dispatch<SetStateAction<boolean>>;
-}
+export function DocumentInformation() {
+	const { document,setDocument } = useIncomeDocumentHepler();
 
-export function DocumentInformation({
-	document,
-	setDocument,
-}: DocumentInformationProps) {
 	const { data: suppliers } = useSWR("suppliers", () =>
 		fetcher<{ value: any[] }>({
 			method: "GET",

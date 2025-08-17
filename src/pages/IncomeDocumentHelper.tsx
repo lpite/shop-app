@@ -23,6 +23,8 @@ import { ProductImport } from "../components/income-document-helper/product-impo
 import Show from "../utils/Show";
 import { DocumentInformation } from "../components/income-document-helper/document-information";
 import { FinalStep } from "../components/income-document-helper/final-step";
+import { PriceSetting } from "../components/income-document-helper/price-setting";
+import { useIncomeDocumentHepler } from "../stores/income-document-helper-store";
 
 const setIsPosted = (m: any) => true;
 
@@ -47,26 +49,15 @@ export interface IncomeDocument {
 
 export function IncomeDocumentHelper() {
 	const [_, navigate] = useLocation();
-
-	const [document, setDocument] = useState<IncomeDocument>({
-		products: [],
-		number: "",
-		date: "",
-		posted: false,
-		comment: "",
-		supplierRef: "",
-		counterPartyRef: "",
-		warehouseRef: "",
-	});
-
-	function setDocumentProducts(products: IncomeDocument["products"]) {
-		setDocument((d) => ({ ...d, products: products }));
-	}
+	const { document } = useIncomeDocumentHepler();
 
 	const [step, setStep] = useState(0);
-	const [canProceed, setCanProceed] = useState(false);
 
 	async function saveDocument() {
+		if (!confirm("Зберегти")) {
+			return;
+		}
+
 		const response = await fetcher<any>({
 			method: "POST",
 			url: "/shop/odata/standard.odata/Document_ПоступлениеТоваровУслуг?$format=json",
@@ -85,13 +76,13 @@ export function IncomeDocumentHelper() {
 					Склад_Key: "37b78b0d-25ac-11e3-874f-00e04c395324",
 					ВидЗапасов_Key: "fdb1b86b-1f65-11e3-8a27-00e04c395324",
 					LineNumber: (i + 1).toString(),
-					Цена: el.price,
-					Сума: el.price * el.quantity,
+					Цена: el.retailPrice,
+					Сума: el.retailPrice * el.quantity,
 					СтавкаНДС: "НеНДС",
 					СуммаНДС: 0,
-					СуммаСНДС: el.price * el.quantity,
+					СуммаСНДС: el.retailPrice * el.quantity,
 					КодСтроки: "0",
-					СуммаВзаиморасчето: el.price * el.quantity,
+					СуммаВзаиморасчето: el.retailPrice * el.quantity,
 					НомерСтрокиДокументаПоставщика: "0",
 					Сертификат: "",
 					НомерПаспорта: "",
@@ -101,14 +92,13 @@ export function IncomeDocumentHelper() {
 			},
 		});
 		if (response.Number && response.Date) {
-			navigate(`/document-helper/income/${response.Number}/${response.Date}`, {
-				replace: true,
-			});
+			alert("Створено!");
+		} else {
+			alert("Не створено!");
 		}
 	}
 
 	function nextStep() {
-		setCanProceed(false);
 		setStep((p) => p + 1);
 	}
 
@@ -122,7 +112,7 @@ export function IncomeDocumentHelper() {
 				document.supplierRef.length &&
 				document.counterPartyRef.length &&
 				document.warehouseRef.length;
-				
+
 			return (
 				<div className="w-full max-w-[1300px] p-4 mx-auto">
 					<div className="flex justify-between py-2">
@@ -141,11 +131,12 @@ export function IncomeDocumentHelper() {
 							<ChevronRight />
 						</button>
 					</div>
-					<DocumentInformation document={document} setDocument={setDocument} />
+					<DocumentInformation />
 				</div>
 			);
 		}
 		case 1: {
+			const canProceed = document.products.length;
 			return (
 				<div className="w-full h-full max-w-[1300px] p-4 mx-auto flex flex-col">
 					<div className="flex justify-between py-2">
@@ -157,79 +148,58 @@ export function IncomeDocumentHelper() {
 						</button>
 						<button
 							onClick={nextStep}
-							className="border p-2 rounded-lg bg-white disabled:bg-transparent"
+							disabled={!canProceed}
+							className="border p-2 rounded-lg bg-white disabled:opacity-25"
 						>
 							<ChevronRight />
 						</button>
 					</div>
-					<ProductImport setDocumentProducts={setDocumentProducts} />
+					<ProductImport />
+				</div>
+			);
+		}
+		case 2: {
+			return (
+				<div className="w-full h-full max-w-[1300px] p-4 mx-auto flex flex-col">
+					<div className="flex justify-between py-2">
+						<button
+							onClick={prevStep}
+							className="border p-2 rounded-lg bg-white disabled:bg-transparent"
+						>
+							<ChevronLeft />
+						</button>
+						<button
+							onClick={nextStep}
+							className="border p-2 rounded-lg bg-white disabled:opacity-25"
+						>
+							<ChevronRight />
+						</button>
+					</div>
+					<PriceSetting />
+				</div>
+			);
+		}
+		case 3: {
+			return (
+				<div className="w-full h-full max-w-[1300px] p-4 mx-auto flex flex-col">
+					<div className="flex justify-between py-2">
+						<button
+							onClick={prevStep}
+							className="border p-2 rounded-lg bg-white disabled:bg-transparent"
+						>
+							<ChevronLeft />
+						</button>
+						<button
+							onClick={nextStep}
+							disabled
+							className="border p-2 rounded-lg bg-white disabled:opacity-25"
+						>
+							<ChevronRight />
+						</button>
+					</div>
+					<FinalStep saveDocument={saveDocument} />
 				</div>
 			);
 		}
 	}
-	// return (
-	// 	<>
-	// 		<main className="px-3 py-8 bg-gray-100 h-full flex justify-center">
-	// 			<div className="w-full max-w-[1300px]">
-	// 				<div className="flex justify-between py-2">
-	// 					<button
-	// 						disabled={true}
-	// 						className="border p-2 rounded-lg bg-white disabled:bg-transparent"
-	// 					>
-	// 						<ChevronLeft />
-	// 					</button>
-	// 					<button>
-	// 						<ChevronRight />
-	// 					</button>
-	// 				</div>
-
-	// 				<Route path="/details">
-	// 					<DocumentInformation
-	// 						document={document}
-	// 						setDocument={setDocument}
-	// 					/>
-	// 				</Route>
-	// 				<Route path="/import">
-	// 					<ProductImport setDocumentProducts={setDocumentProducts} />
-	// 				</Route>
-	// 				<Route path="/price"></Route>
-	// 				<Route path="/final">
-	// 					<FinalStep />
-	// 				</Route>
-	// 				{/*<Show when={activeTab === "products"}>
-	// 				<div className="max-w-7xl mx-auto px-4">
-	// 					<div className="px-3 pt-4 pb-2">
-	// 						<label className="flex gap-2 select-none cursor-pointer">
-	// 							Обрати усі
-	// 						</label>
-	// 					</div>
-	// 					{document?.products?.map((el, i) => {
-	// 						return (
-	// 							<div
-	// 								key={"document_product_" + i}
-	// 								className="border shadow-sm my-2 py-1 px-1 flex items-center gap-2 rounded-md"
-	// 							>
-	// 								<input
-	// 									type="checkbox"
-	// 									className="ml-2"
-	// 									checked={el.selected}
-	// 								/>
-
-	// 								<span className="flex-1">{el.name}</span>
-	// 								<span>{el.quantity}</span>
-	// 								<button
-	// 									className="text-red-500 hover:bg-gray-200 p-2 rounded-md disabled:bg-gray-200 disabled:text-gray-700"
-	// 									disabled={!allowEditing}
-	// 								>
-	// 									<Trash size={20} />
-	// 								</button>
-	// 							</div>
-	// 						);
-	// 					})}
-	// 				</div>
-	// 			</Show>*/}
-	// 			</div>
-	// 		</main>
-	// 	</>
-	// );
 }
