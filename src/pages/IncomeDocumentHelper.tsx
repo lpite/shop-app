@@ -197,6 +197,6 @@ export function IncomeDocumentHelper() {
 					<FinalStep saveDocument={saveDocument} />
 				</div>
 			);
-		
+		}
 	}
 }
