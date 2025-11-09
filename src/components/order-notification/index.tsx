@@ -43,6 +43,9 @@ export function OrderNotifier() {
 		}
 	}, []);
 
+
+	return null
+
 	if (!newOrder && !error) {
 		return null;
 	}
