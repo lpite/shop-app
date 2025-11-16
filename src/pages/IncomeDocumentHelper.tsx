@@ -78,12 +78,12 @@ export function IncomeDocumentHelper() {
 					ВидЗапасов_Key: "fdb1b86b-1f65-11e3-8a27-00e04c395324",
 					LineNumber: (i + 1).toString(),
 					Цена: el.retailPrice,
-					Сума: el.retailPrice * el.quantity,
+					Сумма: el.retailPrice * el.quantity,
 					СтавкаНДС: "НеНДС",
 					СуммаНДС: 0,
 					СуммаСНДС: el.retailPrice * el.quantity,
+					СуммаВзаиморасчетов: el.retailPrice * el.quantity,
 					КодСтроки: "0",
-					СуммаВзаиморасчето: el.retailPrice * el.quantity,
 					НомерСтрокиДокументаПоставщика: "0",
 					Сертификат: "",
 					НомерПаспорта: "",
@@ -93,6 +93,7 @@ export function IncomeDocumentHelper() {
 			},
 		});
 		if (response.Number && response.Date) {
+			alert("Успішно створено.")
 		}
 	}
 

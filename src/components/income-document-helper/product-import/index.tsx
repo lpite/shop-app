@@ -1,24 +1,65 @@
 import { useState } from "react";
-import { ArrowLeft, X, Save } from "lucide-react";
+import {
+	ArrowLeft,
+	X,
+	Save,
+	SquareSplitVertical,
+	Trash,
+	Trash2,
+} from "lucide-react";
 
 import type { Product } from "../../../types/product";
 import { useImportStore } from "./use-import-store";
 import { ProductSelectorDialog } from "./product-selector-dialog";
 import { ImportDialog } from "./import-dialog";
 import { useIncomeDocumentHepler } from "../../../stores/income-document-helper-store";
+import { ImportedProduct } from "./types";
 
 export function ProductImport() {
-	const { importedProducts, setImportedProducts } = useImportStore();
+	const { importedProducts, setImportedProducts, updateRow } = useImportStore();
 	const { setDocumentProducts } = useIncomeDocumentHepler();
 	const [dialog, setDialog] = useState(false);
 
-	function selectSuggestedProduct(product: Product | null, index: number) {
-		const newImportedProducts = [...importedProducts];
-		newImportedProducts[index] = {
-			...newImportedProducts[index],
-			suggestedProduct: product,
-		};
+	function selectSuggestedProduct(rowIndex: number, product: Product | null) {
+		updateRow(rowIndex, { suggestedProduct: product });
+	}
+
+	function splitProductRow(row: ImportedProduct, rowIndex: number) {
+		const newImportedProducts: ImportedProduct[] = [
+			...(!rowIndex ? [row] : importedProducts.slice(0, rowIndex + 1)),
+			{
+				...row,
+				id: Math.random(),
+				name: `Розкоплектування ${row.article}`,
+				quantity: "1",
+				isSplit: true,
+				suggestedProduct: null,
+			},
+			...importedProducts.slice(rowIndex + 1),
+		];
+
 		setImportedProducts(newImportedProducts);
+	}
+
+	function deleteProductRow(rowIndex: number) {
+		const newImportedProducts: ImportedProduct[] = [
+			...importedProducts.slice(0, rowIndex),
+			...importedProducts.slice(rowIndex + 1),
+		];
+
+		setImportedProducts(newImportedProducts);
+	}
+
+	function changeProductQuantity(rowIndex: number, quantity: string) {
+		updateRow(rowIndex, { quantity: quantity });
+	}
+
+	function changeProductPrice(rowIndex: number, price: string) {
+		updateRow(rowIndex, { price: price });
+	}
+
+	function toNumber(value: string) {
+		return parseFloat(value.replace(",", "."));
 	}
 
 	return (
@@ -38,9 +79,9 @@ export function ProductImport() {
 								.map((p) => ({
 									searchCode: p.suggestedProduct?.searchCode,
 									name: p.suggestedProduct?.name || "?",
-									quantity: parseFloat(p.quantity.replace(",", ".")) || 0,
-									supplierPrice: parseFloat(p.price.replace(",", ".")) || 0,
-									retailPrice: p.suggestedProduct?.price || 0, 
+									quantity: toNumber(p.quantity) || 0,
+									supplierPrice: toNumber(p.price) || 0,
+									retailPrice: p.suggestedProduct?.price || 0,
 									ref: p.suggestedProduct?.ref || "",
 								}));
 
@@ -60,13 +101,50 @@ export function ProductImport() {
 				{importedProducts.map((row, rowIndex) => {
 					return (
 						<div
-							key={row["article"] + row["name"]}
-							className={`relative flex gap-3 items-center border my-1 p-2 rounded-md duration-200 ${row.suggestedProduct ? "bg-green-200" : ""}`}
+							key={row.id}
+							className={`relative flex gap-3 items-center border my-1 p-2 rounded-md duration-200 ${row.isSplit ? "mx-2" : ""} ${row.suggestedProduct ? "bg-green-200" : ""}`}
 						>
-							<div className="flex flex-col flex-1">
-								<span>{row["article"]}</span>
-								<span>{row["name"]}</span>
+							<div className="">
+								{!row.isSplit && (
+									<button
+										className="hover:bg-gray-300 hover:bg-opacity-50 p-1.5 rounded-lg"
+										onClick={() => splitProductRow(row, rowIndex)}
+									>
+										<SquareSplitVertical />
+									</button>
+								)}
+								{row.isSplit && (
+									<button
+										className="hover:bg-gray-300 hover:bg-opacity-50 p-1.5 rounded-lg text-red-600"
+										onClick={() => deleteProductRow(rowIndex)}
+									>
+										<Trash2 />
+									</button>
+								)}
 							</div>
+							<div className="flex flex-col flex-1">
+								<span>{row.article}</span>
+								<span>{row.name}</span>
+							</div>
+							<span className="text-sm flex flex-col">
+								Кількість
+								<input
+									className="text-lg font-medium w-12"
+									onChange={(e) =>
+										changeProductQuantity(rowIndex, e.target.value)
+									}
+									min={1}
+									value={row.quantity}
+								/>
+							</span>
+							<span className="text-sm flex flex-col">
+								Ціна
+								<input
+									className="text-lg font-medium w-12"
+									onChange={(e) => changeProductPrice(rowIndex, e.target.value)}
+									value={row.price}
+								/>
+							</span>
 							<ArrowLeft />
 							<ProductSelectorDialog
 								rowIndex={rowIndex}
@@ -77,7 +155,7 @@ export function ProductImport() {
 							{row.suggestedProduct && (
 								<button
 									className="hover:bg-gray-300 hover:bg-opacity-50 p-1 rounded-lg absolute end-2"
-									onClick={() => selectSuggestedProduct(null, rowIndex)}
+									onClick={() => selectSuggestedProduct(rowIndex, null)}
 								>
 									<X />
 								</button>
