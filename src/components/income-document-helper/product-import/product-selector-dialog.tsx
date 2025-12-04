@@ -10,7 +10,7 @@ import { filterProducts } from "../../../utils/filterProducts";
 import { Check } from "lucide-react";
 
 interface ProductSelectorDialogProps {
-	selectProduct: (product: Product, index: number) => void;
+	selectProduct: (index: number, product: Product) => void;
 	q: string;
 	row: ImportedProduct;
 	rowIndex: number;
@@ -62,8 +62,8 @@ export function ProductSelectorDialog({
 			</div>
 			{filteredProducts.length === 1 && !row.suggestedProduct ? (
 				<button
-					className="hover:bg-gray-300 hover:bg-opacity-50 p-1 rounded-lg absolute end-6"
-					onClick={() => selectProduct(filteredProducts[0], rowIndex)}
+					className="hover:bg-gray-300 hover:bg-opacity-50 p-1 rounded-lg absolute end-2"
+					onClick={() => selectProduct(rowIndex, filteredProducts[0])}
 				>
 					<Check />
 				</button>
@@ -73,23 +73,29 @@ export function ProductSelectorDialog({
 				<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-25" />
 				<Dialog.Content className="flex flex-col fixed h-5/6 min-h-96 w-4/6 min-w-96 bg-white shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 pt-5 pb-4 px-4 rounded-lg">
 					<Dialog.Title className="text-2xl pb-3 font-medium">
-						Обери товар
+						{row.article}{" "}
+						<span className="font-normal text-xl">{row.name}</span>
 					</Dialog.Title>
 					<input
 						className="border px-1 py-2 rounded-lg"
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
 					/>
-					<div className="flex flex-col flex-1 overflow-y-auto">
-						{filteredProducts?.map((el) => (
+					<div className="flex flex-col flex-1 gap-1 overflow-y-auto pt-2">
+						{filteredProducts?.slice(0, 100).map((el) => (
 							<button
 								key={el.searchCode}
-								className="flex gap-3"
-								onClick={() => selectProduct(el, rowIndex)}
+								className={`flex gap-3 border rounded-lg px-2 py-1 ${row.suggestedProduct?.searchCode === el.searchCode ? "bg-gray-200" : ""}`}
+								onClick={() => selectProduct(rowIndex, el)}
 							>
+								{el.searchCode}
 								<span>{el.code}</span>
-								<span>{el.name}</span>
+								<span className="grow text-start">{el.name}</span>
 								<span>{el.brand}</span>
+								<span>{el.price.toFixed(2)}грн</span>
+								<span className="w-24">
+									{el.quantity} {el.units}
+								</span>
 							</button>
 						))}
 					</div>

@@ -50,7 +50,7 @@ createRoot(document.getElementById("root")!).render(
 				<Route path="/vin-demo/" component={SearchByVin} />
 				<Route path="/config/" component={ConfigPage} />
 				<Route
-					path="/document-helper/income/"
+					path="/document-helper/income"
 					component={IncomeDocumentHelper}
 					nest
 				/>

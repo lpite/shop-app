@@ -111,6 +111,7 @@ export function ImportDialog({ setDialog, dialog }: ImportDialogProps) {
 									.map((line) => {
 										const values = line.split("\t");
 										const rowObject: ImportedProduct = {
+											id: Math.random(), // yeah not ideal
 											article: "",
 											name: "",
 											quantity: "",

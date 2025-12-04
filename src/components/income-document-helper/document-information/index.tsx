@@ -1,17 +1,13 @@
+import { Dispatch, SetStateAction } from "react";
 import { Building2 } from "lucide-react";
-import { IncomeDocument } from "../../../pages/IncomeDocumentHelper";
 import useSWR from "swr";
+
 import { fetcher } from "../../../utils/fetcher";
+import { useIncomeDocumentHepler } from "../../../stores/income-document-helper-store";
 
-interface DocumentInformationProps {
-	document: IncomeDocument;
-	setDocument: (d: IncomeDocument) => void;
-}
+export function DocumentInformation() {
+	const { document, setDocument } = useIncomeDocumentHepler();
 
-export function DocumentInformation({
-	document,
-	setDocument,
-}: DocumentInformationProps) {
 	const { data: suppliers } = useSWR("suppliers", () =>
 		fetcher<{ value: any[] }>({
 			method: "GET",
@@ -33,12 +29,19 @@ export function DocumentInformation({
 		}).then((r) => r.value),
 	);
 
+	const { data: agreements } = useSWR("agreements", () =>
+		fetcher<{ value: any[] }>({
+			method: "GET",
+			url: `/shop/odata/standard.odata/Catalog_СоглашенияСПоставщиками?$format=json`,
+		}).then((r) => r.value),
+	);
+
 	return (
-		<div className="bg-white rounded-lg shadow">
+		<div className="bg-white rounded-lg shadow w-full">
 			<div className="px-6 py-4 border-b border-gray-200">
 				<h3 className="text-lg font-medium text-gray-900 flex items-center">
 					<Building2 className="h-5 w-5 mr-2" />
-					Основные реквизиты
+					Реквізити
 				</h3>
 			</div>
 			<div className="p-6 space-y-6">
@@ -69,6 +72,7 @@ export function DocumentInformation({
 								Контрагент
 							</label>
 							<select
+								value={document.counterPartyRef}
 								onChange={(e) =>
 									setDocument({ ...document, counterPartyRef: e.target.value })
 								}
@@ -95,6 +99,7 @@ export function DocumentInformation({
 								Склад
 							</label>
 							<select
+								value={document.warehouseRef}
 								onChange={(e) =>
 									setDocument({ ...document, warehouseRef: e.target.value })
 								}
@@ -108,12 +113,33 @@ export function DocumentInformation({
 								))}
 							</select>
 						</div>
+						<div>
+							<label className="block text-sm font-medium text-gray-700 mb-1">
+								Договір
+							</label>
+							<select
+								value={document.agreementRef}
+								onChange={(e) =>
+									setDocument({ ...document, agreementRef: e.target.value })
+								}
+								className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							>
+								<option value="">-</option>
+								{agreements
+									?.filter((el) => el.Партнер_Key === document.supplierRef)
+									?.map((agreement) => (
+										<option key={agreement.Ref_Key} value={agreement.Ref_Key}>
+											{agreement.Description}
+										</option>
+									))}
+							</select>
+						</div>
 					</div>
 				</div>
 
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-1">
-						Комментарий
+						Коментарій
 					</label>
 					<textarea
 						value={document.comment}

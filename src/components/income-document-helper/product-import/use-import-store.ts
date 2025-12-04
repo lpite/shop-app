@@ -14,6 +14,7 @@ interface ImportState {
 		index: number,
 		product: (BackendProduct & { ref: string }) | null,
 	) => void;
+	updateRow: (index: number, patch: Partial<ImportedProduct>) => void;
 	reset: () => void;
 }
 
@@ -33,6 +34,19 @@ export const useImportStore = create<ImportState>((set, get) => ({
 			const updated = [...state.importedProducts];
 			if (updated[index]) updated[index].suggestedProduct = product;
 			return { importedProducts: updated };
+		}),
+	updateRow: (index, patch) =>
+		set((state) => {
+			console.log(
+				state.importedProducts.map((row, i) =>
+					i === index ? { ...row, ...patch } : row,
+				),
+			);
+			return {
+				importedProducts: state.importedProducts.map((row, i) =>
+					i === index ? { ...row, ...patch } : row,
+				),
+			};
 		}),
 	reset: () => set({ rawText: "", importedProducts: [] }),
 }));
