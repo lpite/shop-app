@@ -153,10 +153,12 @@ export function SupplierOrders() {
 									</span>
 								</span>
 								<div className="flex-1 flex justify-end">
-									<button className="px-3 py-1.5 bg-red-400 hover:bg-red-500 rounded-lg font-medium text-white flex items-center gap-2 duration-75 hover:shadow-smд">
-										<Trash2 className="h-5 w-5" />
-										<span>Скасувати</span>
-									</button>
+									{order.status !== "Виконано" ? (
+										<button className="px-3 py-1.5 bg-red-400 hover:bg-red-500 rounded-lg font-medium text-white flex items-center gap-2 duration-75 hover:shadow-smд">
+											<Trash2 className="h-5 w-5" />
+											<span>Скасувати</span>
+										</button>
+									) : null}
 								</div>
 							</div>
 						</div>
