@@ -36,10 +36,17 @@ export const useImportStore = create<ImportState>((set, get) => ({
 			return { importedProducts: updated };
 		}),
 	updateRow: (index, patch) =>
-		set((state) => ({
-			importedProducts: state.importedProducts.map((row, i) =>
-				i === index ? { ...row, ...patch } : row,
-			),
-		})),
+		set((state) => {
+			console.log(
+				state.importedProducts.map((row, i) =>
+					i === index ? { ...row, ...patch } : row,
+				),
+			);
+			return {
+				importedProducts: state.importedProducts.map((row, i) =>
+					i === index ? { ...row, ...patch } : row,
+				),
+			};
+		}),
 	reset: () => set({ rawText: "", importedProducts: [] }),
 }));

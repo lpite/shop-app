@@ -5,7 +5,6 @@ import { fetcher } from "../../../utils/fetcher";
 
 export function PriceSetting() {
 	const { document, changeProductPrice } = useIncomeDocumentHepler();
-
 	const { data: products } = useSWR("/app/product", () =>
 		fetcher<Product[]>({
 			url: "/shop/hs/app/product/",
@@ -15,24 +14,26 @@ export function PriceSetting() {
 
 	return (
 		<div>
-			<h3>Встановлення цін</h3>
+			<div className="px-6 py-4 mb-5 border-b border-gray-200">
+				<h3 className="text-lg font-medium text-gray-900 flex items-center">
+					Встановлення цін
+				</h3>
+			</div>
 			<table cellPadding={2} cellSpacing={6} className="w-full">
 				<thead>
 					<tr>
 						<th className="text-start">Назва</th>
 						<th className="text-start">Постачальника</th>
-						<th className="text-start">поточна</th>
-						<th className="text-start">націнка</th>
+						<th className="text-start">Поточна</th>
+						<th className="text-start">Націнка</th>
 					</tr>
 				</thead>
 				<tbody>
 					{document.products.map((product, i) => {
-						const currentPrice =
-							products?.find((el) => el.name === product.name)?.price || 0;
 						return (
 							<tr
 								key={product.ref}
-								className={`${product.retailPrice / product.supplierPrice < 1.3 && "bg-red-100"} px-2 py-1.5 border`}
+								className={`${product.retailPrice / product.supplierPrice < 1.32 && "bg-red-100 font-bold"} px-2 py-1.5 border`}
 							>
 								<td className="px-2">{product.name}</td>
 								<td className="px-2">{product.supplierPrice}</td>
@@ -40,13 +41,14 @@ export function PriceSetting() {
 									<input
 										className="w-12 border rounded px-1"
 										value={product.retailPrice}
-										onChange={(e) =>
-											changeProductPrice(i, e.target.value)
-										}
+										onChange={(e) => changeProductPrice(i, e.target.value)}
 									/>
 								</td>
 								<td className="">
-									{(product.retailPrice / product.supplierPrice).toFixed(2)}
+									{Math.ceil(
+										(product.retailPrice / product.supplierPrice) * 100 - 100,
+									)}
+									%
 								</td>
 							</tr>
 						);

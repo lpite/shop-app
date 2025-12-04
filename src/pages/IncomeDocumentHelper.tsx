@@ -93,7 +93,7 @@ export function IncomeDocumentHelper() {
 			},
 		});
 		if (response.Number && response.Date) {
-			alert("Успішно створено.")
+			alert("Успішно створено.");
 		}
 	}
 

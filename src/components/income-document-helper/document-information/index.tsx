@@ -6,7 +6,7 @@ import { fetcher } from "../../../utils/fetcher";
 import { useIncomeDocumentHepler } from "../../../stores/income-document-helper-store";
 
 export function DocumentInformation() {
-	const { document,setDocument } = useIncomeDocumentHepler();
+	const { document, setDocument } = useIncomeDocumentHepler();
 
 	const { data: suppliers } = useSWR("suppliers", () =>
 		fetcher<{ value: any[] }>({
@@ -26,6 +26,13 @@ export function DocumentInformation() {
 		fetcher<{ value: any[] }>({
 			method: "GET",
 			url: `/shop/odata/standard.odata/Catalog_Склады?$format=json`,
+		}).then((r) => r.value),
+	);
+
+	const { data: agreements } = useSWR("agreements", () =>
+		fetcher<{ value: any[] }>({
+			method: "GET",
+			url: `/shop/odata/standard.odata/Catalog_СоглашенияСПоставщиками?$format=json`,
 		}).then((r) => r.value),
 	);
 
@@ -104,6 +111,27 @@ export function DocumentInformation() {
 										{warehouse.Description}
 									</option>
 								))}
+							</select>
+						</div>
+						<div>
+							<label className="block text-sm font-medium text-gray-700 mb-1">
+								Договір
+							</label>
+							<select
+								value={document.agreementRef}
+								onChange={(e) =>
+									setDocument({ ...document, agreementRef: e.target.value })
+								}
+								className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							>
+								<option value="">-</option>
+								{agreements
+									?.filter((el) => el.Партнер_Key === document.supplierRef)
+									?.map((agreement) => (
+										<option key={agreement.Ref_Key} value={agreement.Ref_Key}>
+											{agreement.Description}
+										</option>
+									))}
 							</select>
 						</div>
 					</div>

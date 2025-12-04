@@ -19,6 +19,7 @@ export interface IncomeDocument {
 	supplierRef: string;
 	counterPartyRef: string;
 	warehouseRef: string;
+	agreementRef: string;
 }
 
 interface Store {
@@ -33,10 +34,11 @@ const initialDocument: IncomeDocument = {
 	date: "",
 	posted: false,
 	comment: "",
+	products: [],
 	supplierRef: "",
 	counterPartyRef: "",
 	warehouseRef: "",
-	products: [],
+	agreementRef: "",
 };
 
 export const useIncomeDocumentHepler = create<Store>()(
