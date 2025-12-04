@@ -52,6 +52,7 @@ createRoot(document.getElementById("root")!).render(
 				<Route
 					path="/document-helper/income"
 					component={IncomeDocumentHelper}
+					nest
 				/>
 			</Switch>
 		</SWRConfig>

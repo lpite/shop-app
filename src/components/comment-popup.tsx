@@ -42,7 +42,6 @@ export default function CommentPopup({
 			<Dialog.Trigger asChild>
 				{buttonText ? (
 					<button className="h-10 px-4 bg-sky-300 rounded-lg">
-						{" "}
 						{buttonText}
 					</button>
 				) : (
