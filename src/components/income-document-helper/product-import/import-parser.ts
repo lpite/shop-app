@@ -16,6 +16,7 @@ export function parseImportedText(rawText: string) {
 		.map((line) => {
 			const values = line.split("\t");
 			const rowObject: ImportedProduct = {
+				id: Math.random(),
 				article: "",
 				name: "",
 				quantity: "",
