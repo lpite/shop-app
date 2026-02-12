@@ -110,18 +110,18 @@ export default function Header() {
 				</Link>
 			</div>
 			<div className="col-start-4 col-end-13 w-full flex justify-end gap-4">
-				<Link
+			{/*	<Link
 					to="/suppliers-search"
 					className="flex items-center px-2 border-2 h-10 rounded-lg"
 				>
 					Постачальники
-				</Link>
-				<Link
+				</Link>*/}
+			{/*	<Link
 					to="/vin-demo"
 					className="flex items-center px-2 border-2 h-10 rounded-lg"
 				>
 					Vin
-				</Link>
+				</Link>*/}
 				<SearchHistoryPopup />
 				<CatalogPopup />
 				<CommentPopup partnerId={partnerId || ""} buttonText="Коментар" />
