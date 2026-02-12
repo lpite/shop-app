@@ -13,7 +13,11 @@ export default function CommentPopup({
 	partnerId,
 	buttonText,
 }: CommentPopupProps) {
-	const { data: comment } = useSWR(`/comment/${partnerId}`, () =>
+	const {
+		data: comment,
+		mutate: mutateComment,
+		isLoading: isLoadingComment,
+	} = useSWR(`/comment/${partnerId}`, () =>
 		fetcher<string>({
 			url: `/shop/hs/app/comment/${partnerId}`,
 			method: "GET",
@@ -70,14 +74,16 @@ export default function CommentPopup({
 					</Dialog.Title>
 					<textarea
 						value={commentText}
+						disabled={isLoadingComment}
 						onChange={(e) => setCommentText(e.target.value)}
-						className="border-2 rounded-lg shadow-sm outline-none p-2 resize-none w-full h-48"
+						className="border-2 rounded-lg shadow-sm outline-none p-2 resize-none w-full h-48 disabled:bg-gray-200"
 					></textarea>
 					<div className="mt-4 flex gap-3 justify-end">
 						<button
 							onClick={() => {
 								saveComment();
 								mutate("/stats/");
+								mutateComment();
 								setIsOpen(false);
 								setCommentText("");
 							}}

@@ -19,8 +19,8 @@ import {
 	Boxes,
 	Cat,
 	Plus,
-    Minus,
-    Trash2,
+	Minus,
+	Trash2,
 } from "lucide-react";
 
 interface Product {
