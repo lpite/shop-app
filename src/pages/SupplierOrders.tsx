@@ -62,6 +62,9 @@ export function SupplierOrders() {
 				</form>
 			</div>
 			<div>
+				<button>Новий</button>
+			</div>
+			<div>
 				{data?.map((order) => {
 					const orderDate = new Date(order.created);
 					return (
