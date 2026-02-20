@@ -19,7 +19,6 @@ export default function CartSection() {
 	const cartHeight = useAppStore((state) => state.cartHeight);
 	const startResize = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
 		useAppStore.setState((state) => {
-			console.log("start");
 			return {
 				isResizing: true,
 				startY: e.clientY,
@@ -44,14 +43,14 @@ export default function CartSection() {
 
 	return (
 		<div
-			className="bg-sky-100 px-2 rounded-t-xl flex flex-col fixed bottom-0 start-0 end-0"
+			className="bg-sky-100 px-2 rounded-t-3xl flex flex-col fixed bottom-0 start-0 end-0 shadow-2xl border-2"
 			style={{ height: cartHeight }}
 		>
 			<div
-				className="cursor-row-resize h-2 border-t-4 border-slate-500 w-full"
+				className="cursor-row-resize h-4 mx-3 pt-0.5"
 				onMouseDown={startResize}
 			>
-				<div className="h-1.5 bg-slate-300"></div>
+				<div className="h-1 bg-slate-300 rounded"></div>
 			</div>
 
 			<div className="text-xl select-none py-2 pb-1">
@@ -73,7 +72,7 @@ export default function CartSection() {
 				</Dialog.Portal>
 			</Dialog.Root>
 			<div className="flex w-full select-none">
-				<div className="w-12 border border-slate-500 p-1 shrink-0 box-border">
+				<div className="w-12 border border-slate-500 rounded-tl-xl p-1 shrink-0 box-border">
 					Код
 				</div>
 				<div className="w-52 border border-slate-500 p-1 shrink-0 box-border">
@@ -97,7 +96,7 @@ export default function CartSection() {
 				<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
 					Місце
 				</div>
-				<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
+				<div className="w-48 border border-slate-500 rounded-tr-xl p-1 shrink-0 box-border">
 					Місце
 				</div>
 			</div>
