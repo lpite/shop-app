@@ -8,7 +8,7 @@ export function getPageColor(partnerId?: string, type?: string) {
 	}
 
 	if (partnerId !== "УТ-00000002" && type === "sell") {
-		return "bg-green-100";
+		return "bg-blue-200";
 	}
 
 	return null;
