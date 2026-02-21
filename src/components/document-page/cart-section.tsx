@@ -44,7 +44,7 @@ export default function CartSection() {
 	return (
 		<div
 			className="bg-gray-100 px-2 rounded-t-3xl flex flex-col fixed bottom-0 start-0 end-0 border-2 border-gray-300"
-			style={{ height: cartHeight, boxShadow: "0 -2px 30px rgba(0,0,0,0.20)" }}
+			style={{ height: cartHeight, boxShadow: "0 -2px 15px rgba(0,0,0,0.15)" }}
 		>
 			<div
 				className="cursor-row-resize h-4 mx-3 pt-0.5"
