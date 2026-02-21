@@ -3,11 +3,14 @@ import { useConfig } from "../../stores/configStore";
 import { useOrderNotification } from "./store";
 import useSWR from "swr";
 import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
 
 export function OrderNotifier() {
 	const { order_notification_url } = useConfig();
 	const { orderCount } = useOrderNotification();
 	const [newOrder, setNewOrder] = useState(false);
+
+	const [location, navigate] = useLocation();
 
 	const { data, error } = useSWR(
 		(order_notification_url && "order-count") || null,
@@ -38,8 +41,8 @@ export function OrderNotifier() {
 		useOrderNotification.setState({ orderCount: data });
 	}
 	useEffect(() => {
-		if (!order_notification_url) {
-			useConfig.setState({ order_notification_url: prompt() || "" });
+		if (!order_notification_url && location !== "/config") {
+			navigate("/config");
 		}
 	}, []);
 
