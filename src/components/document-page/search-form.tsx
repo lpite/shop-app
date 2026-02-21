@@ -35,6 +35,9 @@ export default function SearchForm() {
 			if (e.key === "F2" && e.target === document.body) {
 				inputRef.current?.focus();
 			}
+			if (e.key === "Escape" && e.target === inputRef.current) {
+				inputRef.current?.blur();
+			}
 		}
 		document.addEventListener("keydown", listener);
 		return () => document.removeEventListener("keydown", listener);
