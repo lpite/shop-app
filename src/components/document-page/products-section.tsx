@@ -15,7 +15,7 @@ type ProductSectionProps = {
 	error: any;
 };
 
-function extractFoundByValue(text: string) {
+function extractFoundByValue(text: string = "") {
 	const indexOfDots = text.indexOf(":");
 	const startPos = text.indexOf("<b>");
 	const endPos = text.lastIndexOf("</b>");
