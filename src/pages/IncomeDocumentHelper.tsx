@@ -47,7 +47,7 @@ export interface IncomeDocument {
 	warehouseRef: string;
 }
 
-export function IncomeDocumentHelper() {
+export default function IncomeDocumentHelper() {
 	const [_, navigate] = useLocation();
 	const { document } = useIncomeDocumentHepler();
 
