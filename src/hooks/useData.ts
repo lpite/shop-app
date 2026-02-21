@@ -19,6 +19,7 @@ export default function useData<TParams extends FetchInputs>({
 	const [ip] = React.useState(localStorage.getItem("ip") || "localhost");
 
 	React.useEffect(() => {
+		throw new Error("DO NOT USE THIS");
 		setIsLoading(true);
 
 		fetch(`http://${ip}/1c_connector/index.php`, {
