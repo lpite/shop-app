@@ -9,6 +9,8 @@ import SearchHistoryPopup from "../search-history-popup";
 import { useSearch } from "../../hooks/useSearch";
 import { getPageColor } from "../../utils/getPageColor";
 import { useEffect } from "react";
+import { ClientSelector } from "./client-selector";
+import { House } from "lucide-react";
 
 export default function Header() {
 	const { partnerId, type } = useParams();
@@ -89,22 +91,15 @@ export default function Header() {
 		>
 			<div className="flex gap-2 col-start-1 col-span-3">
 				<Link
-					to={"/"}
-					className="px-4 h-10 border-2 rounded-lg bg-slate-300 flex items-center hover:bg-sky-200"
+					to="/"
+					className="h-10 border border-gray-300 rounded-lg bg-slate-200 hover:shadow-md flex items-center justify-center gap-2 px-3"
 				>
+					<House />
 					Головна
 				</Link>
-				{type === "sell" ? (
-					<Link
-						to={"/clients"}
-						className="px-3 h-10 border-2 rounded-lg bg-slate-300 flex items-center hover:bg-sky-200"
-					>
-						Клієнти
-					</Link>
-				) : null}
 				<Link
 					to="/stats"
-					className="px-3 h-10 border-2 rounded-lg bg-slate-300 flex items-center hover:bg-sky-200"
+					className="h-10 border border-gray-300 rounded-lg bg-slate-200 hover:shadow-md flex items-center justify-center gap-2 px-3"
 				>
 					Статистика
 				</Link>
@@ -127,18 +122,21 @@ export default function Header() {
 				<CommentPopup partnerId={partnerId || ""} buttonText="Коментар" />
 				<div className="text-xl w-96 flex flex-col items-end">
 					{type === "sell" ? (
-						<b>
-							Продаж -{" "}
-							{
-								agentAndPartner?.find((el) => el.partnerId === partnerId)
-									?.agentName
-							}
-						</b>
+						<div className="flex items-center gap-2">
+							<b>Продаж</b>
+							<ClientSelector partnerId={partnerId} />
+						</div>
 					) : (
 						"Повернення"
 					)}
 					<br />
-					<span>Сума - {documentSum}₴</span>
+					<span>
+						Сума
+						<span className="pl-4 opacity-0 hover:opacity-100 inline-block min-w-24 text-end">
+							{documentSum}
+						</span>
+						₴
+					</span>
 				</div>
 			</div>
 			<div className="col-start-10 col-end-13 justify-self-end">
