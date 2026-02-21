@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { fetcher } from "../utils/fetcher";
 import { Link } from "wouter";
 import { useConfig } from "../stores/configStore";
+import { ChevronRight } from "lucide-react";
 
 const disabledClients = [
 	"00-00000059",
@@ -45,67 +46,58 @@ export default function ClientSelectionPage() {
 					Оберіть клієнта для <b>Продажу</b>
 				</h1>
 				<div className="flex gap-4 mt-12 mb-3">
-					{data
-						?.filter((client) => mainClients.indexOf(client.partnerId) !== -1)
-						.sort((a, b) => {
-							const aIndex = mainClients.indexOf(a.partnerId);
-							const bIndex = mainClients.indexOf(b.partnerId);
+					{data &&
+						data
+							?.filter((client) => mainClients.indexOf(client.partnerId) !== -1)
+							.sort((a, b) => {
+								const aIndex = mainClients.indexOf(a.partnerId);
+								const bIndex = mainClients.indexOf(b.partnerId);
 
-							if (aIndex > bIndex) {
-								return -1;
+								if (aIndex > bIndex) {
+									return -1;
+								}
+								if (aIndex < bIndex) {
+									return 1;
+								}
+								return 0;
+							})
+							.map(({ partnerId, partnerName }) => (
+								<Link
+									key={partnerId}
+									to={`/${posUrl}/${partnerId}/sell`}
+									className="w-72 h-24 p-2 border-2 rounded-lg flex items-center justify-between text-xl font-medium hover:shadow-lg"
+								>
+									{partnerName}
+									<ChevronRight />
+								</Link>
+							))}
+				</div>
+				{data &&
+					data
+						?.filter((client) => {
+							if (client.agentName === "-" || client.partnerName === "-") {
+								return false;
 							}
-							if (aIndex < bIndex) {
-								return 1;
+							if (disabledClients.indexOf(client.partnerId) !== -1) {
+								return false;
 							}
-							return 0;
+
+							if (mainClients.indexOf(client.partnerId) !== -1) {
+								return false;
+							}
+
+							return true;
 						})
+
 						.map(({ partnerId, partnerName }) => (
 							<Link
 								key={partnerId}
 								to={`/${posUrl}/${partnerId}/sell`}
-								className="w-72 h-24 p-2 border-2 rounded-lg flex items-center justify-between text-xl font-medium hover:shadow-lg"
+								className="w-60 px-4 py-2 bg-sky-600 font-medium text-white rounded-lg my-1"
 							>
 								{partnerName}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="24"
-									height="24"
-									fill="currentColor"
-									viewBox="0 0 16 16"
-								>
-									<path
-										fillRule="evenodd"
-										d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-									/>
-								</svg>
 							</Link>
 						))}
-				</div>
-				{data
-					?.filter((client) => {
-						if (client.agentName === "-" || client.partnerName === "-") {
-							return false;
-						}
-						if (disabledClients.indexOf(client.partnerId) !== -1) {
-							return false;
-						}
-
-						if (mainClients.indexOf(client.partnerId) !== -1) {
-							return false;
-						}
-
-						return true;
-					})
-
-					.map(({ partnerId, partnerName }) => (
-						<Link
-							key={partnerId}
-							to={`/${posUrl}/${partnerId}/sell`}
-							className="w-60 px-4 py-2 bg-sky-600 font-medium text-white rounded-lg my-1"
-						>
-							{partnerName}
-						</Link>
-					))}
 			</Show>
 		</main>
 	);
