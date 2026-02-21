@@ -41,6 +41,10 @@ export default function CommentPopup({
 		setCommentText(comment || "");
 	}, [comment]);
 
+	useEffect(() => {
+		mutateComment();
+	}, [isOpen]);
+
 	return (
 		<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
 			<Dialog.Trigger asChild>
