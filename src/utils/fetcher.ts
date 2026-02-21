@@ -1,3 +1,4 @@
+import { useConfig } from "../stores/configStore";
 import { Product } from "../types/product";
 
 type FetchInputBase = {
@@ -62,9 +63,9 @@ export async function fetcher<T>({
 	query,
 	body,
 }: Fetcher): Promise<T> {
-	const ip = localStorage.getItem("ip");
+	const { server_url } = useConfig.getState();
 
-	const result = await fetch(`http://${ip}/1c_connector/index.php`, {
+	const result = await fetch(`${server_url}/1c_connector/index.php`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

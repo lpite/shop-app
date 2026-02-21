@@ -8,6 +8,7 @@ export const configSchema = z.object({
 	use_fancy_pos: z.boolean(),
 	test: z.number(),
 	meow: z.array(z.object({ id: z.string(), color: z.string() })),
+	server_url: z.url(),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -21,6 +22,7 @@ export const useConfig = create<Config>()(
 			test: 0,
 			meow: [],
 			use_fancy_pos: false,
+			server_url: "",
 		}),
 		{
 			name: "settings",

@@ -1,11 +1,14 @@
 import { Base64 } from "js-base64";
 import { useState } from "react";
+import { useConfig } from "../stores/configStore";
 
 type PhotoViewerProps = {
 	photo?: string;
 };
 
 export default function PhotoViewer({ photo }: PhotoViewerProps) {
+	const serverUrl = useConfig((s) => s.server_url);
+
 	const [isLoading, setIsLoading] = useState(true);
 	if (!photo) {
 		return null;
@@ -22,12 +25,7 @@ export default function PhotoViewer({ photo }: PhotoViewerProps) {
 				className="h-5/6"
 				onLoad={() => setIsLoading(false)}
 				onError={() => setIsLoading(false)}
-				src={
-					"http://" +
-					localStorage.getItem("ip") +
-					"/api/get-photo.php?photo=" +
-					encodeURIComponent(Base64.encode(photo))
-				}
+				src={`${serverUrl}/api/get-photo.php?photo=${encodeURIComponent(Base64.encode(photo))}`}
 			/>
 		</div>
 	);
