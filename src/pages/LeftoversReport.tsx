@@ -15,9 +15,9 @@ const headers = [
 ];
 
 export default function LeftoversReport() {
-	// const [selectedSupplier, setSelectedSupplier] = useState<
-	// 	string | undefined
-	// >();
+	const [selectedSupplier, setSelectedSupplier] = useState<
+		string | undefined
+	>();
 
 	const [selected, setSelected] = useState<any[]>([]);
 
@@ -33,7 +33,7 @@ export default function LeftoversReport() {
 	);
 
 	const [searchParams, setSearchParams] = useSearchParams();
-	const selectedSupplier = searchParams.get("supplier") || undefined;
+	// const selectedSupplier = searchParams.get("supplier") || undefined;
 	const { data, isLoading } = useSWR(
 		selectedSupplier
 			? "reports/leftovers-by-supplier/" + selectedSupplier
@@ -43,9 +43,8 @@ export default function LeftoversReport() {
 				url: "/shop/hs/reports/leftovers-by-supplier/" + selectedSupplier,
 				method: "GET",
 			}),
-		{ revalidateOnMount: false },
 	);
-	console.log(searchParams);
+
 	return (
 		<main className="flex items-center flex-col w-screen py-2 px-4">
 			<div className="flex gap-2 items-center justify-start pb-4 w-full ">
@@ -53,7 +52,7 @@ export default function LeftoversReport() {
 					<label htmlFor="supplier_select">Постачальник:</label>
 					<select
 						className="py-2 px-4 rounded-lg border-2 bg-white disabled:bg-gray-200"
-						onChange={(e) => setSearchParams({ supplier: e.target.value })}
+						onChange={(e) => setSelectedSupplier(e.target.value)}
 						disabled={isLoadingSuppliers || isValidatingSuppliers}
 						id="supplier_select"
 					>
@@ -65,7 +64,7 @@ export default function LeftoversReport() {
 						))}
 					</select>
 					<Show when={isLoading || isLoadingSuppliers}>
-						<Spinner size={8} />
+						<Spinner size={30} />
 					</Show>
 				</div>
 				<div className="w-full">
