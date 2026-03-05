@@ -17,6 +17,7 @@
 		"react": "^19.1.0",
 		"react-compiler-runtime": "^19.1.0-rc.2",
 		"react-dom": "^19.1.0",
+		"react-error-boundary": "^6.1.1",
 		"swr": "^2.3.0",
 		"wouter": "^3.6.0",
 		"zod": "^4.0.15",
