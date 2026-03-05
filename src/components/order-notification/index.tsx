@@ -12,6 +12,8 @@ export function OrderNotifier() {
 
 	const [location, navigate] = useLocation();
 
+	const isDev = import.meta.env.MODE === "development";
+
 	const { data, error } = useSWR(
 		(order_notification_url && "order-count") || null,
 		() =>
@@ -54,7 +56,7 @@ export function OrderNotifier() {
 		<div
 			className={`fixed z-30 end-4 top-48 h-16 ${error && "bg-red-300"} ${newOrder && "bg-white"}  rounded-lg p-2 flex items-center justify-center gap-3 animate-bounce hover:pause border shadow-lg`}
 		>
-			{error && (
+			{error && !isDev && (
 				<>
 					<TriangleAlert className="text-red-600" />
 					<span className="text-lg font-medium">
