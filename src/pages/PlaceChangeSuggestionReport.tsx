@@ -20,6 +20,7 @@ import { fetcher } from "../utils/fetcher";
 
 import useSWRMutation from "swr/mutation";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 const halfOfYear = 15552000000;
 
@@ -35,33 +36,42 @@ type ReportStore = {
 	toggleProductTag: (product_ref: string, tag: Tag) => void;
 };
 
-const useReportStore = create<ReportStore>()((set) => ({
-	productTags: {},
-	sortBy: "lastSellDate",
-	sortOrder: "asc",
-	filterValue: "all",
-	filterTag: "__all__",
-	page: 1,
+const useReportStore = create<ReportStore>()(
+	persist<ReportStore>(
+		(set) => ({
+			productTags: {},
+			sortBy: "lastSellDate",
+			sortOrder: "asc",
+			filterValue: "all",
+			filterTag: "__all__",
+			page: 1,
 
-	toggleProductTag: (product_ref, tag) =>
-		set((state) => {
-			const current = state.productTags[product_ref] ?? [];
-			const exists = current.includes(tag);
+			toggleProductTag: (product_ref, tag) =>
+				set((state) => {
+					const current = state.productTags[product_ref] ?? [];
+					const exists = current.includes(tag);
 
-			return {
-				productTags: {
-					...state.productTags,
-					[product_ref]: exists
-						? current.filter((t) => t !== tag)
-						: [...current, tag],
-				},
-			};
+					return {
+						productTags: {
+							...state.productTags,
+							[product_ref]: exists
+								? current.filter((t) => t !== tag)
+								: [...current, tag],
+						},
+					};
+				}),
 		}),
-}));
+		{
+			name: "report/place-change-suggestion",
+		},
+	),
+);
 
-type Tag = "__untagged__" | "cant-move" | "planned" | "moved";
+type Tag = "__untagged__" | "cant-move" | "planned" | "moved" | "issue";
 
 const allTags: { tag: Tag; label: string }[] = [
+	{ tag: "issue", label: "Проблема" },
+
 	{ tag: "cant-move", label: "Неможливо перемістити" },
 	{ tag: "planned", label: "Заплановано" },
 	{ tag: "moved", label: "Переміщено" },
@@ -660,7 +670,7 @@ function TagSelectorDialog({ product_ref }: TagSelectorDialogProps) {
 				<Dialog.Content className="fixed z-10 w-11/12 lg:w-2/6 h-96 bg-white shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 pt-5 pb-4 px-4 rounded-lg flex flex-col">
 					<Dialog.Title className="font-semibold mb-4">Теги</Dialog.Title>
 					{allTags.map(({ tag, label }) => (
-						<label key={tag}>
+						<label key={tag} className="py-3">
 							<input
 								type="checkbox"
 								onChange={() => toggleProductTag(product_ref, tag)}
