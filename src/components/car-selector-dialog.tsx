@@ -36,7 +36,7 @@ export function CarSelectorDialog() {
 	const { data: brands } = useSWR(
 		"car_brand",
 		() =>
-			fetch(`${pb_base_url}/api/collections/car_brand/records?perPage=1000`)
+
 				.then((r) => r.json())
 				.then((r) => r.items) as Promise<{ id: string; name: string }[]>,
 	);

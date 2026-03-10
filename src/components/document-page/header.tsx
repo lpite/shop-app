@@ -15,6 +15,8 @@ import { ErrorBoundary } from "react-error-boundary";
 import { pos } from "../../api/pos";
 import { client } from "../../api/client";
 import { useCartStore } from "../../stores/cart-store";
+import { CarSelectorDialog } from "../car-selector-dialog";
+import { ErrorBoundary } from "react-error-boundary";
 
 export default function Header() {
 	const { partnerId, type } = useParams();
@@ -95,6 +97,9 @@ export default function Header() {
 			</div>
 			<div className="col-start-4 col-end-13 w-full flex justify-end gap-4">
 				<SearchHistoryPopup />
+				<ErrorBoundary fallback="error">
+					<CarSelectorDialog />
+				</ErrorBoundary>
 				<CatalogDialog />
 				<ErrorBoundary fallback="error">
 					<CarSelectorDialog />
