@@ -11,6 +11,8 @@ import { getPageColor } from "../../utils/getPageColor";
 import { useEffect } from "react";
 import { ClientSelector } from "./client-selector";
 import { House } from "lucide-react";
+import { CarSelectorDialog } from "../car-selector-dialog";
+import { ErrorBoundary } from "react-error-boundary";
 
 export default function Header() {
 	const { partnerId, type } = useParams();
@@ -119,6 +121,9 @@ export default function Header() {
 				</Link>*/}
 				<SearchHistoryPopup />
 				<CatalogPopup />
+				<ErrorBoundary fallback="error">
+					<CarSelectorDialog />
+				</ErrorBoundary>
 				<CommentPopup partnerId={partnerId || ""} buttonText="Коментар" />
 				<div className="text-xl w-96 flex flex-col items-end">
 					{type === "sell" ? (
