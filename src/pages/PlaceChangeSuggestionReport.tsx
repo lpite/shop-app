@@ -292,7 +292,7 @@ export default function PlaceChangeSuggestionReport() {
 					Попередня сторінка
 				</button>
 				<button
-					className="border p-2"
+					className="border p-2 disabled:opacity-0"
 					onClick={() => {
 						setPage(page + 1);
 						window.scrollTo({
@@ -300,6 +300,7 @@ export default function PlaceChangeSuggestionReport() {
 							behavior: "smooth",
 						});
 					}}
+					disabled={page * 100 >= sortedData.length}
 				>
 					Наступна сторінка
 				</button>
