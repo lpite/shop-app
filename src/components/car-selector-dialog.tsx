@@ -36,9 +36,7 @@ export function CarSelectorDialog() {
 	const { data: brands } = useSWR(
 		"car_brand",
 		() =>
-			fetch(
-				`${pb_base_url}/api/collections/car_brand/records?perPage=1000`,
-			)
+			fetch(`${pb_base_url}/api/collections/car_brand/records?perPage=1000`)
 				.then((r) => r.json())
 				.then((r) => r.items) as Promise<{ id: string; name: string }[]>,
 	);
@@ -58,7 +56,7 @@ export function CarSelectorDialog() {
 			: null,
 		() =>
 			fetch(
-				`${pb_base_url}/api/collections/car_engine/records?filter=model='${state.model?.id}'`,
+				`${pb_base_url}/api/collections/car_engine/records?filter=model='${state.model?.id}'&perPage=1000`,
 			)
 				.then((r) => r.json())
 				.then((r) => r.items) as Promise<
@@ -81,11 +79,17 @@ export function CarSelectorDialog() {
 			: null,
 		() =>
 			fetch(
-				`${pb_base_url}/api/collections/car_part/records?filter=engine='${state.engine?.id}'`,
+				`${pb_base_url}/api/collections/car_part/records?filter=engine='${state.engine?.id}'&perPage=1000`,
 			)
 				.then((r) => r.json())
 				.then((r) => r.items) as Promise<
-				{ id: string; category: string; oem: string; article: string }[]
+				{
+					id: string;
+					category: string;
+					oem: string;
+					article: string;
+					brand: string;
+				}[]
 			>,
 	);
 
@@ -144,7 +148,7 @@ export function CarSelectorDialog() {
 									Назад
 								</button>
 							</div>
-							<form className="my-2">
+							<form className="my-2" onSubmit={(e) => e.preventDefault()}>
 								<input
 									className="border-2 w-full p-2 rounded-lg disabled:opacity-15"
 									placeholder="Пошук"
@@ -268,7 +272,13 @@ export function CarSelectorDialog() {
 										?.filter((el) => el.category === state.category?.id)
 										.map((part) => {
 											return (
-												<div key={part.id} className="m-2 border p-2">
+												<div key={part.id} className="m-2 border p-2 flex">
+													{part.brand === "sum32lgz6lk47or" ? (
+														<img
+															src={`https://s7g10.scene7.com/is/image/mannhummel/${part.article}?qlt=82`}
+															className="h-24 w-24 object-contain"
+														/>
+													) : null}
 													{part.article}
 													{part.oem}
 												</div>
