@@ -11,9 +11,8 @@ export default function CartSection() {
 		(prev, el) => prev + el.quantity,
 		0,
 	);
-	const cartTotalPrice = cartProducts.reduce(
-		(prev, el) => prev + el.price * el.quantity,
-		0,
+	const cartTotalPrice = Math.ceil(
+		cartProducts.reduce((prev, el) => prev + el.price * el.quantity, 0),
 	);
 
 	const cartHeight = useAppStore((state) => state.cartHeight);
@@ -170,7 +169,7 @@ export default function CartSection() {
 								{el.price}₴
 							</div>
 							<div className="w-20 font-bold border border-slate-500 p-1 shrink-0 box-border">
-								{(el.price * el.quantity).toFixed(2)}
+								{Math.ceil(el.price * el.quantity).toFixed(2)}
 							</div>
 							<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
 								{el.place1 || el.place2 || el.place3}
@@ -178,9 +177,6 @@ export default function CartSection() {
 							<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
 								{el.place1 ? el.place2 || el.place3 : null}
 							</div>
-							{/*<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
-								{el.place1 && el.place2 ? el.place3 : null}
-							</div>*/}
 						</div>
 					);
 				})}
