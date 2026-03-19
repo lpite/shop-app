@@ -1,32 +1,11 @@
-import {
-	Link,
-	Route,
-	Switch,
-	useLocation,
-	useParams,
-	useSearchParams,
-} from "wouter";
 import { fetcher } from "../utils/fetcher";
-import {
-	CheckCircle,
-	ChevronLeft,
-	ChevronRight,
-	Clock,
-	FileText,
-	PenLine,
-	Save,
-	Trash,
-	XCircle,
-} from "lucide-react";
-import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 import { ProductImport } from "../components/income-document-helper/product-import";
-import Show from "../utils/Show";
 import { DocumentInformation } from "../components/income-document-helper/document-information";
 import { FinalStep } from "../components/income-document-helper/final-step";
 import { PriceSetting } from "../components/income-document-helper/price-setting";
 import { useIncomeDocumentHepler } from "../stores/income-document-helper-store";
-
-const setIsPosted = (m: any) => true;
 
 interface IncomeDocumentProduct {
 	ref: string;
@@ -48,11 +27,9 @@ export interface IncomeDocument {
 }
 
 export default function IncomeDocumentHelper() {
-	const [_, navigate] = useLocation();
 	const { document } = useIncomeDocumentHepler();
 
 	const [step, setStep] = useState(0);
-	const [canProceed, setCanProceed] = useState(false);
 
 	async function saveDocument() {
 		if (!confirm("Зберегти")) {
@@ -198,6 +175,9 @@ export default function IncomeDocumentHelper() {
 					<FinalStep saveDocument={saveDocument} />
 				</div>
 			);
+		}
+		default: {
+			return "i dont know how this happened reload page";
 		}
 	}
 }

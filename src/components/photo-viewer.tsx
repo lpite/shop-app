@@ -1,6 +1,6 @@
 import { Base64 } from "js-base64";
 import { useState } from "react";
-import { useConfig } from "../stores/configStore";
+import { useConfig } from "../stores/config-store";
 
 type PhotoViewerProps = {
 	photo?: string;

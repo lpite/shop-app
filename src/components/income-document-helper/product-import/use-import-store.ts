@@ -18,7 +18,7 @@ interface ImportState {
 	reset: () => void;
 }
 
-export const useImportStore = create<ImportState>((set, get) => ({
+export const useImportStore = create<ImportState>((set) => ({
 	rawText: "",
 	importedProducts: [],
 

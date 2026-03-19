@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-	ArrowLeft,
-	X,
-	Save,
-	SquareSplitVertical,
-	Trash,
-	Trash2,
-} from "lucide-react";
+import { ArrowLeft, X, Save, SquareSplitVertical, Trash2 } from "lucide-react";
 
 import type { Product } from "../../../types/product";
 import { useImportStore } from "./use-import-store";

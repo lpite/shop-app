@@ -1,10 +1,9 @@
-import { AgentsAndPartnersGet } from "../utils/fetcher";
 import Show from "../utils/Show";
 import useSWR from "swr";
-import { fetcher } from "../utils/fetcher";
 import { Link } from "wouter";
-import { useConfig } from "../stores/configStore";
+import { useConfig } from "../stores/config-store";
 import { ChevronRight } from "lucide-react";
+import { client } from "../api/client";
 
 const disabledClients = [
 	"00-00000059",
@@ -18,12 +17,7 @@ const disabledClients = [
 const mainClients = ["00-00000034", "00-00000118", "УТ-00000002"];
 
 export default function ClientSelectionPage() {
-	const { data, isLoading } = useSWR("/clients/", () =>
-		fetcher<AgentsAndPartnersGet["response"]>({
-			url: "/shop/hs/app/agent-and-partner/",
-			method: "GET",
-		}),
-	);
+	const { data, isLoading } = useSWR("/clients/", client.getList);
 
 	const { use_fancy_pos } = useConfig();
 

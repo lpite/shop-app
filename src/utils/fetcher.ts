@@ -1,4 +1,4 @@
-import { useConfig } from "../stores/configStore";
+import { useConfig } from "../stores/config-store";
 import { Product } from "../types/product";
 
 type FetchInputBase = {

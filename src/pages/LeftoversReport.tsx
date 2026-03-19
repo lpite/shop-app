@@ -3,7 +3,6 @@ import { fetcher } from "../utils/fetcher";
 import { useState } from "react";
 import { Spinner } from "../components/spinner";
 import Show from "../utils/Show";
-import { useSearchParams } from "wouter";
 
 const headers = [
 	"Артикул",
@@ -19,8 +18,6 @@ export default function LeftoversReport() {
 		string | undefined
 	>();
 
-	const [selected, setSelected] = useState<any[]>([]);
-
 	const {
 		data: suppliers,
 		isLoading: isLoadingSuppliers,
@@ -32,8 +29,6 @@ export default function LeftoversReport() {
 		}),
 	);
 
-	const [searchParams, setSearchParams] = useSearchParams();
-	// const selectedSupplier = searchParams.get("supplier") || undefined;
 	const { data, isLoading } = useSWR(
 		selectedSupplier
 			? "reports/leftovers-by-supplier/" + selectedSupplier
@@ -57,7 +52,7 @@ export default function LeftoversReport() {
 						id="supplier_select"
 					>
 						<option>--------</option>
-						{suppliers?.map((sp, i) => (
+						{suppliers?.map((sp) => (
 							<option key={sp["Код"]} value={sp["Код"]}>
 								{sp["Наименование"]}
 							</option>
