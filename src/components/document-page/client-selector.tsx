@@ -1,10 +1,10 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
-import { AgentsAndPartnersGet, fetcher } from "../../utils/fetcher";
 import useSWR from "swr";
-import { useConfig } from "../../stores/configStore";
+import { useConfig } from "../../stores/config-store";
 import { Link } from "wouter";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { client } from "../../api/client";
 const mainClients = ["00-00000034", "00-00000118", "УТ-00000002"];
 const disabledClients = [
 	"00-00000059",
@@ -26,11 +26,7 @@ export function ClientSelector({ partnerId }: ClientSelectorProps) {
 
 	const { data: clients, isLoading: isLoadingClients } = useSWR(
 		"/clients/",
-		() =>
-			fetcher<AgentsAndPartnersGet["response"]>({
-				url: "/shop/hs/app/agent-and-partner/",
-				method: "GET",
-			}),
+		client.getList,
 	);
 
 	const posUrl = use_fancy_pos ? "pos-new" : "pos";

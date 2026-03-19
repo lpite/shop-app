@@ -1,9 +1,8 @@
-import { AgentsAndPartnersGet, fetcher } from "../../utils/fetcher";
 import useSWR from "swr";
-import { useAppStore } from "../../stores/useAppStore";
+
 import SearchForm from "./search-form";
 import CommentPopup from "../comment-popup";
-import CatalogPopup from "./catalog";
+import { CatalogDialog } from "./catalog-dialog";
 import { Link, useParams } from "wouter";
 import SearchHistoryPopup from "../search-history-popup";
 import { useSearch } from "../../hooks/useSearch";
@@ -13,26 +12,22 @@ import { ClientSelector } from "./client-selector";
 import { House } from "lucide-react";
 import { CarSelectorDialog } from "../car-selector-dialog";
 import { ErrorBoundary } from "react-error-boundary";
+import { pos } from "../../api/pos";
+import { client } from "../../api/client";
+import { useCartStore } from "../../stores/cart-store";
 
 export default function Header() {
 	const { partnerId, type } = useParams();
-
-	const cartProducts = useAppStore((state) => state.cartProducts);
-	const clearCart = useAppStore((state) => state.clearCart);
+	const { cartProducts, clearCart } = useCartStore();
 
 	const { setQuery, clearData } = useSearch({ fts: true });
 
-	const { data: agentAndPartner } = useSWR("/clients/", () =>
-		fetcher<AgentsAndPartnersGet["response"]>({
-			url: "/shop/hs/app/agent-and-partner/",
-			method: "GET",
-		}),
+	const { data: agentAndPartner } = useSWR(partnerId ? "clients/" : null, () =>
+		client.getOne(partnerId || ""),
 	);
-	const { data: documentSum } = useSWR(`/document-sum/${partnerId}`, () =>
-		fetcher<string>({
-			url: `/shop/hs/app/sell-document/${partnerId}`,
-			method: "GET",
-		}),
+	const { data: documentSum } = useSWR(
+		partnerId ? `document-sum/${partnerId}` : null,
+		() => pos.getSum(partnerId || ""),
 	);
 
 	async function saveCart() {
@@ -47,36 +42,28 @@ export default function Header() {
 		if (!agentAndPartner) {
 			alert("йой");
 		}
-		const agentName = agentAndPartner?.find(
-			(el) => el.partnerId === partnerId,
-		)?.agentName;
+		const agentName = agentAndPartner?.agentName;
 
 		if (!agentName) {
-			alert("йой");
+			console.error("no agentName");
+			return;
 		}
 
-		const res = await fetcher<string>({
-			url: `/shop/hs/app/sale-document`,
-			method: "POST",
-			body: {
-				partnerId,
-				agentName: agentName,
-				products: cartProducts.map((p) => ({
-					...p,
-					searchCode: "0".repeat(4 - p.searchCode.length) + p.searchCode,
-				})),
-			},
-		});
-		if (res === "Успешно") {
+		if (!partnerId) {
+			console.error("no partnerId");
+			return;
+		}
+
+		if (
+			await pos.sellProducts({ agentName, partnerId, products: cartProducts })
+		) {
 			clearCart();
-			useAppStore.setState({ searchValue: "" });
 			setQuery("");
 			clearData();
 		} else {
-			alert(res);
+			alert("Не вдалося перенести!");
 		}
 	}
-
 	useEffect(() => {
 		function listener(e: KeyboardEvent) {
 			if (e.key === "F9" && e.target === document.body) {
@@ -107,20 +94,8 @@ export default function Header() {
 				</Link>
 			</div>
 			<div className="col-start-4 col-end-13 w-full flex justify-end gap-4">
-				{/*	<Link
-					to="/suppliers-search"
-					className="flex items-center px-2 border-2 h-10 rounded-lg"
-				>
-					Постачальники
-				</Link>*/}
-				{/*	<Link
-					to="/vin-demo"
-					className="flex items-center px-2 border-2 h-10 rounded-lg"
-				>
-					Vin
-				</Link>*/}
 				<SearchHistoryPopup />
-				<CatalogPopup />
+				<CatalogDialog />
 				<ErrorBoundary fallback="error">
 					<CarSelectorDialog />
 				</ErrorBoundary>

@@ -4,7 +4,7 @@ import {
 	useConfig,
 	configSchema,
 	type ConfigKeys,
-} from "../stores/configStore";
+} from "../stores/config-store";
 import { Link } from "wouter";
 import { House } from "lucide-react";
 

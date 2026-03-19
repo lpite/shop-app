@@ -1,16 +1,7 @@
-import useSWR from "swr";
 import { useIncomeDocumentHepler } from "../../../stores/income-document-helper-store";
-import { Product } from "../../../types/product";
-import { fetcher } from "../../../utils/fetcher";
 
 export function PriceSetting() {
 	const { document, changeProductPrice } = useIncomeDocumentHepler();
-	const { data: products } = useSWR("/app/product", () =>
-		fetcher<Product[]>({
-			url: "/shop/hs/app/product/",
-			method: "GET",
-		}),
-	);
 
 	return (
 		<div>

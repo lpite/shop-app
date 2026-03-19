@@ -1,5 +1,5 @@
 import { Check, TriangleAlert, X } from "lucide-react";
-import { useConfig } from "../../stores/configStore";
+import { useConfig } from "../../stores/config-store";
 import { useOrderNotification } from "./store";
 import useSWR from "swr";
 import { useEffect, useState } from "react";

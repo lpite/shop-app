@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useAppStore } from "../..//stores/useAppStore";
+
 import * as Dialog from "@radix-ui/react-dialog";
+import { usePosStore } from "../../stores/pos-store";
+import { useCartStore } from "../../stores/cart-store";
 
 export default function CartSection() {
-	const cartProducts = useAppStore((state) => state.cartProducts);
-	const removeFromCart = useAppStore((state) => state.removeFromCart);
-	const editCart = useAppStore((state) => state.editCart);
+	const { cartProducts, removeFromCart, editCart } = useCartStore();
 
 	const cartTotalCount = cartProducts.reduce(
 		(prev, el) => prev + el.quantity,
@@ -15,9 +15,9 @@ export default function CartSection() {
 		cartProducts.reduce((prev, el) => prev + el.price * el.quantity, 0),
 	);
 
-	const cartHeight = useAppStore((state) => state.cartHeight);
+	const cartHeight = usePosStore((state) => state.cartHeight);
 	const startResize = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
-		useAppStore.setState((state) => {
+		usePosStore.setState((state) => {
 			return {
 				isResizing: true,
 				startY: e.clientY,

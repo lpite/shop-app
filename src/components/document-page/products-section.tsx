@@ -1,15 +1,51 @@
-import { useEffect, useState } from "react";
-import { useAppStore } from "../../stores/useAppStore";
+import { CSSProperties, ReactNode, useEffect, useState } from "react";
 import { FTSProduct } from "../../types/product";
 import PhotoViewer from "../photo-viewer";
 import { State } from "./product-details/state";
 import Show from "../../utils/Show";
+import { usePosStore } from "../../stores/pos-store";
 
-const cellStyles = "border px-1 py-2 shrink-0 box-border";
-const columnsWidth = [48, 200, 0, 150, 79, 100, 0, 200, 200];
+import { Image } from "lucide-react";
+import { useCartStore } from "../../stores/cart-store";
+
+const cellStyles = "border px-1 py-2 box-border";
+
+const columns = [
+	{
+		label: "Код",
+		width: "48px",
+	},
+	{
+		label: "Артикул",
+		width: "200px",
+	},
+	{
+		label: "Назва",
+		width: "100%",
+	},
+	{
+		label: "Виробник",
+		width: "150px",
+	},
+	{
+		label: "Ціна",
+		width: "79px",
+	},
+	{
+		label: "Наяв.",
+		width: "100px",
+	},
+	{
+		label: "Місце 1",
+		width: "200px",
+	},
+	{
+		label: "Місце 2",
+		width: "200px",
+	},
+];
 
 type ProductSectionProps = {
-	pageWidth?: number;
 	items: FTSProduct[];
 	isLoading: boolean;
 	error: any;
@@ -35,23 +71,21 @@ function extractFoundByValue(text: string = "") {
 }
 
 export default function ProductsSection({
-	pageWidth,
 	items,
 	isLoading,
 	error,
 }: ProductSectionProps) {
-	const cartHeight = useAppStore((state) => state.cartHeight);
-	const addToCart = useAppStore((state) => state.addToCart);
+	const cartHeight = usePosStore((state) => state.cartHeight);
+	const addToCart = useCartStore((state) => state.addToCart);
 
-	const [selectedProduct, setSelectedProduct] = useState<string | undefined>();
+	const [selectedProduct, setSelectedProduct] = useState<
+		FTSProduct | undefined
+	>();
 	const [photo, setPhoto] = useState<string | undefined>();
 
 	function onDoubleClick(product: FTSProduct) {
 		addToCart({ ...product, quantity: 1 });
 	}
-
-	const elementWidth =
-		(pageWidth || 0) - columnsWidth.reduce((prev, el) => prev + el, 0) - 56;
 
 	useEffect(() => {
 		const handler = (event: KeyboardEvent) => {
@@ -70,7 +104,7 @@ export default function ProductsSection({
 				if (!items) {
 					return p;
 				}
-				const index = items?.findIndex((el) => el.searchCode === p) || 0;
+				const index = items?.findIndex((el) => el.id === p.id) || 0;
 				if (
 					(index === items.length - 1 && direction === 1) ||
 					(index === 0 && direction === -1)
@@ -78,180 +112,154 @@ export default function ProductsSection({
 					return p;
 				}
 
-				return items[index + direction].searchCode;
+				return items[index + direction];
 			});
 		};
 		window.addEventListener("keydown", handler);
 		return () => window.removeEventListener("keydown", handler);
 	}, [items]);
+
 	return (
 		<div
-			className="px-1 flex flex-col overflow-y-auto"
+			className="flex px-2 min-h-0"
 			style={{ paddingBottom: `${cartHeight}px` }}
 		>
-			<PhotoViewer photo={photo} />
+			<div className="flex flex-col overflow-y-auto w-full">
+				<PhotoViewer photo={photo} />
 
-			<div className="flex select-none">
-				<div className="w-6 shrink-0"></div>
-				<div style={{ width: columnsWidth[0] }} className={cellStyles}>
-					Код
-				</div>
-				<div style={{ width: columnsWidth[1] }} className={cellStyles}>
-					Артикул
-				</div>
-				<div
-					style={{
-						width: elementWidth,
-					}}
-					className={cellStyles}
-				>
-					Назва
-				</div>
-				<div style={{ width: columnsWidth[3] }} className={cellStyles}>
-					Виробник
-				</div>
-				<div style={{ width: columnsWidth[4] }} className={cellStyles}>
-					Ціна
-				</div>
-				<div style={{ width: columnsWidth[5] }} className={cellStyles}>
-					Наяв
-				</div>
-				<div style={{ width: columnsWidth[7] }} className={cellStyles}>
-					Місце 1
-				</div>
-				<div style={{ width: columnsWidth[8] }} className={cellStyles}>
-					Місце 2
-				</div>
-			</div>
-			{!isLoading && !items.length && !error ? (
-				<div className="h-full w-full flex items-center justify-center">
-					<span className="text-3xl">Нічого не знайдено</span>
-				</div>
-			) : null}
-			{error ? (
-				<div className="h-full w-full flex items-center justify-center">
-					<span className="text-3xl">Помилка</span>
-				</div>
-			) : null}
-			<div style={{ overflowY: "auto", flexGrow: 1 }}>
-				{!isLoading &&
-					items?.slice(0, 100)?.map((product, i) => (
-						<div
-							className={`flex select-none hover:bg-slate-100 ${product.needToSell ? "bg-green-200 hover:bg-green-300" : ""} ${product.searchCode === selectedProduct ? "bg-slate-300 hover:bg-slate-300" : ""}`}
-							key={i}
-							onDoubleClick={() => onDoubleClick(product)}
-							onMouseDown={() => setSelectedProduct(product.searchCode)}
-							onContextMenu={(e) => e.preventDefault()}
-						>
-							<div
-								className="w-6 shrink-0 flex items-center justify-center"
-								onMouseEnter={() => setPhoto(product.photoPath)}
-								onMouseLeave={() => setPhoto(undefined)}
-							>
-								{product.photo ? (
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										fill="currentColor"
-										viewBox="0 0 16 16"
-										className="cursor-pointer"
-									>
-										<path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
-										<path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z" />
-									</svg>
-								) : null}
-							</div>
-							<div style={{ width: columnsWidth[0] }} className={cellStyles}>
-								{product.searchCode}
-							</div>
-							<div
-								style={{ width: columnsWidth[1], wordWrap: "break-word" }}
-								className={cellStyles}
-							>
-								{product.code}
-								<Show when={product.vendorCode.length && product.code.length}>
-									<br />
-								</Show>
-								{product.vendorCode}
-							</div>
-							<div
-								style={{
-									width: elementWidth,
-								}}
-								className={cellStyles + " flex flex-col justify-between"}
-							>
-								<div className="flex justify-between">
-									{product.name}
-
-									{product?.description?.length ? (
-										<button onClick={() => State.openPopup(product)}>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												width="16"
-												height="16"
-												fill="currentColor"
-												viewBox="0 0 16 16"
-											>
-												<path
-													fillRule="evenodd"
-													d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"
-												/>
-											</svg>
-										</button>
-									) : null}
-								</div>
-								<span
-									className="text-xs line-clamp-1 text-gray-600 mt-1"
-									dangerouslySetInnerHTML={{
-										__html: `<span style="display:flex;gap:5px">Знайдено: ${extractFoundByValue(product.foundBy)}</span>`,
-									}}
-								></span>
-							</div>
-							<div
-								style={{ width: columnsWidth[3] }}
-								className={cellStyles}
-								title={product.brand}
-							>
-								<span className="line-clamp-1">{product.brand}</span>
-							</div>
-							<div style={{ width: columnsWidth[4] }} className={cellStyles}>
-								{product.price?.toFixed(2)}
-							</div>
-							<div style={{ width: columnsWidth[5] }} className={cellStyles}>
-								{product.quantity ? (
-									<>
-										<span className="font-semibold">{product.quantity}</span>{" "}
-										{product?.units}
-									</>
-								) : (
-									<span className="text-red-700 font-bold">Немає</span>
-								)}
-							</div>
-							<div style={{ width: columnsWidth[7] }} className={cellStyles}>
-								{product?.place1}
-								<br />
-							</div>
-							<div style={{ width: columnsWidth[8] }} className={cellStyles}>
-								{product?.place2}
-								<Show
-									when={
-										product?.place3?.length !== 0 &&
-										product?.place2?.length !== 0
-									}
-								>
-									<br />
-								</Show>
-								{product?.place3}
-							</div>
-						</div>
+				<div className="flex select-none">
+					<div className="w-6 shrink-0"></div>
+					{columns.map((column) => (
+						<Cell width={column.width}>{column.label}</Cell>
 					))}
-				{items.length > 100 ? (
-					<div className="h-24 flex items-center justify-center text-3xl">
-						Запит дуже неточний
+				</div>
+				{!isLoading && !items.length && !error ? (
+					<div className="h-96 flex items-center justify-center select-none">
+						<span className="text-3xl">Нічого не знайдено</span>
 					</div>
 				) : null}
+				{error ? (
+					<div className="h-96 flex items-center justify-center select-none">
+						<span className="text-3xl">Помилка</span>
+					</div>
+				) : null}
+				<div className="overflow-y-auto grow">
+					{!isLoading &&
+						items?.slice(0, 100)?.map((product, i) => (
+							<div
+								className={`flex select-none hover:bg-slate-100 ${product.needToSell ? "bg-green-200 hover:bg-green-300" : ""} ${product.id === selectedProduct?.id ? "bg-slate-300 hover:bg-slate-300" : ""}`}
+								key={i}
+								onDoubleClick={() => onDoubleClick(product)}
+								onMouseDown={() => setSelectedProduct(product)}
+								onContextMenu={(e) => e.preventDefault()}
+							>
+								<div
+									className="w-6 shrink-0 flex items-center justify-center"
+									onMouseEnter={() => setPhoto(product.photoPath)}
+									onMouseLeave={() => setPhoto(undefined)}
+								>
+									{product.photo ? (
+										<Image className="cursor-pointer size-5" />
+									) : null}
+								</div>
+								<Cell width={columns[0].width}>{product.searchCode}</Cell>
+								<Cell
+									width={columns[1].width}
+									style={{ wordWrap: "break-word" }}
+								>
+									{product.code}
+									<Show when={product.vendorCode.length && product.code.length}>
+										<br />
+									</Show>
+									{product.vendorCode}
+								</Cell>
+								<Cell width="100%" className="flex flex-col justify-between">
+									<div className="flex justify-between">
+										{product.name}
+
+										{product?.description?.length ? (
+											<button onClick={() => State.openPopup(product)}>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													width="16"
+													height="16"
+													fill="currentColor"
+													viewBox="0 0 16 16"
+												>
+													<path
+														fillRule="evenodd"
+														d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"
+													/>
+												</svg>
+											</button>
+										) : null}
+									</div>
+									<span
+										className="text-xs line-clamp-1 text-gray-600 mt-1"
+										dangerouslySetInnerHTML={{
+											__html: `<span style="display:flex;gap:5px">Знайдено: ${extractFoundByValue(product.foundBy)}</span>`,
+										}}
+									></span>
+								</Cell>
+								<Cell width={columns[3].width}>
+									<span className="line-clamp-1" title={product.brand}>
+										{product.brand}
+									</span>
+								</Cell>
+								<Cell width={columns[4].width}>
+									{product.price?.toFixed(2)}
+								</Cell>
+								<Cell width={columns[5].width}>
+									{product.quantity ? (
+										<>
+											<span className="font-semibold">{product.quantity}</span>{" "}
+											{product?.units}
+										</>
+									) : (
+										<span className="text-red-700 font-bold">Немає</span>
+									)}
+								</Cell>
+								<Cell width={columns[6].width}>{product?.place1}</Cell>
+								<Cell width={columns[7].width}>
+									{product?.place2}
+									<Show
+										when={
+											product?.place3?.length !== 0 &&
+											product?.place2?.length !== 0
+										}
+									>
+										<br />
+									</Show>
+									{product?.place3}
+								</Cell>
+							</div>
+						))}
+					{items.length > 100 ? (
+						<div className="h-24 flex items-center justify-center text-3xl">
+							Запит дуже неточний
+						</div>
+					) : null}
+				</div>
 			</div>
+			{/*<div className="w-96 border-l-2 p-2"></div>*/}
+		</div>
+	);
+}
+
+type CellProps = {
+	children: ReactNode;
+	width: string;
+	style?: CSSProperties;
+	className?: string;
+};
+
+function Cell({ children, width, style, className }: CellProps) {
+	return (
+		<div
+			className={`${cellStyles} ${className} ${width.includes("%") ? "shrink" : "shrink-0"}`}
+			style={{ width: width, ...style }}
+		>
+			{children}
 		</div>
 	);
 }

@@ -1,8 +1,8 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { fetcher } from "../utils/fetcher";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 import { useEffect, useState } from "react";
+import { pos } from "../api/pos";
 
 type CommentPopupProps = {
 	partnerId: string;
@@ -17,24 +17,12 @@ export default function CommentPopup({
 		data: comment,
 		mutate: mutateComment,
 		isLoading: isLoadingComment,
-	} = useSWR(`/comment/${partnerId}`, () =>
-		fetcher<string>({
-			url: `/shop/hs/app/comment/${partnerId}`,
-			method: "GET",
-		}),
-	);
+	} = useSWR(`/comment/${partnerId}`, () => pos.getComment(partnerId));
 	const [commentText, setCommentText] = useState("");
 	const [isOpen, setIsOpen] = useState(false);
 
 	const { trigger: saveComment } = useSWRMutation("/comment/${partnerId}", () =>
-		fetcher<string>({
-			url: `/shop/hs/app/comment/${partnerId}`,
-			method: "POST",
-			body: {
-				partnerId,
-				commentText,
-			},
-		}),
+		pos.updateComment(partnerId, commentText),
 	);
 
 	useEffect(() => {
