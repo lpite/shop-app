@@ -14,13 +14,14 @@ import {
 	Tags,
 	X,
 } from "lucide-react";
-
-import { Spinner } from "../components/spinner";
-import { fetcher } from "../utils/fetcher";
-
 import useSWRMutation from "swr/mutation";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+
+import { Spinner } from "../components/spinner";
+
+import { fetcher } from "../utils/fetcher";
+import { getOdataValue } from "../utils/odata";
 
 const halfOfYear = 15552000000;
 
@@ -83,9 +84,9 @@ type ProductRow = {
 	stock: number;
 	name: string;
 	id: string;
-	place1: null | string;
-	place2: null | string;
-	place3: null | string;
+	place1: string;
+	place2: string;
+	place3: string;
 	suggestion?: "keep" | "move-further" | "move-closer";
 };
 
@@ -94,8 +95,18 @@ export default function PlaceChangeSuggestionReport() {
 		fetcher<ProductRow[]>({
 			url: "/shop/hs/reports/universal/",
 			method: "POST",
-			body: `ВЫБРАТЬ РеализацияТоваровУслугТовары.Номенклатура КАК Номенклатура,МАКСИМУМ(РеализацияТоваровУслугТовары.Ссылка.Дата) КАК ДатаПоследнейРеализации ПОМЕСТИТЬ ПоследниеПродажи ИЗ Документ.РеализацияТоваровУслуг.Товары КАК РеализацияТоваровУслугТовары ГДЕ РеализацияТоваровУслугТовары.Ссылка.Проведен = ИСТИНА СГРУППИРОВАТЬ ПО РеализацияТоваровУслугТовары.Номенклатура; ВЫБРАТЬ ПоследниеПродажи.ДатаПоследнейРеализации КАК lastSellDate, СУММА(ТоварыНаСкладахОстатки.ВНаличииОстаток) КАК stock, ТоварыНаСкладахОстатки.Номенклатура.Код КАК id,ТоварыНаСкладахОстатки.Номенклатура.Ссылка КАК ref,  ТоварыНаСкладахОстатки.Номенклатура.Наименование КАК name, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения.Код КАК place1, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения1.Код КАК place2, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения2.Код КАК place3 ИЗ РегистрНакопления.ТоварыНаСкладах.Остатки КАК ТоварыНаСкладахОстатки ЛЕВОЕ СОЕДИНЕНИЕ ПоследниеПродажи ПО ТоварыНаСкладахОстатки.Номенклатура = ПоследниеПродажи.Номенклатура ГДЕ ТоварыНаСкладахОстатки.ВНаличииОстаток <> 0 СГРУППИРОВАТЬ ПО ТоварыНаСкладахОстатки.Номенклатура.Код, ТоварыНаСкладахОстатки.Номенклатура.Наименование, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения2, ПоследниеПродажи.ДатаПоследнейРеализации, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения,ТоварыНаСкладахОстатки.Номенклатура.Ссылка, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения1`,
+			body: `ВЫБРАТЬ РеализацияТоваровУслугТовары.Номенклатура КАК Номенклатура,МАКСИМУМ(РеализацияТоваровУслугТовары.Ссылка.Дата) КАК ДатаПоследнейРеализации ПОМЕСТИТЬ ПоследниеПродажи ИЗ Документ.РеализацияТоваровУслуг.Товары КАК РеализацияТоваровУслугТовары ГДЕ РеализацияТоваровУслугТовары.Ссылка.Проведен = ИСТИНА СГРУППИРОВАТЬ ПО РеализацияТоваровУслугТовары.Номенклатура; ВЫБРАТЬ ПоследниеПродажи.ДатаПоследнейРеализации КАК lastSellDate, СУММА(ТоварыНаСкладахОстатки.ВНаличииОстаток) КАК stock, ТоварыНаСкладахОстатки.Номенклатура.Код КАК id,ТоварыНаСкладахОстатки.Номенклатура.Ссылка КАК ref,  ТоварыНаСкладахОстатки.Номенклатура.Наименование КАК name, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения КАК place1, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения1 КАК place2, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения2 КАК place3 ИЗ РегистрНакопления.ТоварыНаСкладах.Остатки КАК ТоварыНаСкладахОстатки ЛЕВОЕ СОЕДИНЕНИЕ ПоследниеПродажи ПО ТоварыНаСкладахОстатки.Номенклатура = ПоследниеПродажи.Номенклатура ГДЕ ТоварыНаСкладахОстатки.ВНаличииОстаток <> 0 СГРУППИРОВАТЬ ПО ТоварыНаСкладахОстатки.Номенклатура.Код, ТоварыНаСкладахОстатки.Номенклатура.Наименование, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения2, ПоследниеПродажи.ДатаПоследнейРеализации, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения,ТоварыНаСкладахОстатки.Номенклатура.Ссылка, ТоварыНаСкладахОстатки.Номенклатура.МестоХранения1`,
 		}),
+	);
+
+	const { data: storageCells } = useSWR(
+		"odata/catalog/storage-cells",
+		() =>
+			fetcher<any>({
+				url: "/shop/odata/standard.odata/Catalog_СкладскиеЯчейки?$format=json&$select=Ref_Key,Parent_Key,Description,Code,IsFolder,DeletionMark",
+				method: "GET",
+			}).then((r) => getOdataValue<StorageCell[]>(r)),
+		{ revalidateOnFocus: false },
 	);
 
 	const filterValue = useReportStore((s) => s.filterValue);
@@ -173,6 +184,20 @@ export default function PlaceChangeSuggestionReport() {
 				.slice((page - 1) * 100, page * 100)) ||
 		[];
 
+	function storageCellName(ref?: string) {
+		if (!ref) {
+			return "";
+		}
+
+		if (ref === EMPTY_REF) {
+			return "";
+		}
+		return (
+			storageCells?.find((storageCell) => storageCell.Ref_Key === ref)?.Code ||
+			"not found"
+		);
+	}
+
 	return (
 		<main className="flex flex-col w-full h-full px-5 py-3">
 			<ReportControls />
@@ -219,9 +244,9 @@ export default function PlaceChangeSuggestionReport() {
 								</div>
 								<div className="pt-2 flex gap-2 items-center">
 									<MapPin className="size-5 text-gray-600" />
-									{item.place1 && <span>{item.place1}</span>}
-									{item.place2 && <span>{item.place2}</span>}
-									<span>{item.place3}</span>
+									<span>{storageCellName(item.place1)}</span>
+									<span>{storageCellName(item.place2)}</span>
+									<span>{storageCellName(item.place3)}</span>
 								</div>
 							</div>
 							<div className="flex flex-col gap-2">
@@ -257,9 +282,9 @@ export default function PlaceChangeSuggestionReport() {
 									<span className="flex flex-col">
 										<span className="col-span-3">{el["name"]}</span>
 										<span className="flex gap-3 text-gray-600 text-sm">
-											{el["place1"] && <span>{el["place1"]}</span>}
-											{el["place2"] && <span>{el["place2"]}</span>}
-											<span>{el["place3"]}</span>
+											<span>{storageCellName(el["place1"])}</span>
+											<span>{storageCellName(el["place2"])}</span>
+											<span>{storageCellName(el["place3"])}</span>
 										</span>
 									</span>
 								</td>
@@ -423,14 +448,13 @@ type EditProductDialogProps = {
 	product: Omit<ProductRow, "lastSellDate">;
 };
 
-function EditProductDialog({ product }: EditProductDialogProps) {
+export function EditProductDialog({ product }: EditProductDialogProps) {
 	const [newProduct, setNewProduct] = useState({ ...product });
 	const {
 		trigger: updateProduct,
 		isMutating,
 		error,
 	} = useSWRMutation(["update-product", product.id], () =>
-		// new Promise((r) => setTimeout(() => r(1), 1000)),
 		fetcher<{ "odata.error": any } | { "odata.metadata": string }>({
 			method: "PATCH",
 			url: `/shop/odata/standard.odata/Catalog_Номенклатура(guid'${product.ref}')?$format=json`,
@@ -551,11 +575,13 @@ function PlaceSelectorDialog({
 	setPlace,
 	place,
 }: PlaceSelectorDialogProps) {
-	const { data: places, isLoading: isLoadingPlaces } = useSWR("places", () =>
-		fetcher<{ value?: StorageCell[] }>({
-			method: "GET",
-			url: "/shop/odata/standard.odata/Catalog_СкладскиеЯчейки?$format=json&$filter=DeletionMark eq false&$select=Ref_Key,Parent_Key,Description,Code,IsFolder",
-		}).then((r) => r.value),
+	const { data: places, isLoading: isLoadingPlaces } = useSWR(
+		"odata/catalog/storage-cells",
+		() =>
+			fetcher<any>({
+				method: "GET",
+				url: "/shop/odata/standard.odata/Catalog_СкладскиеЯчейки?$format=json&$select=Ref_Key,Parent_Key,Description,Code,IsFolder,DeletionMark",
+			}).then((r) => getOdataValue<StorageCell[]>(r)),
 	);
 	const [path, setPath] = useState<string[]>([EMPTY_REF]);
 	const [isOpen, setIsOpen] = useState(false);
@@ -563,7 +589,7 @@ function PlaceSelectorDialog({
 		Ref_Key: string;
 		Code: string;
 	} | null>(null);
-
+	console.log("places=>", places);
 	return (
 		<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
 			<Dialog.Trigger className="flex items-center grow">
@@ -571,7 +597,7 @@ function PlaceSelectorDialog({
 					{selectedPlace
 						? places?.find((place) => place.Ref_Key === selectedPlace.Ref_Key)
 								?.Code
-						: place}
+						: places?.find((p) => p.Ref_Key === place)?.Code}
 				</span>
 				<div className="size-10 bg-gray-50 border rounded-lg flex items-center justify-center">
 					<Pencil className="size-4" />
