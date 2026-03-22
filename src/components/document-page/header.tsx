@@ -15,8 +15,6 @@ import { ErrorBoundary } from "react-error-boundary";
 import { pos } from "../../api/pos";
 import { client } from "../../api/client";
 import { useCartStore } from "../../stores/cart-store";
-import { CarSelectorDialog } from "../car-selector-dialog";
-import { ErrorBoundary } from "react-error-boundary";
 
 export default function Header() {
 	const { partnerId, type } = useParams();
@@ -101,9 +99,6 @@ export default function Header() {
 					<CarSelectorDialog />
 				</ErrorBoundary>
 				<CatalogDialog />
-				<ErrorBoundary fallback="error">
-					<CarSelectorDialog />
-				</ErrorBoundary>
 				<CommentPopup partnerId={partnerId || ""} buttonText="Коментар" />
 				<div className="text-xl w-96 flex flex-col items-end">
 					{type === "sell" ? (

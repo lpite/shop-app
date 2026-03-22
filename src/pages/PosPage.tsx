@@ -13,7 +13,7 @@ export default function PosPage() {
 	const { partnerId, type } = useParams();
 
 	const { data: products, isLoading: isLoadingProducts, error } = useSearch({});
-	const {} = usePosStore()
+	const {} = usePosStore();
 	const resize = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
 		usePosStore.setState((state) => {
 			if (state.isResizing) {

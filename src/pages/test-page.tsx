@@ -1,16 +1,17 @@
-import * as Dialog from "@radix-ui/react-dialog";
-import { Car, ChevronLeft } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
 import useSWR from "swr";
+import { catalog } from "../api/catalog";
+import { Dispatch, SetStateAction, useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useConfig } from "../stores/config-store";
-import { CatalogProduct, CatalogTreeItem, catalog } from "../api/catalog";
+import { Car, ChevronLeft } from "lucide-react";
 
-type State = {
-	brand: { id: number; name: string } | null;
-	model: { id: number; name: string } | null;
-	engine: { id: number; name: string } | null;
-	tree_node: CatalogTreeItem | null;
-};
+export function TestPage() {
+	return (
+		<main className="flex">
+			<CarSelectorDialog />
+		</main>
+	);
+}
 
 export function CarSelectorDialog() {
 	const { pb_base_url } = useConfig();
@@ -19,12 +20,9 @@ export function CarSelectorDialog() {
 		brand: null,
 		model: null,
 		engine: null,
-		tree_node: null,
 	});
 
 	const [filterQuery, setFilterQuery] = useState<string | null>(null);
-
-	const { data: tree } = useSWR("catalog_product_tree", catalog.getProductTree);
 
 	const { data: brands } = useSWR("car_brand", catalog.getCarBrands);
 
@@ -39,18 +37,17 @@ export function CarSelectorDialog() {
 		() => catalog.getCarEngines(state.model?.id || 0),
 	);
 
-	const { data: parts } = useSWR(
-		state.brand && state.model && state.engine
-			? ["parts", state.brand.id, state.model.id, state.engine.id]
-			: null,
-		() => catalog.getProductsByEngine(state.engine?.id || 0),
+	const { data } = useSWR(
+		state.brand && state.model && state.engine ? "shit" : null,
+		() =>
+			fetch(
+				`http://localhost:8090/api/collections/wix_temp/records?filter=${state.engine?.codes.map((el) => `eng_code~'${el}'`).join(" || ")}`,
+			).then((r) => r.json()),
 	);
 
+	console.log(data);
+
 	function goBack() {
-		if (state.tree_node) {
-			setState({ ...state, tree_node: null, engine: null });
-			return;
-		}
 		if (state.engine) {
 			setState({ ...state, engine: null });
 			return;
@@ -77,6 +74,53 @@ export function CarSelectorDialog() {
 
 		return "Бренди";
 	}
+
+	async function linkPartToCar(el: any) {
+		if (!state.engine?.id) {
+			return;
+		}
+		const wixSupplierId = "n05rgt1fe61epx4";
+		const filters = el.filters as string[];
+		for (const filter of filters) {
+			let filterId = await fetch(
+				`http://localhost:8090/api/collections/catalog_article/records?filter=article='${filter}'`,
+			)
+				.then((r) => r.json())
+				.then((r) => r.items[0].id)
+				.catch(() => null);
+			if (!filterId) {
+				filterId = await fetch(
+					"http://localhost:8090/api/collections/catalog_article/records",
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							article: filter,
+							supplier_id: wixSupplierId,
+						}),
+					},
+				)
+					.then((r) => r.json())
+					.then((r) => r.id);
+			}
+			await fetch(
+				"http://localhost:8090/api/collections/catalog_article_engine_link/records",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						article_id: filterId,
+						engine_id: state.engine.id,
+					}),
+				},
+			);
+		}
+	}
+
 	return (
 		<Dialog.Root>
 			<Dialog.Trigger className="size-10 border-2 rounded-lg flex items-center justify-center hover:bg-gray-200">
@@ -183,12 +227,6 @@ export function CarSelectorDialog() {
 												<span>{engine.codes.join(", ")}</span>
 											</span>
 											<span className="flex gap-2 text-gray-600">
-												{/*<span>*/}
-												{/*<span>cc: </span>
-													{engine.cc}
-												</span>
-												<span>hp: {engine.hp}</span>
-												<span>kw: {engine.kw}</span>*/}
 												<span className="grow text-right">
 													{new Date(engine.dateFrom).toLocaleDateString()} -{" "}
 													{new Date(engine.dateTo).toLocaleDateString()}
@@ -196,51 +234,27 @@ export function CarSelectorDialog() {
 											</span>
 										</button>
 									))}
-								{state.brand &&
-									state.model &&
-									state.engine &&
-									tree
-										?.filter((n) => !n.parent.length)
-										.map((node) => {
-											return (
-												<Category
-													key={node.id}
-													tree={tree}
-													node={node}
-													parts={parts}
-													setState={setState}
-													state={state}
-												/>
-											);
-										})}
 							</div>
 						</div>
 						<div className="flex flex-col border rounded-lg p-2 grow">
-							<span className="text-xl">Запчастини</span>
-							<div className="min-h-0 overflow-y-auto">
-								{state.brand &&
-									state.model &&
-									state.engine &&
-									parts
-										// ?.filter((el) => el.category === state.category?.id)
-										?.map((part) => {
-											return (
-												<Product
-													article={part.article}
-													supplier={part.supplier}
-												/>
-												// <div key={part.article} className="m-2 border p-2 flex">
-												// 	{/*	{part.brand === "sum32lgz6lk47or" ? (
-												// 		<img
-												// 			src={`https://s7g10.scene7.com/is/image/mannhummel/${part.article}?qlt=82`}
-												// 			className="h-24 w-24 object-contain"
-												// 		/>
-												// 	) : null}*/}
-												// 	{part.article}
-												// 	{part.supplier}
-												// </div>
-											);
-										})}
+							<span className="text-xl">
+								{state.brand?.name} {state.model?.name} {state.engine?.name}{" "}
+								{state.engine?.codes.join(", ")}
+							</span>
+							<div className="min-h-0 overflow-y-auto flex flex-col">
+								{state.brand && state.model ? (
+									<>
+										{data?.items?.map((el) => (
+											<button
+												onClick={() => linkPartToCar(el)}
+												className="border-2 p-2"
+											>
+												{el.id} {el.make} {el.model} {el.eng_code}{" "}
+												{el.filters.join(", ")}
+											</button>
+										))}
+									</>
+								) : null}
 							</div>
 						</div>
 					</div>
@@ -250,45 +264,42 @@ export function CarSelectorDialog() {
 	);
 }
 
-type ProductProps = {
-	article: string;
-	supplier: string;
-};
-
-function Product({ article, supplier }: ProductProps) {
-	const { data: details } = useSWR(`shit/${article}/${supplier}`, () =>
-		catalog.getArticleDetails({ article, brand: supplier }),
-	);
-	return (
-		<div>
-			{details?.type} {article}
-		</div>
-	);
-}
-
 type CategoryProps = {
-	node: CatalogTreeItem;
-	tree: CatalogTreeItem[];
-	parts?: CatalogProduct[];
+	category: {
+		id: string;
+		parent: string;
+		name: string;
+	};
+	categories: {
+		id: string;
+		parent: string;
+		name: string;
+	}[];
+	parts?: { id: string; category: string }[];
 	setState: Dispatch<SetStateAction<State>>;
 	state: State;
 };
 
+type State = {
+	brand: { id: number; name: string } | null;
+	model: { id: number; name: string } | null;
+	engine: { id: number; name: string; codes: string[] } | null;
+};
+
 export function Category({
-	node,
-	tree,
+	category,
+	categories,
 	parts,
 	setState,
 	state,
 }: CategoryProps) {
-	const children = tree.filter((n) => n.parent === node.id);
-	// const partsCount =
-	// 	children.reduce((acc, cat) => {
-	// 		return (
-	// 			acc + (parts?.filter((part) => part.category === cat.id).length || 0)
-	// 		);
-	// 	}, 0) || parts?.filter((part) => part.category === node.id).length;
-	const partsCount = 1;
+	const children = categories.filter((cat) => cat.parent === category.id);
+	const partsCount =
+		children.reduce((acc, cat) => {
+			return (
+				acc + (parts?.filter((part) => part.category === cat.id).length || 0)
+			);
+		}, 0) || parts?.filter((part) => part.category === category.id).length;
 	const [open, setOpen] = useState(false);
 
 	function onClick() {
@@ -296,23 +307,23 @@ export function Category({
 			setOpen(!open);
 			return;
 		}
-		setState((p) => ({ ...p }));
+		setState((p) => ({ ...p, category }));
 	}
 
 	return (
 		<div className="">
 			<button
 				onClick={onClick}
-				className={`p-2 border-b hover:bg-gray-200 w-full text-left ${state.tree_node?.id === node.id ? "bg-gray-300" : ""}`}
+				className={`p-2 border-b hover:bg-gray-200 w-full text-left ${state.category?.id === category.id ? "bg-gray-300" : ""}`}
 			>
-				{node.name} ({partsCount})
+				{category.name} ({partsCount})
 			</button>
 			<div className="pl-8">
 				{open &&
 					children.map((child) => (
 						<Category
-							tree={tree}
-							node={child}
+							categories={categories}
+							category={child}
 							parts={parts}
 							setState={setState}
 							state={state}
