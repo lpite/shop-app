@@ -13,6 +13,7 @@ import { ConfigPage } from "./pages/Config.tsx";
 import { Spinner } from "./components/spinner.tsx";
 import { OrderNotifier } from "./components/order-notification";
 import { ErrorBoundary } from "react-error-boundary";
+import { ProductEditor } from "./pages/ProductEditor.tsx";
 
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const StatsPage = lazy(() => import("./pages/StatsPage.tsx"));
@@ -66,6 +67,7 @@ createRoot(document.getElementById("root")!).render(
 						component={IncomeDocumentHelper}
 						nest
 					/>
+					<Route path="/product-editor" component={ProductEditor} />
 				</Switch>
 			</SWRConfig>
 		</ErrorBoundary>

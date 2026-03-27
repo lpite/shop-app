@@ -4,6 +4,6 @@ export function getOdataValue<T>(json: OdataResponse<T>) {
 	if ("odata.error" in json) {
 		throw new Error(json["odata.error"]);
 	}
-	console.log("json", json);
+
 	return json.value;
 }

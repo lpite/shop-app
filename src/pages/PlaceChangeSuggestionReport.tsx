@@ -8,6 +8,7 @@ import {
 	ArrowUp,
 	Check,
 	ChevronLeft,
+	CircleOff,
 	Folder,
 	MapPin,
 	Pencil,
@@ -21,7 +22,8 @@ import { persist } from "zustand/middleware";
 import { Spinner } from "../components/spinner";
 
 import { fetcher } from "../utils/fetcher";
-import { getOdataValue } from "../utils/odata";
+import { StorageCell, useStorageCells } from "../api/odata";
+import { getStorageCellCode } from "../utils/getStorageCellCode";
 
 const halfOfYear = 15552000000;
 
@@ -99,15 +101,7 @@ export default function PlaceChangeSuggestionReport() {
 		}),
 	);
 
-	const { data: storageCells } = useSWR(
-		"odata/catalog/storage-cells",
-		() =>
-			fetcher<any>({
-				url: "/shop/odata/standard.odata/Catalog_СкладскиеЯчейки?$format=json&$select=Ref_Key,Parent_Key,Description,Code,IsFolder,DeletionMark",
-				method: "GET",
-			}).then((r) => getOdataValue<StorageCell[]>(r)),
-		{ revalidateOnFocus: false },
-	);
+	const { data: storageCells } = useStorageCells();
 
 	const filterValue = useReportStore((s) => s.filterValue);
 	const filterTag = useReportStore((s) => s.filterTag);
@@ -184,20 +178,6 @@ export default function PlaceChangeSuggestionReport() {
 				.slice((page - 1) * 100, page * 100)) ||
 		[];
 
-	function storageCellName(ref?: string) {
-		if (!ref) {
-			return "";
-		}
-
-		if (ref === EMPTY_REF) {
-			return "";
-		}
-		return (
-			storageCells?.find((storageCell) => storageCell.Ref_Key === ref)?.Code ||
-			"not found"
-		);
-	}
-
 	return (
 		<main className="flex flex-col w-full h-full px-5 py-3">
 			<ReportControls />
@@ -244,9 +224,9 @@ export default function PlaceChangeSuggestionReport() {
 								</div>
 								<div className="pt-2 flex gap-2 items-center">
 									<MapPin className="size-5 text-gray-600" />
-									<span>{storageCellName(item.place1)}</span>
-									<span>{storageCellName(item.place2)}</span>
-									<span>{storageCellName(item.place3)}</span>
+									<span>{getStorageCellCode(storageCells, item.place1)}</span>
+									<span>{getStorageCellCode(storageCells, item.place2)}</span>
+									<span>{getStorageCellCode(storageCells, item.place3)}</span>
 								</div>
 							</div>
 							<div className="flex flex-col gap-2">
@@ -282,9 +262,15 @@ export default function PlaceChangeSuggestionReport() {
 									<span className="flex flex-col">
 										<span className="col-span-3">{el["name"]}</span>
 										<span className="flex gap-3 text-gray-600 text-sm">
-											<span>{storageCellName(el["place1"])}</span>
-											<span>{storageCellName(el["place2"])}</span>
-											<span>{storageCellName(el["place3"])}</span>
+											<span>
+												{getStorageCellCode(storageCells, el["place1"])}
+											</span>
+											<span>
+												{getStorageCellCode(storageCells, el["place2"])}
+											</span>
+											<span>
+												{getStorageCellCode(storageCells, el["place3"])}
+											</span>
 										</span>
 									</span>
 								</td>
@@ -471,7 +457,8 @@ export function EditProductDialog({ product }: EditProductDialogProps) {
 	);
 	function clearPlace(place: "place1" | "place2" | "place3") {
 		if (confirm(`Дійсно очистити ${place}`)) {
-			setNewProduct((p) => ({ ...p, [place]: null }));
+			setNewProduct((p) => ({ ...p, [place]: EMPTY_REF }));
+			console.log(newProduct);
 		}
 	}
 
@@ -562,34 +549,29 @@ type PlaceSelectorDialogProps = {
 	place: string | null;
 };
 
-type StorageCell = {
-	Ref_Key: string;
-	Description: string;
-	Code: string;
-	IsFolder: boolean;
-	Parent_Key: string;
-};
-
 function PlaceSelectorDialog({
 	title,
 	setPlace,
 	place,
 }: PlaceSelectorDialogProps) {
-	const { data: places, isLoading: isLoadingPlaces } = useSWR(
-		"odata/catalog/storage-cells",
-		() =>
-			fetcher<any>({
-				method: "GET",
-				url: "/shop/odata/standard.odata/Catalog_СкладскиеЯчейки?$format=json&$select=Ref_Key,Parent_Key,Description,Code,IsFolder,DeletionMark",
-			}).then((r) => getOdataValue<StorageCell[]>(r)),
-	);
+	const { data: places, isLoading: isLoadingPlaces } = useStorageCells();
+
 	const [path, setPath] = useState<string[]>([EMPTY_REF]);
 	const [isOpen, setIsOpen] = useState(false);
 	const [selectedPlace, setSelectedPlace] = useState<{
 		Ref_Key: string;
 		Code: string;
 	} | null>(null);
-	console.log("places=>", places);
+
+	function onItemClick(item: StorageCell) {
+		if (item.IsFolder) {
+			setPath((p) => [item.Ref_Key, ...p]);
+			setSelectedPlace(null);
+			return;
+		}
+		setSelectedPlace(item);
+	}
+
 	return (
 		<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
 			<Dialog.Trigger className="flex items-center grow">
@@ -628,17 +610,13 @@ function PlaceSelectorDialog({
 								<button
 									key={item.Ref_Key + title}
 									className={`flex items-center gap-1 border-b py-2 px-2 ${selectedPlace?.Ref_Key === item.Ref_Key ? "bg-gray-100" : ""}`}
-									onClick={() => {
-										if (item.IsFolder) {
-											setPath((p) => [item.Ref_Key, ...p]);
-											setSelectedPlace(null);
-											return;
-										}
-										setSelectedPlace(item);
-									}}
+									onClick={() => onItemClick(item)}
 								>
 									{item.IsFolder ? (
 										<Folder className="size-4 text-gray-600" />
+									) : null}
+									{item.DeletionMark ? (
+										<CircleOff className="size-4 text-red-600" />
 									) : null}
 									{item.Code}
 								</button>
