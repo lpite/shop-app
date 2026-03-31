@@ -40,6 +40,7 @@ export function filterProducts(
 	}
 
 	if (
+		product.code.includes(trimmedSearchValue) ||
 		product.name.includes(trimmedSearchValue) ||
 		product.description?.includes(trimmedSearchValue)
 	) {
