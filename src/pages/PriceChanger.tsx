@@ -65,7 +65,7 @@ export default function PriceChanger() {
 	);
 
 	const { data: products } = useSWR(
-		"/products/",
+		"app/product",
 		() =>
 			fetcher({
 				url: `/shop/hs/app/product`,
