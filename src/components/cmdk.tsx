@@ -7,6 +7,7 @@ import {
 	useState,
 } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
+import { createPortal } from "react-dom";
 
 type CMDKProps = {
 	search: string;
@@ -76,12 +77,12 @@ export function CMDK({
 		return () => window.removeEventListener("keydown", arrowListener);
 	}, []);
 
-	return (
+	return createPortal(
 		<>
 			<Dialog.Root open={isOpen} onOpenChange={onChangeOpen}>
 				<Dialog.Portal>
 					<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-30" />
-					<Dialog.Content className="fixed w-4/6 bg-white shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg">
+					<Dialog.Content className="fixed w-11/12 md:w-4/6 bg-white shadow-lg top-3 md:top-1/2 start-1/2 -translate-x-1/2 md:-translate-y-1/2 rounded-lg">
 						<Dialog.Title className="sr-only">{title}</Dialog.Title>
 						<form
 							className="border-b-2 relative flex items-center"
@@ -135,6 +136,7 @@ export function CMDK({
 					</Dialog.Content>
 				</Dialog.Portal>
 			</Dialog.Root>
-		</>
+		</>,
+		document.body,
 	);
 }
