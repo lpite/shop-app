@@ -19,6 +19,7 @@ const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const StatsPage = lazy(() => import("./pages/StatsPage.tsx"));
 const LeftOversReport = lazy(() => import("./pages/LeftoversReport.tsx"));
 const ReportsPage = lazy(() => import("./pages/Reports.tsx"));
+const PhotoStudio = lazy(() => import("./pages/PhotoStudio.tsx"));
 const PlaceChangeSuggestionReport = lazy(
 	() => import("./pages/PlaceChangeSuggestionReport.tsx"),
 );
@@ -68,6 +69,7 @@ createRoot(document.getElementById("root")!).render(
 						nest
 					/>
 					<Route path="/product-editor" component={ProductEditor} />
+					<Route path="/photo-studio" component={PhotoStudio} />
 				</Switch>
 			</SWRConfig>
 		</ErrorBoundary>
