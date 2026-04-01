@@ -24,7 +24,9 @@ export default function PriceChanger() {
 		isLoading: isLoadingPrices,
 		isValidating: isValidatingPrices,
 	} = useSWR(
-		selectedProduct.searchCode.length ? `/prices/` : null,
+		selectedProduct.searchCode.length
+			? `api/product-price/${selectedProduct.searchCode}`
+			: null,
 		() =>
 			fetcher({
 				url: `/shop/hs/api/product-price/00-${"0".repeat(8 - selectedProduct.searchCode.length) + selectedProduct.searchCode}/Розничная`,
@@ -45,7 +47,7 @@ export default function PriceChanger() {
 	);
 
 	const { trigger, isMutating } = useSWRMutation(
-		"/mutate",
+		"api/product-price",
 		(
 			_,
 			{
