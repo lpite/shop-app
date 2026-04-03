@@ -136,4 +136,5 @@ export function CMDK({
 				</Dialog.Portal>
 			</Dialog.Root>
 		</>
+	);
 }
