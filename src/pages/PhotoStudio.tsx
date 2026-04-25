@@ -1,44 +1,143 @@
-import { Plus, Upload, X } from "lucide-react";
 import useSWR from "swr";
+import {
+	Download,
+	Eye,
+	Plus,
+	RefreshCw,
+	Save,
+	SendHorizonal,
+	Upload,
+	X,
+} from "lucide-react";
 import { useConfig } from "../stores/config-store";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetcher } from "../utils/fetcher";
 import { CMDK } from "../components/cmdk";
 import { useDebounce } from "@uidotdev/usehooks";
 
+const photoStatuses = ["new", "ready", "junk", "maybe", "uploaded"] as const;
+
+type PhotoStatus = "new" | "ready" | "junk" | "maybe" | "uploaded";
+
+type Photo = { id: string; file: string; status: PhotoStatus };
+type Product = {
+	ref: string;
+	searchCode: string;
+	name: string;
+};
+
 export default function PhotoStudio() {
 	const { pb_base_url } = useConfig();
-	const { data: photos } = useSWR(
+
+	const [filterStatus, setFilterStatus] = useState(null);
+	const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+	const [showAddPhotosDialog, setShowAddPhotosDialog] =
+		useState<boolean>(false);
+
+	const { data: photos, mutate: updatePhotos } = useSWR(
 		"pb/photo_product_link",
 		() =>
 			fetch(
-				`${pb_base_url}/api/collections/photo_product_link/records?sort=-created`,
+				`${pb_base_url}/api/collections/photo_agg/records?sort=-created&perPage=100`,
 			)
 				.then((r) => r.json())
 				.then((r) => r.items) as Promise<
 				{
 					product_ref: string;
-					photo: string;
-					collectionId: string;
-					id: string;
+					photos: Photo[];
 				}[]
 			>,
 	);
 
+	const { data: products } = useSWR(
+		"app/product",
+		() =>
+			fetcher({
+				url: `/shop/hs/app/product`,
+				method: "GET",
+			}) as Promise<
+				{ ref: string; name: string; searchCode: string; code: string }[]
+			>,
+		{ revalidateOnFocus: false },
+	);
+
 	return (
 		<main className="p-4">
-			<div className="py-2">
-				<AddPhotosDialog />
+			<PhotoDialog
+				show={selectedPhoto !== null}
+				onClose={() => setSelectedPhoto(null)}
+				photo={selectedPhoto}
+			/>
+			<div className="py-2 flex gap-3 sticky top-0 bg-white z-10">
+				<AddPhotosDialog
+					selectedProduct={selectedProduct}
+					setSelectedProduct={setSelectedProduct}
+					show={showAddPhotosDialog}
+					setShow={setShowAddPhotosDialog}
+				/>
+				<select className="px-2 rounded-lg cursor-pointer">
+					<option>-</option>
+					{photoStatuses.map((status) => (
+						<option key={status} value={status}>
+							{status}
+						</option>
+					))}
+				</select>
+				<button
+					className="border size-10 flex items-center justify-center rounded-lg hover:shadow-sm"
+					onClick={() => updatePhotos()}
+				>
+					<RefreshCw className="size-4" />
+				</button>
 			</div>
-			<div className="flex flex-wrap gap-2">
-				{photos?.map(({ product_ref, photo, collectionId, id }) => (
-					<div className="flex flex-col border w-full md:size-56 p-2">
-						<span>{product_ref}</span>
-						<img
-							className="object-contain h-56 md:h-36"
-							src={`${pb_base_url}/api/files/${collectionId}/${id}/${photo}`}
-						/>
+			<div className="flex justify-center flex-wrap gap-2">
+				{photos?.map(({ product_ref, photos }) => (
+					<div
+						key={product_ref}
+						className="flex flex-col border w-full p-2 relative rounded-xl"
+					>
+						<span className="">
+							Назва товару
+							{/*{products?.find((p) => p.ref === product_ref)?.name}*/}
+						</span>
+						<div className="flex gap-2 overflow-hidden">
+							{photos.map(({ file, id, status }) => (
+								<button
+									key={file}
+									className="group relative"
+									onClick={() => setSelectedPhoto({ file, id, status })}
+								>
+									<span className="flex items-center justify-center bg-gray-100/55 absolute top-0 start-0 w-full h-full pointer-events-none opacity-0 group-hover:opacity-100 rounded-xl">
+										<Eye className="size-10" />
+									</span>
+									{status === "new" ? (
+										<span className="absolute end-1 top-1 size-3 block bg-blue-200 rounded-full"></span>
+									) : null}
+										{status === "ready" ? (
+										<span className="absolute end-1 top-1 size-3 block bg-green-600 rounded-full"></span>
+									) : null}
+									<img
+										className={`w-24 h-24 object-cover rounded-xl`}
+										src={`${pb_base_url}/api/files/photo_product_link/${id}/${file}?thumb=192x192`}
+									/>
+								</button>
+							))}
+							<button
+								className="w-24 h-24 border-2 rounded-xl flex items-center justify-center hover:bg-gray-100"
+								onClick={() => {
+									setSelectedProduct({
+										ref: product_ref,
+										searchCode: "",
+										name: product_ref,
+									});
+									setShowAddPhotosDialog(true);
+								}}
+							>
+								<Plus className="text-gray-500" />
+							</button>
+						</div>
 					</div>
 				))}
 			</div>
@@ -52,16 +151,24 @@ interface PhotoPreview {
 	preview: string;
 }
 
-function AddPhotosDialog() {
-	const [open, setOpen] = useState(false);
+type AddPhotosDialogProps = {
+	selectedProduct: Product | null;
+	setSelectedProduct: (p: Product | null) => void;
+	show: boolean;
+	setShow: (v: boolean) => void;
+};
 
-	const [selectedProduct, setSelectedProduct] = useState<{
-		ref: string;
-		searchCode: string;
-		name: string;
-	} | null>(null);
+function AddPhotosDialog({
+	selectedProduct,
+	setSelectedProduct,
+	show,
+	setShow,
+}: AddPhotosDialogProps) {
 	const [photos, setPhotos] = useState<PhotoPreview[]>([]);
 	const [isDragging, setIsDragging] = useState(false);
+	const [defaultPhotoStatus, setDefaultPhotoStatus] = useState(
+		photoStatuses[0],
+	);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [isOpenCMDK, setIsOpenCMDK] = useState(false);
 	const [searchValue, setSearchValue] = useState("");
@@ -119,6 +226,8 @@ function AddPhotosDialog() {
 				const formData = new FormData();
 				formData.append("product_ref", selectedProduct.ref);
 				formData.append("photo", photo.file);
+				formData.append("status", defaultPhotoStatus);
+
 				await fetch(
 					`${pb_base_url}/api/collections/photo_product_link/records`,
 					{
@@ -154,32 +263,35 @@ function AddPhotosDialog() {
 		photos.forEach((photo) => URL.revokeObjectURL(photo.preview));
 		setPhotos([]);
 		setSelectedProduct(null);
-		setOpen(false);
+		setShow(false);
 	};
 
 	return (
-		<Dialog.Root open={open} onOpenChange={setOpen}>
+		<Dialog.Root open={show} onOpenChange={setShow}>
 			<Dialog.Trigger className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent">
 				<Plus className="size-4" /> Додати
 			</Dialog.Trigger>
 			<Dialog.Portal>
 				<Dialog.Overlay className="fixed inset-0 bg-black/40" />
-				<Dialog.Content className="fixed left-1/2 top-1/2 w-11/12 max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background p-6 shadow-lg bg-white">
+				<Dialog.Content
+					onCloseAutoFocus={(e) => e.preventDefault()}
+					className="fixed left-1/2 top-1/2 w-11/12 max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background p-6 shadow-lg bg-white"
+				>
 					<Dialog.Title className="text-xl font-semibold">
 						Додавання фото
 					</Dialog.Title>
 					<Dialog.Description className="mt-1 text-sm text-muted-foreground">
-						Завантажте фотографії та оберіть продукт.
+						Завантаж фотографії та обери товар.
 					</Dialog.Description>
 
 					<div className="mt-5 space-y-4">
-						<div className="flex">
+						<div className="flex items-center">
 							<span className="grow text-ellipsis">
 								{selectedProduct?.name}
-							</span>{" "}
+							</span>
 							<button
 								onClick={() => setIsOpenCMDK(true)}
-								className="shrink-0 border bg-sky-200 px-2 py-1 rounded-lg"
+								className="shrink-0 border px-2 py-1 rounded-lg bg-purple-100 hover:bg-purple-50"
 							>
 								Обрати товар
 							</button>
@@ -204,7 +316,23 @@ function AddPhotosDialog() {
 								}))}
 						/>
 						<div className="space-y-2">
-							<label className="text-sm font-medium">Фотографії</label>
+							<div className="flex justify-between">
+								<label className="text-sm font-medium">Фотографії</label>
+								<label className="text-sm">
+									Статус
+									<select
+										className="bg-transparent cursor-pointer hover:bg-gray-100 rounded-lg px-1"
+										value={defaultPhotoStatus}
+										onChange={(e) =>
+											setDefaultPhotoStatus(e.target.value as any)
+										}
+									>
+										{photoStatuses.map((status) => (
+											<option value={status}>{status}</option>
+										))}
+									</select>
+								</label>
+							</div>
 							<div
 								onClick={() => fileInputRef.current?.click()}
 								onDrop={handleDrop}
@@ -216,15 +344,15 @@ function AddPhotosDialog() {
 									e.preventDefault();
 									setIsDragging(false);
 								}}
-								className={`flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-4 transition-colors ${
+								className={`group flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-4 transition-colors ${
 									isDragging
-										? "border-primary bg-primary/5"
+										? "border-primary bg-gray-200"
 										: "border-muted-foreground/25 hover:border-primary/50"
 								}`}
 							>
-								<Upload className="size-6 text-muted-foreground" />
+								<Upload className="size-6 text-muted-foreground group-hover:-translate-y-1 duration-300" />
 								<p className="text-sm text-muted-foreground">
-									Перетягніть або натисніть для вибору
+									Перетягни фото або натисни для вибору
 								</p>
 								<input
 									ref={fileInputRef}
@@ -236,44 +364,151 @@ function AddPhotosDialog() {
 								/>
 							</div>
 						</div>
-						{photos.length > 0 && (
-							<div className="grid grid-cols-4 gap-2">
-								{photos.map((photo) => (
-									<div
-										key={photo.id}
-										className="group relative aspect-square overflow-hidden rounded-md border"
+						<div
+							className={`grid grid-cols-4 gap-2 duration-100 ${!photos.length ? "h-0" : "h-28"}`}
+						>
+							{photos.map((photo) => (
+								<div
+									key={photo.id}
+									className="group relative aspect-square overflow-hidden rounded-md border"
+								>
+									<img
+										src={photo.preview}
+										alt=""
+										className="size-full object-cover"
+									/>
+									<button
+										type="button"
+										onClick={() => removePhoto(photo.id)}
+										className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100 bg-red-200"
 									>
-										<img
-											src={photo.preview}
-											alt=""
-											className="size-full object-cover"
-										/>
-										<button
-											type="button"
-											onClick={() => removePhoto(photo.id)}
-											className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100 bg-red-200"
-										>
-											<X className="size-3" />
-										</button>
-									</div>
-								))}
-							</div>
-						)}
+										<X className="size-3" />
+									</button>
+								</div>
+							))}
+						</div>
 					</div>
 					<div className="mt-6 flex justify-end gap-2">
-						<Dialog.Close className="rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-accent">
+						<Dialog.Close className="rounded-lg border border-input px-4 py-2 text-sm font-medium hover:bg-accent">
 							Скасувати
 						</Dialog.Close>
 						<button
 							onClick={handleSubmit}
 							disabled={!selectedProduct || photos.length === 0 || isSending}
-							className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+							className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 bg-violet-100 hover:bg-violet-50 disabled:bg-transparent"
 						>
 							{isSending ? (
 								<>wait...</>
 							) : (
 								<>Завантажити {photos.length > 0 && `(${photos.length})`}</>
 							)}
+						</button>
+					</div>
+				</Dialog.Content>
+			</Dialog.Portal>
+		</Dialog.Root>
+	);
+}
+
+type PhotoDialogProps = {
+	show: boolean;
+	onClose: () => void;
+	photo: Photo | null;
+};
+
+function PhotoDialog({ show, onClose, photo }: PhotoDialogProps) {
+	const { pb_base_url } = useConfig();
+	const [photoStatus, setPhotoStatus] = useState<PhotoStatus | null>(null);
+
+	useEffect(() => {
+		if (photo?.status) {
+			setPhotoStatus(photo.status);
+		}
+	}, [photo?.status]);
+
+	if (!photo) {
+		return null;
+	}
+
+	async function updatePhotoStatus() {
+		await fetch(
+			`${pb_base_url}/api/collections/photo_product_link/records/${photo?.id}`,
+			{
+				method: "PATCH",
+				body: JSON.stringify({
+					status: photoStatus,
+				}),
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		).then((r) => {
+			if (!r.ok) {
+				alert(":(");
+			}
+		});
+	}
+
+	async function downloadPhoto(url: string, filename: string) {
+		const response = await fetch(url);
+		const blob = await response.blob();
+
+		const blobUrl = window.URL.createObjectURL(blob);
+
+		const link = document.createElement("a");
+		link.href = blobUrl;
+		link.download = filename;
+		link.click();
+
+		window.URL.revokeObjectURL(blobUrl);
+	}
+
+	return (
+		<Dialog.Root open={show} onOpenChange={onClose}>
+			<Dialog.Portal>
+				<Dialog.Overlay className="fixed inset-0 bg-black/40 z-20" />
+				<Dialog.Content className="fixed left-1/2 top-1/2 max-w-lg h-5/6 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-background p-3 shadow-lg bg-white flex flex-col gap-4 z-20">
+					<Dialog.Title className="sr-only">Фото</Dialog.Title>
+					<img
+						className="h-full rounded-lg object-cover"
+						src={`${pb_base_url}/api/files/photo_product_link/${photo.id}/${photo.file}`}
+					/>
+					<div className="flex justify-between">
+						<div className="flex gap-2">
+							<select
+								value={photoStatus as string}
+								onChange={(e) => setPhotoStatus(e.target.value as any)}
+								className="px-2 py-0.5 bg-white border rounded-lg cursor-pointer"
+							>
+								{photoStatuses.map((status) => (
+									<option value={status}>{status}</option>
+								))}
+							</select>
+							<button
+								className="border p-3 rounded-lg hover:shadow-lg disabled:hover:shadow-none duration-75 disabled:opacity-35"
+								disabled={photo.status === photoStatus}
+								onClick={updatePhotoStatus}
+							>
+								<Save className="size-4" />
+							</button>
+							<button
+								onClick={() =>
+									downloadPhoto(
+										`${pb_base_url}/api/files/photo_product_link/${photo.id}/${photo.file}`,
+										photo.file,
+									)
+								}
+								className="border p-3 rounded-lg hover:shadow-lg disabled:hover:shadow-none duration-75 disabled:opacity-35"
+							>
+								<Download className="size-4" />
+							</button>
+						</div>
+
+						<button
+							className="border p-3 rounded-lg hover:shadow-lg disabled:hover:shadow-none duration-75 disabled:opacity-35"
+							disabled={photo.status !== "ready"}
+						>
+							<SendHorizonal className="size-4" />
 						</button>
 					</div>
 				</Dialog.Content>

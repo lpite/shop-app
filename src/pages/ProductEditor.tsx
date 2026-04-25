@@ -6,10 +6,11 @@ import { getOdataValue } from "../utils/odata";
 import { Search } from "lucide-react";
 import { useStorageCells } from "../api/odata";
 import { getStorageCellCode } from "../utils/getStorageCellCode";
+import { Spinner } from "../components/spinner";
 
 export function ProductEditor() {
 	const [query, setQuery] = useState("");
-	const { data: product } = useSWR(
+	const { data: product, isLoading: isLoadingProduct } = useSWR(
 		query.length ? `odata/catalog/products/${query}` : null,
 		() =>
 			fetcher<any>({
@@ -50,12 +51,13 @@ export function ProductEditor() {
 					name="query"
 					placeholder="Код"
 					type="number"
-					className="w-full px-3 py-2 rounded-lg"
+					className="w-full px-3 py-2 rounded-lg border"
 				/>
-				<button className="bg-sky-500 size-10 flex items-center justify-center rounded-lg shrink-0">
+				<button className="bg-sky-400 size-10 flex items-center justify-center rounded-lg shrink-0">
 					<Search className="size-6" />
 				</button>
 			</form>
+			{isLoadingProduct ? <Spinner size={40} /> : null}
 			{product ? (
 				<div>
 					<div>Артикул: {product.Артикул}</div>
