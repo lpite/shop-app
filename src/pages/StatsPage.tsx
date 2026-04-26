@@ -20,7 +20,7 @@ export default function StatsPage() {
 		<>
 			<header className="px-4 py-4">
 				<button
-					onClick={()=>window.history.back()}
+					onClick={() => window.history.back()}
 					className="bg-sky-300 px-6 py-3 rounded-lg font-medium"
 				>
 					Назад

@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode, useEffect, useState } from "react";
+import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 import { EllipsisVertical, Image } from "lucide-react";
 
 import PhotoViewer from "../photo-viewer";
@@ -82,6 +82,9 @@ export default function ProductsSection({
 	const cartHeight = usePosStore((state) => state.cartHeight);
 	const addToCart = useCartStore((state) => state.addToCart);
 
+	const itemsListRef = useRef<HTMLDivElement>(null);
+	const currentListItemRef = useRef<HTMLDivElement>(null);
+
 	const [selectedProduct, setSelectedProduct] = useState<
 		FTSProduct | undefined
 	>();
@@ -107,6 +110,11 @@ export default function ProductsSection({
 			} else {
 				return;
 			}
+			const scrollPosition = itemsListRef.current?.scrollTop || 0;
+			const elementHeight = currentListItemRef.current?.clientHeight || 0;
+			itemsListRef.current?.scrollTo({
+				top: scrollPosition + direction * elementHeight,
+			});
 
 			setSelectedProduct((p) => {
 				if (!p) {
@@ -156,10 +164,13 @@ export default function ProductsSection({
 						<span className="text-3xl">Помилка</span>
 					</div>
 				) : null}
-				<div className="overflow-y-auto grow">
+				<div ref={itemsListRef} className="overflow-y-auto grow">
 					{!isLoading &&
 						items?.slice(0, 100)?.map((product, i) => (
 							<div
+								ref={
+									product.id === selectedProduct?.id ? currentListItemRef : null
+								}
 								className={`flex select-none hover:bg-slate-100 ${product.needToSell ? "bg-green-200 hover:bg-green-300" : ""} ${product.id === selectedProduct?.id ? "bg-slate-300 hover:bg-slate-300" : ""}`}
 								key={i}
 								onDoubleClick={() => onDoubleClick(product)}
@@ -199,7 +210,7 @@ export default function ProductsSection({
 										Знайдено:
 										<span
 											dangerouslySetInnerHTML={{
-												__html: `<span class="line-clamp-1 h-4">${extractFoundByValue(product.foundBy)}</span>`,
+												__html: `<span class="line-clamp-1 h-4 flex gap-1">${extractFoundByValue(product.foundBy)}</span>`,
 											}}
 										></span>
 									</span>
