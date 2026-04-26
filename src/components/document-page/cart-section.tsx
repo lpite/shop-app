@@ -1,11 +1,11 @@
 import { useState } from "react";
-
 import * as Dialog from "@radix-ui/react-dialog";
+
 import { usePosStore } from "../../stores/pos-store";
 import { useCartStore } from "../../stores/cart-store";
 
 export default function CartSection() {
-	const { cartProducts, removeFromCart, editCart } = useCartStore();
+	const { cartProducts, removeFromCart, editCart, clearCart } = useCartStore();
 
 	const cartTotalCount = cartProducts.reduce(
 		(prev, el) => prev + el.quantity,
@@ -40,6 +40,12 @@ export default function CartSection() {
 		}
 	}
 
+	function onClearCart() {
+		if (confirm("Точно?")) {
+			clearCart();
+		}
+	}
+
 	return (
 		<div
 			className="bg-gray-100 px-2 rounded-t-3xl flex flex-col fixed bottom-0 start-0 end-0 border-2 border-gray-300"
@@ -52,15 +58,21 @@ export default function CartSection() {
 				<div className="h-1 bg-slate-300 rounded"></div>
 			</div>
 
-			<div className="text-xl select-none py-2 pb-1">
-				Підібрано {cartTotalCount.toFixed(2)} на суму{" "}
+			<div className="flex gap-1 text-xl select-none py-2 pb-1">
+				<span>Підібрано {cartTotalCount.toFixed(2)} на суму</span>
 				<b>{cartTotalPrice.toFixed(2)}</b> грн
+				<button
+					className="text-sm flex items-center ml-4"
+					onClick={onClearCart}
+				>
+					Очистити
+				</button>
 			</div>
 			<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
 				<Dialog.Portal>
 					<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-25" />
 					<Dialog.Content className="fixed shadow-lg top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2">
-						<Dialog.Title className="sr-only">видалити</Dialog.Title>
+						<Dialog.Title className="sr-only">Видалити</Dialog.Title>
 						<button
 							onClick={onRemoveClick}
 							className="px-5 py-3 bg-red-500 rounded-lg font-medium text-white"
