@@ -3,7 +3,6 @@ import * as Dialog from "@radix-ui/react-dialog";
 
 import { fetcher } from "../utils/fetcher";
 import CommentPopup from "../components/comment-popup";
-import { Link } from "wouter";
 
 export default function StatsPage() {
 	const { data: stats, isLoading } = useSWR(
@@ -20,9 +19,12 @@ export default function StatsPage() {
 	return (
 		<>
 			<header className="px-4 py-4">
-				<Link to="/" className="bg-sky-300 px-6 py-3 rounded-lg font-medium">
-					На головну
-				</Link>
+				<button
+					onClick={()=>window.history.back()}
+					className="bg-sky-300 px-6 py-3 rounded-lg font-medium"
+				>
+					Назад
+				</button>
 			</header>
 			<main className="flex">
 				{!isLoading &&
@@ -34,6 +36,7 @@ export default function StatsPage() {
 		</>
 	);
 }
+
 function Day({ day, documents }: { day: string; documents: any[] }) {
 	return (
 		<div className="w-3/6 flex flex-col items-center justify-start gap-3 mx-1">
