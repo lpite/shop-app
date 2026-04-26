@@ -30,7 +30,7 @@ type Product = {
 export default function PhotoStudio() {
 	const { pb_base_url } = useConfig();
 
-	const [filterStatus, setFilterStatus] = useState(null);
+	// const [filterStatus, setFilterStatus] = useState(null);
 	const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 	const [showAddPhotosDialog, setShowAddPhotosDialog] =
@@ -51,17 +51,17 @@ export default function PhotoStudio() {
 			>,
 	);
 
-	const { data: products } = useSWR(
-		"app/product",
-		() =>
-			fetcher({
-				url: `/shop/hs/app/product`,
-				method: "GET",
-			}) as Promise<
-				{ ref: string; name: string; searchCode: string; code: string }[]
-			>,
-		{ revalidateOnFocus: false },
-	);
+	// const { data: products } = useSWR(
+	// 	"app/product",
+	// 	() =>
+	// 		fetcher({
+	// 			url: `/shop/hs/app/product`,
+	// 			method: "GET",
+	// 		}) as Promise<
+	// 			{ ref: string; name: string; searchCode: string; code: string }[]
+	// 		>,
+	// 	{ revalidateOnFocus: false },
+	// );
 
 	return (
 		<main className="p-4">

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import useSWR from "swr";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
@@ -7,9 +7,6 @@ import {
 	ArrowLeft,
 	ArrowUp,
 	Check,
-	ChevronLeft,
-	CircleOff,
-	Folder,
 	MapPin,
 	Pencil,
 	Tags,
@@ -22,7 +19,7 @@ import { persist } from "zustand/middleware";
 import { Spinner } from "../components/spinner";
 
 import { fetcher } from "../utils/fetcher";
-import { StorageCell, useStorageCells } from "../api/odata";
+import { useStorageCells } from "../api/odata";
 import { getStorageCellCode } from "../utils/getStorageCellCode";
 import { StoragePlaceSelectorDialog } from "../components/storage-place-selector-dialog";
 
