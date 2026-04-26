@@ -1,14 +1,14 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
-import { State } from "./state";
+import { ProductDetailsDialog } from "./product-details-dialog-state";
 import { Product } from "../../../types/product";
 
-export default function ProductDetailsPopup() {
+export function ProductDetailsDialogPortal() {
 	const [open, setOpen] = useState(false);
 	const [product, setProduct] = useState<Product | undefined>();
 
 	useEffect(() => {
-		State.register(setOpen, setProduct);
+		ProductDetailsDialog.register(setOpen, setProduct);
 	}, []);
 
 	return (
@@ -31,6 +31,11 @@ export default function ProductDetailsPopup() {
 				<Dialog.Title className="text-3xl pb-8 font-medium">
 					Докладніше про товар
 				</Dialog.Title>
+				<div className="pb-4">
+					<button className="px-2 py-1 bg-red-100 rounded-lg">
+						Не можу знайти товар
+					</button>
+				</div>
 				<div className="h-full shrink overflow-y-auto flex flex-col">
 					<span className="font-medium">Опис / Додаткова інформація</span>
 					<span>

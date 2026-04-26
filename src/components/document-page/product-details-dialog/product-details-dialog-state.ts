@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { FTSProduct } from "../../../types/product";
 
-class PopupState {
+class ProductDetailsState {
 	//@ts-expect-error its okay.
 	private changeOpenState: Dispatch<SetStateAction<boolean>>;
 	//@ts-expect-error its okay.
@@ -30,4 +30,4 @@ class PopupState {
 	}
 }
 
-export const State = new PopupState();
+export const ProductDetailsDialog = new ProductDetailsState();

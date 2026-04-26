@@ -40,7 +40,6 @@ function createQueryForFTS(searchValue: string, exact: boolean) {
 				return `(${w} OR Ф${w}мм)`;
 			}
 
-			// if (!isNaN(Number(w[w.length - 1])) && w.length < 3) {
 			if (!isNaN(Number(w[w.length - 1]))) {
 				// не можна додавати зірочку в кінець коли останній символ цифра
 				return w;
@@ -61,11 +60,6 @@ interface UseSearch {
 	fts?: boolean;
 	exact?: boolean;
 }
-
-/**
- * @param {number} [fts] - do not use
- * @deprecated fts
- */
 
 export function useSearch({ exact = false }: UseSearch) {
 	const { query, history } = useSearchStore();

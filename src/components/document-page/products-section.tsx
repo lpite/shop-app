@@ -1,12 +1,15 @@
 import { CSSProperties, ReactNode, useEffect, useState } from "react";
-import { FTSProduct } from "../../types/product";
-import PhotoViewer from "../photo-viewer";
-import { State } from "./product-details/state";
-import Show from "../../utils/Show";
-import { usePosStore } from "../../stores/pos-store";
-
 import { Image } from "lucide-react";
+
+import PhotoViewer from "../photo-viewer";
+import { ProductDetailsDialog } from "./product-details-dialog/product-details-dialog-state";
+
+import Show from "../../utils/Show";
+
+import { usePosStore } from "../../stores/pos-store";
 import { useCartStore } from "../../stores/cart-store";
+
+import { FTSProduct } from "../../types/product";
 
 const cellStyles = "border px-1 py-2 box-border";
 
@@ -130,7 +133,9 @@ export default function ProductsSection({
 				<div className="flex select-none">
 					<div className="w-6 shrink-0"></div>
 					{columns.map((column) => (
-						<Cell width={column.width}>{column.label}</Cell>
+						<Cell key={`cell_${column.label}`} width={column.width}>
+							{column.label}
+						</Cell>
 					))}
 				</div>
 				{!isLoading && !items.length && !error ? (
@@ -151,7 +156,6 @@ export default function ProductsSection({
 								key={i}
 								onDoubleClick={() => onDoubleClick(product)}
 								onMouseDown={() => setSelectedProduct(product)}
-								onContextMenu={(e) => e.preventDefault()}
 							>
 								<div
 									className="w-6 shrink-0 flex items-center justify-center"
@@ -176,23 +180,22 @@ export default function ProductsSection({
 								<Cell width="100%" className="flex flex-col justify-between">
 									<div className="flex justify-between">
 										{product.name}
-
-										{product?.description?.length ? (
-											<button onClick={() => State.openPopup(product)}>
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													width="16"
-													height="16"
-													fill="currentColor"
-													viewBox="0 0 16 16"
-												>
-													<path
-														fillRule="evenodd"
-														d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"
-													/>
-												</svg>
-											</button>
-										) : null}
+										<button
+											onClick={() => ProductDetailsDialog.openPopup(product)}
+										>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												fill="currentColor"
+												viewBox="0 0 16 16"
+											>
+												<path
+													fillRule="evenodd"
+													d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"
+												/>
+											</svg>
+										</button>
 									</div>
 									<span
 										className="text-xs line-clamp-1 text-gray-600 mt-1"

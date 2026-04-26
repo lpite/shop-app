@@ -6,7 +6,6 @@ import { StorageCell, useStorageCells } from "../api/odata";
 
 const EMPTY_REF = "00000000-0000-0000-0000-000000000000";
 
-
 type StoragePlaceSelectorDialogProps = {
 	title: string;
 	setPlace: (placeRef: string) => void;
@@ -17,8 +16,8 @@ export function StoragePlaceSelectorDialog({
 	title,
 	setPlace,
 	place,
-}:StoragePlaceSelectorDialogProps) {
-const { data: places, isLoading: isLoadingPlaces } = useStorageCells();
+}: StoragePlaceSelectorDialogProps) {
+	const { data: places, isLoading: isLoadingPlaces } = useStorageCells();
 
 	const [lastPlaces, setLastPlaces] = useState<string[]>([]);
 	const [path, setPath] = useState<string[]>([EMPTY_REF]);

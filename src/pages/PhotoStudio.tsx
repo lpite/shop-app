@@ -115,7 +115,7 @@ export default function PhotoStudio() {
 									{status === "new" ? (
 										<span className="absolute end-1 top-1 size-3 block bg-blue-200 rounded-full"></span>
 									) : null}
-										{status === "ready" ? (
+									{status === "ready" ? (
 										<span className="absolute end-1 top-1 size-3 block bg-green-600 rounded-full"></span>
 									) : null}
 									<img

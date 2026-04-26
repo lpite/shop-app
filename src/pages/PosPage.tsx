@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import CartSection from "../components/document-page/cart-section";
 import ProductsSection from "../components/document-page/products-section";
 import Header from "../components/document-page/header";
-import ProductDetailsPopup from "../components/document-page/product-details/popup";
+import { ProductDetailsDialogPortal } from "../components/document-page/product-details-dialog/product-details-dialog-portal";
 import { useSearch } from "../hooks/useSearch";
 import { getPageColor } from "../utils/getPageColor";
 import { useParams } from "wouter";
@@ -39,7 +39,7 @@ export default function PosPage() {
 			onMouseMove={resize}
 			ref={pageRef}
 		>
-			<ProductDetailsPopup />
+			<ProductDetailsDialogPortal />
 			{isLoadingProducts ? (
 				<div className="fixed z-10 start-0 top-0 end-0 right-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center">
 					<div className="w-24 h-24 border-8 border-sky-500 rounded-full border-t-transparent animate-spin"></div>
