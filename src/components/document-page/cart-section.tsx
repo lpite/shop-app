@@ -61,12 +61,14 @@ export default function CartSection() {
 			<div className="flex gap-1 text-xl select-none py-2 pb-1">
 				<span>Підібрано {cartTotalCount.toFixed(2)} на суму</span>
 				<b>{cartTotalPrice.toFixed(2)}</b> грн
-				<button
-					className="text-sm flex items-center ml-4"
-					onClick={onClearCart}
-				>
-					Очистити
-				</button>
+				{cartProducts.length ? (
+					<button
+						className="text-sm flex items-center ml-4"
+						onClick={onClearCart}
+					>
+						Очистити
+					</button>
+				) : null}
 			</div>
 			<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
 				<Dialog.Portal>

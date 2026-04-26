@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useSearch } from "../../hooks/useSearch";
+import { Search } from "lucide-react";
+import { useHotkey } from "@tanstack/react-hotkeys";
 
 export default function SearchForm() {
 	const [exactSearch, setExactSearch] = useState(false);
@@ -30,11 +32,12 @@ export default function SearchForm() {
 
 	const inputRef = useRef<HTMLInputElement>(null);
 
+	useHotkey("F2", () => {
+		inputRef.current?.focus();
+	});
+
 	useEffect(() => {
 		function listener(e: KeyboardEvent) {
-			if (e.key === "F2" && e.target === document.body) {
-				inputRef.current?.focus();
-			}
 			if (e.key === "Escape" && e.target === inputRef.current) {
 				inputRef.current?.blur();
 			}
@@ -56,18 +59,10 @@ export default function SearchForm() {
 					ref={inputRef}
 				/>
 				<button
-					disabled={isValidatingProducts || isValidatingProducts}
+					disabled={isValidatingProducts || isValidatingProducts || !query}
 					className="mx-2 border-2 h-10 px-3 rounded-lg bg-sky-600 text-white hover:bg-sky-500 disabled:bg-slate-400"
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						fill="currentColor"
-						viewBox="0 0 16 16"
-					>
-						<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-					</svg>
+					<Search />
 				</button>
 				<label className="shrink-0 flex gap-2 items-center h-10 mr-2">
 					<input

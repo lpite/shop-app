@@ -10,6 +10,7 @@ import { usePosStore } from "../../stores/pos-store";
 import { useCartStore } from "../../stores/cart-store";
 
 import { FTSProduct } from "../../types/product";
+import { useHotkey } from "@tanstack/react-hotkeys";
 
 const cellStyles = "border px-1 py-2 box-border";
 
@@ -89,6 +90,13 @@ export default function ProductsSection({
 	function onDoubleClick(product: FTSProduct) {
 		addToCart({ ...product, quantity: 1 });
 	}
+
+	useHotkey("Enter", () => {
+		if (!selectedProduct) {
+			return;
+		}
+		addToCart({ ...selectedProduct, quantity: 1 });
+	});
 
 	useEffect(() => {
 		const handler = (event: KeyboardEvent) => {

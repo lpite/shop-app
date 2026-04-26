@@ -1,9 +1,9 @@
 import useSWR from "swr";
-import { fetcher } from "../utils/fetcher";
-import { FTSProduct } from "../types/product";
-
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+
+import { fetcher } from "../utils/fetcher";
+import { FTSProduct } from "../types/product";
 
 export const useSearchStore = create<{ query: string; history: string[] }>()(
 	persist(
@@ -90,6 +90,10 @@ export function useSearch({ exact = false }: UseSearch) {
 	};
 
 	const search = () => {
+		if (!query.length) {
+			return;
+		}
+
 		if (history[0] !== query) {
 			useSearchStore.setState({
 				history: [query, ...history.slice(0, 10)],

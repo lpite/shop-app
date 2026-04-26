@@ -1,7 +1,7 @@
-import { useEffect } from "react";
 import useSWR from "swr";
 import { Link, useParams } from "wouter";
 import { House } from "lucide-react";
+import { useHotkey } from "@tanstack/react-hotkeys";
 
 import SearchForm from "./search-form";
 import CommentPopup from "../comment-popup";
@@ -66,15 +66,9 @@ export default function Header() {
 		}
 	}
 
-	useEffect(() => {
-		function listener(e: KeyboardEvent) {
-			if (e.key === "F9" && e.target === document.body) {
-				saveCart();
-			}
-		}
-		document.addEventListener("keydown", listener);
-		return () => document.removeEventListener("keydown", listener);
-	}, [saveCart]);
+	useHotkey("F9", () => {
+		saveCart();
+	});
 
 	return (
 		<header
