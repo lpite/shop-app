@@ -1,15 +1,35 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { ProductDetailsDialog } from "./product-details-dialog-state";
-import { Product } from "../../../types/product";
+import { FTSProduct } from "../../../types/product";
+import { useConfig } from "../../../stores/config-store";
 
 export function ProductDetailsDialogPortal() {
+	const { pb_base_url } = useConfig();
+
 	const [open, setOpen] = useState(false);
-	const [product, setProduct] = useState<Product | undefined>();
+	const [product, setProduct] = useState<FTSProduct | undefined>();
 
 	useEffect(() => {
 		ProductDetailsDialog.register(setOpen, setProduct);
 	}, []);
+
+	async function createProductIssue(issue: "MISSING" | "WRONG_PHOTO") {
+		if (!confirm("Дійсно?")) {
+			return;
+		}
+		await fetch(`${pb_base_url}/api/collections/product_issue/records`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				product_id: product?.id,
+				status: "OPEN",
+				issue_type: issue,
+			}),
+		});
+	}
 
 	return (
 		<Dialog.Root open={open} onOpenChange={setOpen}>
@@ -31,9 +51,18 @@ export function ProductDetailsDialogPortal() {
 				<Dialog.Title className="text-3xl pb-8 font-medium">
 					Докладніше про товар
 				</Dialog.Title>
-				<div className="pb-4">
-					<button className="px-2 py-1 bg-red-100 rounded-lg">
-						Не можу знайти товар
+				<div className="pb-4 flex gap-3">
+					<button
+						className="px-2 py-1 bg-red-200 rounded-lg"
+						onClick={() => createProductIssue("MISSING")}
+					>
+						Не можу знайти
+					</button>
+					<button
+						className="px-2 py-1 bg-yellow-200 rounded-lg"
+						onClick={() => createProductIssue("WRONG_PHOTO")}
+					>
+						Неправильне фото
 					</button>
 				</div>
 				<div className="h-full shrink overflow-y-auto flex flex-col">

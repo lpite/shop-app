@@ -5,7 +5,7 @@ class ProductDetailsState {
 	//@ts-expect-error its okay.
 	private changeOpenState: Dispatch<SetStateAction<boolean>>;
 	//@ts-expect-error its okay.
-	private productState: Dispatch<SetStateAction<Product | undefined>>;
+	private productState: Dispatch<SetStateAction<FTSProduct | undefined>>;
 
 	register(s: typeof this.changeOpenState, p: typeof this.productState) {
 		this.changeOpenState = s;
