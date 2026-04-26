@@ -187,12 +187,14 @@ export default function ProductsSection({
 											<EllipsisVertical />
 										</button>
 									</div>
-									<span
-										className="text-xs line-clamp-1 text-gray-600 mt-1"
-										dangerouslySetInnerHTML={{
-											__html: `<span style="display:flex;gap:5px">Знайдено: ${extractFoundByValue(product.foundBy)}</span>`,
-										}}
-									></span>
+									<span className="text-xs text-gray-600 mt-1 flex">
+										Знайдено:
+										<span
+											dangerouslySetInnerHTML={{
+												__html: `<span class="line-clamp-1 h-4">${extractFoundByValue(product.foundBy)}</span>`,
+											}}
+										></span>
+									</span>
 								</Cell>
 								<Cell width={columns[3].width}>
 									<span className="line-clamp-1" title={product.brand}>
@@ -234,7 +236,6 @@ export default function ProductsSection({
 					) : null}
 				</div>
 			</div>
-			{/*<div className="w-96 border-l-2 p-2"></div>*/}
 		</div>
 	);
 }
