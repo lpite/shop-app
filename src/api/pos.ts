@@ -14,7 +14,7 @@ async function sellProducts({ agentName, partnerId, products }: Sell) {
 		body: {
 			partnerId,
 			agentName,
-			products,
+			products: products.map((el) => ({ ...el, searchCode: el.id.slice(7) })),
 		},
 	}).catch((err) => {
 		console.error(err);
