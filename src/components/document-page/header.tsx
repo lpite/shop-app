@@ -1,17 +1,20 @@
+import { useEffect } from "react";
 import useSWR from "swr";
+import { Link, useParams } from "wouter";
+import { House } from "lucide-react";
 
 import SearchForm from "./search-form";
 import CommentPopup from "../comment-popup";
 import { CatalogDialog } from "./catalog-dialog";
-import { Link, useParams } from "wouter";
 import SearchHistoryPopup from "../search-history-popup";
-import { useSearch } from "../../hooks/useSearch";
 import { getPageColor } from "../../utils/getPageColor";
-import { useEffect } from "react";
 import { ClientSelector } from "./client-selector";
-import { House } from "lucide-react";
+
+import { useSearch } from "../../hooks/useSearch";
+
 import { pos } from "../../api/pos";
 import { client } from "../../api/client";
+
 import { useCartStore } from "../../stores/cart-store";
 
 export default function Header() {
@@ -62,6 +65,7 @@ export default function Header() {
 			alert("Не вдалося перенести!");
 		}
 	}
+
 	useEffect(() => {
 		function listener(e: KeyboardEvent) {
 			if (e.key === "F9" && e.target === document.body) {
