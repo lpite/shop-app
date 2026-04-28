@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 
 export function OrderNotifier() {
-	const { order_notification_url } = useConfig();
+	const { pb_base_url } = useConfig();
 	const { orderCount } = useOrderNotification();
 	const [newOrder, setNewOrder] = useState(false);
 
@@ -15,9 +15,9 @@ export function OrderNotifier() {
 	const isDev = import.meta.env.MODE === "development";
 
 	const { data, error } = useSWR(
-		(order_notification_url && "order-count") || null,
+		pb_base_url ? pb_base_url : null,
 		() =>
-			fetch(order_notification_url)
+			fetch(`${pb_base_url}/api/collections/kv/records`)
 				.then((r) => r.json())
 				.then((json) => json.items[0].value)
 				.then((newCount) => {
