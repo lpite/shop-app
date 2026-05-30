@@ -2,15 +2,12 @@ import { Check, TriangleAlert, X } from "lucide-react";
 import { useConfig } from "../../stores/config-store";
 import { useOrderNotification } from "./store";
 import useSWR from "swr";
-import { useEffect, useState } from "react";
-import { useLocation } from "wouter";
+import { useState } from "react";
 
 export function OrderNotifier() {
 	const { pb_base_url } = useConfig();
 	const { orderCount } = useOrderNotification();
 	const [newOrder, setNewOrder] = useState(false);
-
-	const [location, navigate] = useLocation();
 
 	const isDev = import.meta.env.MODE === "development";
 
@@ -42,11 +39,6 @@ export function OrderNotifier() {
 		setNewOrder(false);
 		useOrderNotification.setState({ orderCount: data });
 	}
-	useEffect(() => {
-		if (!order_notification_url && location !== "/config") {
-			navigate("/config");
-		}
-	}, []);
 
 	if (!newOrder && !error) {
 		return null;
