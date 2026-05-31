@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import {
 	Download,
@@ -9,12 +10,13 @@ import {
 	Upload,
 	X,
 } from "lucide-react";
-import { useConfig } from "../stores/config-store";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useEffect, useRef, useState } from "react";
+import { useDebounce } from "@uidotdev/usehooks";
+import { toast } from "sonner";
+
+import { useConfig } from "../stores/config-store";
 import { fetcher } from "../utils/fetcher";
 import { CMDK } from "../components/cmdk";
-import { useDebounce } from "@uidotdev/usehooks";
 
 const photoStatuses = ["new", "ready", "junk", "maybe", "uploaded"] as const;
 
@@ -31,7 +33,10 @@ export default function PhotoStudio() {
 	const { pb_base_url } = useConfig();
 
 	// const [filterStatus, setFilterStatus] = useState(null);
-	const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+	const [photoDialogState, setPhotoDialogState] = useState<{
+		photo: Photo;
+		product_ref: string;
+	} | null>(null);
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 	const [showAddPhotosDialog, setShowAddPhotosDialog] =
 		useState<boolean>(false);
@@ -51,24 +56,24 @@ export default function PhotoStudio() {
 			>,
 	);
 
-	// const { data: products } = useSWR(
-	// 	"app/product",
-	// 	() =>
-	// 		fetcher({
-	// 			url: `/shop/hs/app/product`,
-	// 			method: "GET",
-	// 		}) as Promise<
-	// 			{ ref: string; name: string; searchCode: string; code: string }[]
-	// 		>,
-	// 	{ revalidateOnFocus: false },
-	// );
+	const { data: products } = useSWR(
+		"app/product",
+		() =>
+			fetcher({
+				url: `/shop/hs/app/product`,
+				method: "GET",
+			}) as Promise<
+				{ ref: string; name: string; searchCode: string; code: string }[]
+			>,
+		{ revalidateOnFocus: false },
+	);
 
 	return (
 		<main className="p-4">
 			<PhotoDialog
-				show={selectedPhoto !== null}
-				onClose={() => setSelectedPhoto(null)}
-				photo={selectedPhoto}
+				show={photoDialogState !== null}
+				onClose={() => setPhotoDialogState(null)}
+				state={photoDialogState}
 			/>
 			<div className="py-2 flex gap-3 sticky top-0 bg-white z-10">
 				<AddPhotosDialog
@@ -98,16 +103,20 @@ export default function PhotoStudio() {
 						key={product_ref}
 						className="flex flex-col border w-full p-2 relative rounded-xl"
 					>
-						<span className="">
-							Назва товару
-							{/*{products?.find((p) => p.ref === product_ref)?.name}*/}
+						<span className="text-gray-700 pb-2">
+							{products?.find((p) => p.ref === product_ref)?.name}
 						</span>
 						<div className="flex gap-2 overflow-hidden">
 							{photos.map(({ file, id, status }) => (
 								<button
 									key={file}
 									className="group relative"
-									onClick={() => setSelectedPhoto({ file, id, status })}
+									onClick={() =>
+										setPhotoDialogState({
+											photo: { file, id, status },
+											product_ref,
+										})
+									}
 								>
 									<span className="flex items-center justify-center bg-gray-100/55 absolute top-0 start-0 w-full h-full pointer-events-none opacity-0 group-hover:opacity-100 rounded-xl">
 										<Eye className="size-10" />
@@ -413,26 +422,38 @@ function AddPhotosDialog({
 type PhotoDialogProps = {
 	show: boolean;
 	onClose: () => void;
-	photo: Photo | null;
+	state?: { photo: Photo; product_ref: string };
 };
 
-function PhotoDialog({ show, onClose, photo }: PhotoDialogProps) {
+function PhotoDialog({ show, onClose, state }: PhotoDialogProps) {
 	const { pb_base_url } = useConfig();
 	const [photoStatus, setPhotoStatus] = useState<PhotoStatus | null>(null);
 
-	useEffect(() => {
-		if (photo?.status) {
-			setPhotoStatus(photo.status);
-		}
-	}, [photo?.status]);
+	const { data: products } = useSWR(
+		"app/product",
+		() =>
+			fetcher({
+				url: `/shop/hs/app/product`,
+				method: "GET",
+			}) as Promise<
+				{ ref: string; name: string; searchCode: string; code: string }[]
+			>,
+		{ revalidateOnFocus: false },
+	);
 
-	if (!photo) {
+	useEffect(() => {
+		if (state?.photo.status) {
+			setPhotoStatus(state.photo.status);
+		}
+	}, [state?.photo.status]);
+
+	if (!state) {
 		return null;
 	}
 
 	async function updatePhotoStatus() {
 		await fetch(
-			`${pb_base_url}/api/collections/photo_product_link/records/${photo?.id}`,
+			`${pb_base_url}/api/collections/photo_product_link/records/${state?.photo.id}`,
 			{
 				method: "PATCH",
 				body: JSON.stringify({
@@ -446,6 +467,47 @@ function PhotoDialog({ show, onClose, photo }: PhotoDialogProps) {
 			if (!r.ok) {
 				alert(":(");
 			}
+		});
+	}
+
+	function generateFolderName() {
+		const date = new Date();
+
+		return `${date.getFullYear()}_${date.getMonth()}_${date.getDate()}`;
+	}
+
+	async function savePhoto() {
+		const photoResponse = await fetcher<{ Ref_Key: string } | null>({
+			method: "POST",
+			url: "/shop/odata/standard.odata/Catalog_НоменклатураПрисоединенныеФайлы?$format=json",
+			body: {
+				Description: state?.photo.file,
+				ВладелецФайла_Key: state?.product_ref,
+				ПутьКФайлу: `${generateFolderName()}/${state?.photo.file}`,
+				Том_Key: "dbeb54b3-beb5-11ee-94c1-a8a1591442c4",
+				ТипХраненияФайла: "ВТомахНаДиске",
+				ДатаСоздания: new Date().toISOString(),
+				ДатаМодификацииУниверсальная: new Date().toISOString(),
+			},
+		});
+
+		if (!photoResponse) {
+			toast("Помилка", {
+				className: "bg-green-600",
+			});
+			return;
+		}
+
+		await fetcher({
+			method: "PATCH",
+			url: `/shop/odata/standard.odata/Catalog_Номенклатура(guid'${state?.product_ref}')?$format=json`,
+			body: {
+				ФайлКартинки_Key: photoResponse.Ref_Key,
+			},
+		});
+
+		toast("Успішно", {
+			className: "bg-green-600",
 		});
 	}
 
@@ -471,7 +533,7 @@ function PhotoDialog({ show, onClose, photo }: PhotoDialogProps) {
 					<Dialog.Title className="sr-only">Фото</Dialog.Title>
 					<img
 						className="h-full rounded-lg object-cover"
-						src={`${pb_base_url}/api/files/photo_product_link/${photo.id}/${photo.file}`}
+						src={`${pb_base_url}/api/files/photo_product_link/${state.photo.id}/${state.photo.file}`}
 					/>
 					<div className="flex justify-between">
 						<div className="flex gap-2">
@@ -486,7 +548,7 @@ function PhotoDialog({ show, onClose, photo }: PhotoDialogProps) {
 							</select>
 							<button
 								className="border p-3 rounded-lg hover:shadow-lg disabled:hover:shadow-none duration-75 disabled:opacity-35"
-								disabled={photo.status === photoStatus}
+								disabled={state.photo.status === photoStatus}
 								onClick={updatePhotoStatus}
 							>
 								<Save className="size-4" />
@@ -494,8 +556,8 @@ function PhotoDialog({ show, onClose, photo }: PhotoDialogProps) {
 							<button
 								onClick={() =>
 									downloadPhoto(
-										`${pb_base_url}/api/files/photo_product_link/${photo.id}/${photo.file}`,
-										photo.file,
+										`${pb_base_url}/api/files/photo_product_link/${state.photo.id}/${state.photo.file}`,
+										state.photo.file,
 									)
 								}
 								className="border p-3 rounded-lg hover:shadow-lg disabled:hover:shadow-none duration-75 disabled:opacity-35"
@@ -506,7 +568,8 @@ function PhotoDialog({ show, onClose, photo }: PhotoDialogProps) {
 
 						<button
 							className="border p-3 rounded-lg hover:shadow-lg disabled:hover:shadow-none duration-75 disabled:opacity-35"
-							disabled={photo.status !== "ready"}
+							disabled={state.photo.status !== "ready"}
+							onClick={savePhoto}
 						>
 							<SendHorizonal className="size-4" />
 						</button>

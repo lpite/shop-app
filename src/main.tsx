@@ -2,6 +2,7 @@ import { lazy, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { SWRConfig } from "swr";
 import { Route, Switch } from "wouter";
+import { Toaster } from "sonner";
 
 import "./index.css";
 
@@ -43,6 +44,7 @@ createRoot(document.getElementById("root")!).render(
 		>
 			<SWRConfig value={{ provider: () => new Map() }}>
 				<OrderNotifier />
+				<Toaster />
 				<Switch>
 					<Route path="/" component={StartPage} />
 					<Route path="/clients/" component={ClientSelectionPage} />
