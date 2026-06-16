@@ -492,9 +492,7 @@ function PhotoDialog({ show, onClose, state }: PhotoDialogProps) {
 		});
 
 		if (!photoResponse) {
-			toast("Помилка", {
-				className: "bg-green-600",
-			});
+			toast("Помилка");
 			return;
 		}
 

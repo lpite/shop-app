@@ -44,7 +44,7 @@ createRoot(document.getElementById("root")!).render(
 		>
 			<SWRConfig value={{ provider: () => new Map() }}>
 				<OrderNotifier />
-				<Toaster />
+				<Toaster richColors={true} />
 				<Switch>
 					<Route path="/" component={StartPage} />
 					<Route path="/clients/" component={ClientSelectionPage} />
