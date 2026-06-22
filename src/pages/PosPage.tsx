@@ -7,6 +7,9 @@ import { useSearch } from "../hooks/useSearch";
 import { getPageColor } from "../utils/getPageColor";
 import { useParams } from "wouter";
 import { usePosStore } from "../stores/pos-store";
+import { useBarcodeScanner } from "../hooks/useBarcodeScanner";
+import { BarcodeDialog } from "../components/document-page/barcode-dialog/barcode-dialog-state";
+import { BarcodeDialogPortal } from "../components/document-page/barcode-dialog/barcode-dialog-portal";
 
 export default function PosPage() {
 	const pageRef = useRef<HTMLDivElement>(null);
@@ -32,6 +35,10 @@ export default function PosPage() {
 			isResizing: false,
 		}));
 
+	useBarcodeScanner((barcode) => {
+		BarcodeDialog.openPopup(barcode);
+	});
+
 	return (
 		<div
 			className={`h-full overflow-hidden flex flex-col ${getPageColor(partnerId, type)}`}
@@ -40,6 +47,7 @@ export default function PosPage() {
 			ref={pageRef}
 		>
 			<ProductDetailsDialogPortal />
+			<BarcodeDialogPortal />
 			{isLoadingProducts ? (
 				<div className="fixed z-10 start-0 top-0 end-0 right-0 bg-black bg-opacity-50 w-full h-full flex items-center justify-center">
 					<div className="w-24 h-24 border-8 border-sky-500 rounded-full border-t-transparent animate-spin"></div>
