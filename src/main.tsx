@@ -27,6 +27,8 @@ const PlaceChangeSuggestionReport = lazy(
 const IncomeDocumentHelper = lazy(
 	() => import("./pages/IncomeDocumentHelper.tsx"),
 );
+const ScannerPage = lazy(() => import("./pages/ScannerPage.tsx"));
+
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
@@ -72,6 +74,7 @@ createRoot(document.getElementById("root")!).render(
 					/>
 					<Route path="/product-editor" component={ProductEditor} />
 					<Route path="/photo-studio" component={PhotoStudio} />
+					<Route path="/scanner" component={ScannerPage} />
 				</Switch>
 			</SWRConfig>
 		</ErrorBoundary>
