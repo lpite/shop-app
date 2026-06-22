@@ -22,6 +22,24 @@ export function useStorageCells(config?: SWRConfiguration<StorageCell[]>) {
 	return useSWR("odata/catalog/storage-cells", odata.getStorageCells, config);
 }
 
+export async function getBarcodeProductLinks(barcode:string) {
+	return fetcher<{
+		value: {
+			Штрихкод: string;
+			Номенклатура_Key: string;
+			Характеристика_Key: string;
+			Упаковка_Key: string;
+		}[];
+	}>({
+		url: `/shop/odata/standard.odata/InformationRegister_ШтрихкодыНоменклатуры?$format=json&$filter=Штрихкод eq '${barcode}'`,
+		method: "GET",
+	});
+}
+
+export async function getProduct() {
+	
+}
+
 export const odata = {
 	getStorageCells,
 };
