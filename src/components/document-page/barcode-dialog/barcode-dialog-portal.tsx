@@ -70,7 +70,9 @@ export function BarcodeDialogPortal() {
 					Знайдено за штрихкодом
 				</Dialog.Title>
 				{!barcodeProducts.length ? (
-					<div className="h-full flex items-center justify-center text-xl">Не знайдено товар за штрихкодом</div>
+					<div className="h-full flex items-center justify-center text-xl">
+						Не знайдено товар за штрихкодом
+					</div>
 				) : null}
 				{barcodeProducts.map((product) => (
 					<div
@@ -91,7 +93,7 @@ export function BarcodeDialogPortal() {
 						<button
 							className="border py-1 px-2 rounded-lg bg-sky-400"
 							onClick={() => {
-							//TODO Так не можна робити
+								//TODO Так не можна робити
 								addToCart({ ...product, id: "", foundBy: "", quantity: 1 });
 								setOpen(false);
 							}}

@@ -29,7 +29,6 @@ const IncomeDocumentHelper = lazy(
 );
 const ScannerPage = lazy(() => import("./pages/ScannerPage.tsx"));
 
-
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<ErrorBoundary

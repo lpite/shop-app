@@ -22,7 +22,7 @@ export function useStorageCells(config?: SWRConfiguration<StorageCell[]>) {
 	return useSWR("odata/catalog/storage-cells", odata.getStorageCells, config);
 }
 
-export async function getBarcodeProductLinks(barcode:string) {
+export async function getBarcodeProductLinks(barcode: string) {
 	return fetcher<{
 		value: {
 			Штрихкод: string;
@@ -36,9 +36,7 @@ export async function getBarcodeProductLinks(barcode:string) {
 	});
 }
 
-export async function getProduct() {
-	
-}
+export async function getProduct() {}
 
 export const odata = {
 	getStorageCells,

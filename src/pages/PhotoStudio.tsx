@@ -422,24 +422,24 @@ function AddPhotosDialog({
 type PhotoDialogProps = {
 	show: boolean;
 	onClose: () => void;
-	state?: { photo: Photo; product_ref: string };
+	state?: { photo: Photo; product_ref: string } | null;
 };
 
 function PhotoDialog({ show, onClose, state }: PhotoDialogProps) {
 	const { pb_base_url } = useConfig();
 	const [photoStatus, setPhotoStatus] = useState<PhotoStatus | null>(null);
 
-	const { data: products } = useSWR(
-		"app/product",
-		() =>
-			fetcher({
-				url: `/shop/hs/app/product`,
-				method: "GET",
-			}) as Promise<
-				{ ref: string; name: string; searchCode: string; code: string }[]
-			>,
-		{ revalidateOnFocus: false },
-	);
+	// const { data: products } = useSWR(
+	// 	"app/product",
+	// 	() =>
+	// 		fetcher({
+	// 			url: `/shop/hs/app/product`,
+	// 			method: "GET",
+	// 		}) as Promise<
+	// 			{ ref: string; name: string; searchCode: string; code: string }[]
+	// 		>,
+	// 	{ revalidateOnFocus: false },
+	// );
 
 	useEffect(() => {
 		if (state?.photo.status) {
