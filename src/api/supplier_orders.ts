@@ -31,7 +31,7 @@ export async function getSuplierOrders(): Promise<
 	const { pb_base_url } = useConfig.getState();
 
 	return await fetch(
-		`${pb_base_url}/api/collections/supplier_order_with_products/records`,
+		`${pb_base_url}/api/collections/supplier_order_with_products/records?perPage=10`,
 	)
 		.then((r) => r.json())
 		.then((r) => r.items)

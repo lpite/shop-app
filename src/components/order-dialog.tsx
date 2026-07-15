@@ -232,6 +232,9 @@ export function OrderDialog() {
 											);
 											const balance = total - order.deposit;
 											const editing = order.id === editingOrderId;
+											const orderStatus = orderStatuses?.find(
+												(s) => s.id === order.status,
+											);
 
 											return (
 												<div
@@ -273,7 +276,7 @@ export function OrderDialog() {
 																))}
 															</div>
 															<div>
-																<button>Замовлення оплачене</button>
+																{/*<button>Замовлення оплачене</button>*/}
 															</div>
 														</div>
 													) : null}
@@ -287,14 +290,10 @@ export function OrderDialog() {
 																</h3>
 																<span
 																	className={`text-xs px-2 py-0.5 rounded-full border capitalize ${getStatusColor(
-																		orderStatuses?.find(
-																			(s) => s.id === order.status,
-																		)?.name,
+																		orderStatus?.name,
 																	)}`}
 																>
-																	{orderStatuses?.find(
-																		(s) => s.id === order.status,
-																	)?.label || "Помилка"}
+																	{orderStatus?.label || "Помилка"}
 																</span>
 																<span>
 																	id:{" "}
