@@ -166,7 +166,7 @@ export async function getCustomer(
 		});
 }
 
-type Supplier = {
+export type Supplier = {
 	id: string;
 	name: string;
 };
