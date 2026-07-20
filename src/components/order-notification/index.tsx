@@ -24,7 +24,7 @@ export function OrderNotifier() {
 					return newCount;
 				}),
 		{
-			refreshInterval: 3000,
+			refreshInterval: 20000,
 		},
 	);
 
