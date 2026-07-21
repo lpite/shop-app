@@ -33,13 +33,16 @@ export function BarcodeDialogPortal() {
 			return;
 		}
 		async function findProductByBarcode() {
-			//@ts-expect-error its fine :)
-			const links = await getBarcodeProductLinks(barcode).then((l) => l.value);
+			if (!barcode) {
+				return;
+			}
+
+			const links = await getBarcodeProductLinks(barcode);
 			setBarcodeProducts([]);
 			links.forEach((link) => {
 				const product = products?.find((p) => p.ref === link.Номенклатура_Key);
 				if (!product) {
-					console.error("wtf");
+					console.error("cant find product by link");
 					return;
 				}
 				setBarcodeProducts((b) => [...b, product]);

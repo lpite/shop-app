@@ -33,7 +33,7 @@ export async function getBarcodeProductLinks(barcode: string) {
 	}>({
 		url: `/shop/odata/standard.odata/InformationRegister_ШтрихкодыНоменклатуры?$format=json&$filter=Штрихкод eq '${barcode}'`,
 		method: "GET",
-	});
+	}).then((r) => r.value);
 }
 
 export async function getProduct() {}
