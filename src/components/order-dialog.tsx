@@ -84,7 +84,7 @@ export function OrderDialog() {
 	return (
 		<Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
 			<Dialog.Trigger asChild>
-				<button className="bg-fuchsia-200 hover:bg-fuchsia-300 text-gray-800 px-3 h-10 rounded-lg shadow-md font-semibold">
+				<button className="bg-fuchsia-200 hover:bg-fuchsia-300 text-gray-800 px-3 h-10 rounded-lg shadow-md">
 					Замовлення
 				</button>
 			</Dialog.Trigger>
@@ -440,7 +440,6 @@ function OrderCreationForm({
 		);
 
 		mutateOrders();
-		// resetForm();
 		setView("list");
 	};
 
