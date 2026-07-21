@@ -1,13 +1,40 @@
 import { toast } from "sonner";
 import { useConfig } from "../stores/config-store";
 
-type SupplierOrder = {
+type SupplierOrderCreate = {
 	id: string;
 	date: string;
 	deposit: number;
 	car_vin: string;
-	car_name: string;
-	status: string;
+	car: string;
+	status_id: string;
+};
+
+type SupplierOrderSelect = {
+	id: string;
+	date: string;
+	deposit: number;
+	car_vin: string;
+	car: string;
+	status: {
+		name: string;
+		label: string;
+	};
+	customer: {
+		id: string;
+		phone_number: string;
+		name: string;
+		notes: string;
+		restricted: boolean;
+	};
+	products: {
+		id: string;
+		article: string;
+		name: string;
+		price: number;
+		quantity: number;
+		supplier: string;
+	}[];
 };
 
 type SupplierOrderProduct = {
@@ -19,15 +46,7 @@ type SupplierOrderProduct = {
 	supplier_id: string;
 };
 
-export type SupplierOrderWithProductsAndCustomer = SupplierOrder & {
-	customer: Customer;
-} & {
-	products: SupplierOrderProduct[];
-};
-
-export async function getSuplierOrders(): Promise<
-	SupplierOrderWithProductsAndCustomer[]
-> {
+export async function getSuplierOrders(): Promise<SupplierOrderSelect[]> {
 	const { pb_base_url } = useConfig.getState();
 
 	return await fetch(
@@ -43,7 +62,7 @@ export async function getSuplierOrders(): Promise<
 }
 
 export async function createOrder(
-	order: Omit<SupplierOrder, "id" | "date">,
+	order: Omit<SupplierOrderCreate, "id" | "date" | "status_id">,
 	customer: Omit<Customer, "id">,
 	products: Omit<SupplierOrderProduct, "id">[],
 ) {
@@ -80,7 +99,7 @@ export async function createOrder(
 			body: JSON.stringify({
 				order,
 				customer_id: customerId,
-				status: "05thvo36e5fdj19",
+				status_id: "05thvo36e5fdj19",
 			}),
 			headers: {
 				"Content-Type": "application/json",
@@ -207,6 +226,28 @@ export async function getOrderStatuses(): Promise<SupplierOrderStatus[]> {
 		.catch((err) => {
 			console.error(err);
 			toast.error("Помилка отримання статусів замовлень");
+			return [];
+		});
+}
+
+export async function getOrdersCountByStatus(): Promise<
+	{
+		id: string;
+		count: number;
+		status_name: string;
+		status_label: string;
+	}[]
+> {
+	const { pb_base_url } = useConfig.getState();
+
+	return await fetch(
+		`${pb_base_url}/api/collections/supplier_orders_count_by_status/records`,
+	)
+		.then((r) => r.json())
+		.then((r) => r.items)
+		.catch((err) => {
+			console.error(err);
+			toast.error("Помилка отримання замовлень агрегованих по статусам");
 			return [];
 		});
 }

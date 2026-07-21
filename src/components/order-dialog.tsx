@@ -9,10 +9,11 @@ import {
 	getSuplierOrders,
 	getSuppliers,
 	createOrder,
-	SupplierOrderWithProductsAndCustomer,
 	updateOrder,
 	Supplier,
+	getOrdersCountByStatus,
 } from "../api/supplier_orders";
+import { ArrayElement } from "../types/ArrayElement";
 
 function formatPhoneNumber(phoneNumber: string) {
 	return `${phoneNumber.slice(0, 3)} ${phoneNumber.slice(3, 6)} ${phoneNumber.slice(6, 8)} ${phoneNumber.slice(8, 10)}`;
@@ -28,6 +29,9 @@ export function OrderDialog() {
 	const { data: suppliers } = useSWR("suppliers", () => getSuppliers());
 	const { data: orderStatuses } = useSWR("order_statuses", () =>
 		getOrderStatuses(),
+	);
+	const { data: ordersCountByStatus } = useSWR("orders_count_by_status", () =>
+		getOrdersCountByStatus(),
 	);
 
 	const [isOpen, setIsOpen] = useState(false);
@@ -46,9 +50,11 @@ export function OrderDialog() {
 		setView("form");
 	};
 
-	function openEditForm(order: SupplierOrderWithProductsAndCustomer) {
+	function openEditForm(
+		order: ArrayElement<Exclude<typeof orders, undefined>>,
+	) {
 		setEditingOrderId(order.id);
-		setEditingOrderStatus(order.status);
+		setEditingOrderStatus(order.status.name);
 	}
 
 	const closeDialog = () => {
@@ -84,7 +90,7 @@ export function OrderDialog() {
 	return (
 		<Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
 			<Dialog.Trigger asChild>
-				<button className="bg-fuchsia-200 hover:bg-fuchsia-300 text-gray-800 px-3 h-10 rounded-lg shadow-md">
+				<button className="bg-fuchsia-200 hover:bg-fuchsia-300 text-gray-800 px-3 h-10 rounded-lg">
 					Замовлення
 				</button>
 			</Dialog.Trigger>
@@ -106,23 +112,17 @@ export function OrderDialog() {
 							<div>
 								<div className="flex justify-between items-center mb-6">
 									<div className="flex gap-2">
-										{orderStatuses
-											?.filter((status) => !status.label.includes("Скасовано"))
-											.map((status) => (
+										{ordersCountByStatus?.map(
+											({ id, count, status_label, status_name }) => (
 												<div
-													key={status.id}
-													className={`px-3 py-2 rounded-xl flex gap-1 border-2 ${getStatusColor(status.name)}`}
+													key={id}
+													className={`px-3 py-2 rounded-xl flex gap-1 border-2 ${getStatusColor(status_name)}`}
 												>
-													<span>{status.label}:</span>
-													<span>
-														{
-															orders?.filter(
-																(order) => order.status === status.id,
-															).length
-														}
-													</span>
+													<span>{status_label}:</span>
+													<span>{count}</span>
 												</div>
-											))}
+											),
+										)}
 									</div>
 									<button
 										onClick={openCreateForm}
@@ -154,9 +154,6 @@ export function OrderDialog() {
 											);
 											const balance = total - order.deposit;
 											const editing = order.id === editingOrderId;
-											const orderStatus = orderStatuses?.find(
-												(s) => s.id === order.status,
-											);
 
 											return (
 												<div
@@ -187,10 +184,12 @@ export function OrderDialog() {
 																{orderStatuses?.map((status) => (
 																	<button
 																		key={`status_button_${status.id}`}
-																		className={`${status.id === editingOrderStatus ? "scale-105 font-bold" : ""} border px-3 py-2 disabled:shadow-lg rounded-lg ${getStatusColor(status.name)}`}
-																		disabled={status.id === editingOrderStatus}
+																		className={`${status.name === editingOrderStatus ? "scale-105 font-bold" : ""} border px-3 py-2 rounded-lg ${getStatusColor(status.name)}`}
+																		disabled={
+																			status.name === editingOrderStatus
+																		}
 																		onClick={() =>
-																			setEditingOrderStatus(status.id)
+																			setEditingOrderStatus(status.name)
 																		}
 																	>
 																		{status.label}
@@ -208,11 +207,11 @@ export function OrderDialog() {
 																	)}
 																</h3>
 																<span
-																	className={`text-sm px-2.5 py-1 rounded-full border capitalize ${getStatusColor(
-																		orderStatus?.name,
+																	className={`font-medium px-2.5 py-1 rounded-full border capitalize ${getStatusColor(
+																		order.status.name,
 																	)}`}
 																>
-																	{orderStatus?.label || "Помилка"}
+																	{order.status.label || "Помилка"}
 																</span>
 																<span>
 																	id:{" "}
@@ -221,11 +220,11 @@ export function OrderDialog() {
 																	</span>
 																</span>
 															</div>
-															{(order.car_name || order.car_vin) && (
+															{(order.car || order.car_vin) && (
 																<div className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-md text-sm border border-slate-200">
-																	{order.car_name && (
+																	{order.car && (
 																		<span className="font-medium">
-																			{order.car_name}
+																			{order.car}
 																		</span>
 																	)}
 																	{order.car_vin && (
@@ -239,11 +238,11 @@ export function OrderDialog() {
 														<div className="text-right flex flex-col items-end gap-1">
 															<button
 																onClick={() => openEditForm(order)}
-																className="text-sm text-blue-600 hover:text-blue-800 font-medium underline mb-1"
+																className="text-blue-600 hover:text-blue-800 font-medium underline mb-1"
 															>
 																Редагувати
 															</button>
-															<div className="text-sm">
+															<div className="text">
 																<span className="text-gray-500 mr-2">
 																	Всього:
 																</span>
@@ -251,7 +250,7 @@ export function OrderDialog() {
 																	{total?.toFixed(2)}₴
 																</span>
 															</div>
-															<div className="text-sm">
+															<div className="">
 																<span className="text-gray-500 mr-2">
 																	Застава:
 																</span>
@@ -259,7 +258,7 @@ export function OrderDialog() {
 																	{order.deposit?.toFixed(2)}₴
 																</span>
 															</div>
-															<div className="text-sm font-bold mt-1 pt-1 border-t">
+															<div className="text-xl font-bold mt-1 pt-1 border-t">
 																<span className="text-gray-700 mr-2">
 																	До сплати:
 																</span>
@@ -275,33 +274,36 @@ export function OrderDialog() {
 															</div>
 														</div>
 													</div>
-													<ul className="text-sm text-gray-700 space-y-2">
+													<ul className="text-gray-700 space-y-2">
 														{order?.products.map((p, idx) => (
 															<li
 																key={idx}
-																className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded border border-gray-100"
+																className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded border border-gray-100 text-lg"
 															>
 																<div className="flex gap-4">
-																	<span className="text-gray-800 text-sm mt-0.5 block w-48">
+																	<span className="text-gray-800 mt-0.5 block w-48">
 																		Артикул: {p.article}
 																	</span>
 																	<span>{p.name}</span>
-																	<span className="text-gray-600 text-xs mt-0.5 ml-2">
-																		{suppliers?.find(
-																			(supplier) =>
-																				supplier.id === p.supplier_id,
-																		)?.name || "Без постачальника"}
+																	<span className="text-gray-600 mt-0.5 ml-2">
+																		{p.supplier}
 																	</span>
 																</div>
 																<div className="flex gap-2">
+																	<div className="flex gap-1">
+																		<span>Кількість:</span>
+																		<span className="font-medium">
+																			{p.quantity}
+																		</span>
+																	</div>
+																	<div className="flex gap-1">
+																		<span>Ціна:</span>
+																		<span className="font-medium">
+																			{p.price}₴
+																		</span>
+																	</div>
 																	<span className="font-medium">
-																		Кількість: {p.quantity}
-																	</span>
-																	<span className="font-medium">
-																		Ціна: {p.price}₴
-																	</span>
-																	<span className="font-medium">
-																		Разом: {(p.price * p.quantity).toFixed(2)}₴
+																		Разом: {p.price * p.quantity}₴
 																	</span>
 																</div>
 															</li>
@@ -434,7 +436,11 @@ function OrderCreationForm({
 		if (customer.restricted) return;
 
 		createOrder(
-			{ ...order, car_name: order.carName, car_vin: order.carVin },
+			{
+				...order,
+				car: order.carName,
+				car_vin: order.carVin,
+			},
 			{ ...customer, phone_number: customer.phoneNumber },
 			products as any,
 		);
