@@ -136,7 +136,7 @@ export async function createOrder(
 
 export async function updateOrder(order: {
 	id: string;
-	status?: string;
+	status_id?: string;
 	deposit?: number;
 }) {
 	const { pb_base_url } = useConfig.getState();
@@ -145,7 +145,10 @@ export async function updateOrder(order: {
 		`${pb_base_url}/api/collections/supplier_orders/records/${order.id}`,
 		{
 			method: "PATCH",
-			body: JSON.stringify({ status: order.status, deposit: order.deposit }),
+			body: JSON.stringify({
+				status_id: order.status_id,
+				deposit: order.deposit,
+			}),
 			headers: {
 				"Content-Type": "application/json",
 			},

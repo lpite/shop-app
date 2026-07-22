@@ -14,6 +14,7 @@ import {
 	getOrdersCountByStatus,
 } from "../api/supplier_orders";
 import { ArrayElement } from "../types/ArrayElement";
+import { toast } from "sonner";
 
 function formatPhoneNumber(phoneNumber: string) {
 	return `${phoneNumber.slice(0, 3)} ${phoneNumber.slice(3, 6)} ${phoneNumber.slice(6, 8)} ${phoneNumber.slice(8, 10)}`;
@@ -37,9 +38,9 @@ export function OrderDialog() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [view, setView] = useState("list");
 	const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
-	const [editingOrderStatus, setEditingOrderStatus] = useState<string | null>(
-		null,
-	);
+	const [editingOrderStatusName, setEditingOrderStatusName] = useState<
+		string | null
+	>(null);
 
 	function resetForm() {
 		setEditingOrderId(null);
@@ -54,7 +55,7 @@ export function OrderDialog() {
 		order: ArrayElement<Exclude<typeof orders, undefined>>,
 	) {
 		setEditingOrderId(order.id);
-		setEditingOrderStatus(order.status.name);
+		setEditingOrderStatusName(order.status.name);
 	}
 
 	const closeDialog = () => {
@@ -80,7 +81,7 @@ export function OrderDialog() {
 		if (isOpen) {
 			closeDialog();
 			setEditingOrderId(null);
-			setEditingOrderStatus(null);
+			setEditingOrderStatusName(null);
 		} else {
 			mutateOrders();
 			setIsOpen(true);
@@ -165,10 +166,24 @@ export function OrderDialog() {
 															<button
 																className="absolute right-4 top-4 bg-fuchsia-100 px-2 py-1 rounded-lg"
 																onClick={async () => {
-																	if (editingOrderId && editingOrderStatus) {
+																	if (
+																		editingOrderId &&
+																		editingOrderStatusName
+																	) {
+																		const statusId = orderStatuses?.find(
+																			(status) =>
+																				status.name === editingOrderStatusName,
+																		)?.id;
+
+																		if (!statusId) {
+																			toast.error(
+																				"Помилка. Знаходження id статусу.",
+																			);
+																		}
+
 																		const result = await updateOrder({
 																			id: editingOrderId,
-																			status: editingOrderStatus,
+																			status_id: statusId,
 																		});
 																		if (result) {
 																			setEditingOrderId(null);
@@ -184,12 +199,12 @@ export function OrderDialog() {
 																{orderStatuses?.map((status) => (
 																	<button
 																		key={`status_button_${status.id}`}
-																		className={`${status.name === editingOrderStatus ? "scale-105 font-bold" : ""} border px-3 py-2 rounded-lg ${getStatusColor(status.name)}`}
+																		className={`${status.name === editingOrderStatusName ? "scale-105 font-bold" : ""} border px-3 py-2 rounded-lg ${getStatusColor(status.name)}`}
 																		disabled={
-																			status.name === editingOrderStatus
+																			status.name === editingOrderStatusName
 																		}
 																		onClick={() =>
-																			setEditingOrderStatus(status.name)
+																			setEditingOrderStatusName(status.name)
 																		}
 																	>
 																		{status.label}
@@ -443,10 +458,10 @@ function OrderCreationForm({
 			},
 			{ ...customer, phone_number: customer.phoneNumber },
 			products as any,
-		);
-
-		mutateOrders();
-		setView("list");
+		).then(() => {
+			mutateOrders();
+			setView("list");
+		});
 	};
 
 	return (
