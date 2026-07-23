@@ -2,6 +2,7 @@ import { ChangeEvent, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import useSWR from "swr";
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 import {
 	getCustomer,
@@ -14,7 +15,89 @@ import {
 	getOrdersCountByStatus,
 } from "../api/supplier_orders";
 import { ArrayElement } from "../types/ArrayElement";
-import { toast } from "sonner";
+import { create } from "zustand";
+
+type OrderDialogStore = {
+	customer: {
+		phoneNumber: string;
+		name: string;
+		restricted: boolean;
+		notes: string;
+	};
+	order: {
+		deposit: number;
+		carVin: string;
+		carName: string;
+		notes: string;
+		status: string;
+	};
+	products: {
+		article: string;
+		name: string;
+		supplier_id: string;
+		price: number;
+		quantity: number;
+	}[];
+};
+
+const useOrderDialogStore = create<OrderDialogStore>()(() => ({
+	customer: {
+		name: "",
+		phoneNumber: "",
+		restricted: false,
+		notes: "",
+	},
+	order: {
+		status: "",
+		carName: "",
+		carVin: "",
+		deposit: 0,
+		notes: "",
+	},
+	products: [
+		{
+			article: "",
+			name: "",
+			price: 0,
+			quantity: 1,
+			supplier_id: "",
+		},
+	],
+}));
+
+const setCustomer = (c: OrderDialogStore["customer"]) =>
+	useOrderDialogStore.setState({ customer: c });
+
+const setOrder = (o: OrderDialogStore["order"]) =>
+	useOrderDialogStore.setState({ order: o });
+
+const setProducts = (p: OrderDialogStore["products"]) =>
+	useOrderDialogStore.setState({ products: p });
+
+function resetOrderForm() {
+	setCustomer({
+		name: "",
+		notes: "",
+		phoneNumber: "",
+		restricted: false,
+	});
+	setOrder({
+		carName: "",
+		carVin: "",
+		deposit: 0,
+		notes: "",
+		status: "",
+	});
+	setProducts([
+		{
+			article: "",
+			name: "",
+			price: 0,
+			quantity: 1,
+			supplier_id: "",
+		},
+	]);
+}
 
 function formatPhoneNumber(phoneNumber: string) {
 	return `${phoneNumber.slice(0, 3)} ${phoneNumber.slice(3, 6)} ${phoneNumber.slice(6, 8)} ${phoneNumber.slice(8, 10)}`;
@@ -345,6 +428,7 @@ export function OrderDialog() {
 									type="button"
 									onClick={() => {
 										setView("list");
+										resetOrderForm();
 									}}
 									className="px-4 py-2 text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-md font-medium transition-colors"
 								>
@@ -383,37 +467,14 @@ function OrderCreationForm({
 	setView,
 	suppliers,
 }: OrderCreationFormProps) {
-	const [customer, setCustomer] = useState({
-		phoneNumber: "",
-		name: "",
-		restricted: false,
-		notes: "",
-	});
-
-	const [order, setOrder] = useState({
-		deposit: 0,
-		carVin: "",
-		carName: "",
-		notes: "",
-		status: "",
-	});
-
-	const [products, setProducts] = useState<
-		{
-			article: string;
-			name: string;
-			supplier_id: string;
-			price: number;
-			quantity: number;
-		}[]
-	>([{ article: "", name: "", supplier_id: "", price: 0, quantity: 1 }]);
+	const { customer, order, products } = useOrderDialogStore();
 
 	async function onPhoneNumberChange(e: ChangeEvent<HTMLInputElement>) {
-		setCustomer((c) => ({
-			...c,
+		setCustomer({
+			...customer,
 			phoneNumber: e.target.value,
 			restricted: false,
-		}));
+		});
 
 		if (e.target.value.length === 10) {
 			const customer = await getCustomer(e.target.value);
@@ -495,7 +556,7 @@ function OrderCreationForm({
 							type="text"
 							value={customer.name}
 							onChange={(e) =>
-								setCustomer((c) => ({ ...c, name: e.target.value }))
+								setCustomer({ ...customer, name: e.target.value })
 							}
 							className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
 							placeholder="Пес патрон"
@@ -509,7 +570,7 @@ function OrderCreationForm({
 							type="text"
 							value={customer.notes}
 							onChange={(e) =>
-								setCustomer((c) => ({ ...c, notes: e.target.value }))
+								setCustomer({ ...customer, notes: e.target.value })
 							}
 							className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
 						/>
@@ -534,9 +595,7 @@ function OrderCreationForm({
 						<input
 							type="text"
 							value={order.carName}
-							onChange={(e) =>
-								setOrder((o) => ({ ...o, carName: e.target.value }))
-							}
+							onChange={(e) => setOrder({ ...order, carName: e.target.value })}
 							className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
 							placeholder=""
 						/>
@@ -548,9 +607,7 @@ function OrderCreationForm({
 						<input
 							type="text"
 							value={order.carVin}
-							onChange={(e) =>
-								setOrder((o) => ({ ...o, carVin: e.target.value }))
-							}
+							onChange={(e) => setOrder({ ...order, carVin: e.target.value })}
 							className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none uppercase"
 							placeholder="1HGCM..."
 							maxLength={17}
@@ -683,10 +740,10 @@ function OrderCreationForm({
 							type="number"
 							value={order.deposit}
 							onChange={(e) =>
-								setOrder((o) => ({
-									...o,
+								setOrder({
+									...order,
 									deposit: parseInt(e.target.value),
-								}))
+								})
 							}
 							className="w-full border rounded-md pl-7 pr-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
 						/>
