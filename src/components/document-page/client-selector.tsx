@@ -1,7 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import useSWR from "swr";
-import { useConfig } from "../../stores/config-store";
 import { Link } from "wouter";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { client } from "../../api/client";
@@ -20,16 +19,12 @@ type ClientSelectorProps = {
 };
 
 export function ClientSelector({ partnerId }: ClientSelectorProps) {
-	const { use_fancy_pos } = useConfig();
-
 	const [isOpen, setIsOpen] = useState(false);
 
 	const { data: clients, isLoading: isLoadingClients } = useSWR(
 		"/clients/",
 		client.getList,
 	);
-
-	const posUrl = use_fancy_pos ? "pos-new" : "pos";
 
 	return (
 		<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
@@ -65,7 +60,7 @@ export function ClientSelector({ partnerId }: ClientSelectorProps) {
 							.map(({ partnerId, partnerName }) => (
 								<Link
 									key={partnerId}
-									to={`/${posUrl}/${partnerId}/sell`}
+									to={`/pos/${partnerId}/sell`}
 									className="w-1/3 h-24 p-2 border-2 rounded-lg flex items-center justify-between text-xl font-medium hover:shadow-lg"
 									onClick={() => setIsOpen(false)}
 								>
@@ -96,7 +91,7 @@ export function ClientSelector({ partnerId }: ClientSelectorProps) {
 							.map(({ partnerId, partnerName }) => (
 								<Link
 									key={partnerId}
-									to={`/${posUrl}/${partnerId}/sell`}
+									to={`/pos/${partnerId}/sell`}
 									className="px-4 py-2 bg-sky-600 font-medium text-white rounded-lg"
 									onClick={() => setIsOpen(false)}
 								>

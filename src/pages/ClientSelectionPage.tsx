@@ -1,7 +1,6 @@
 import Show from "../utils/Show";
 import useSWR from "swr";
 import { Link } from "wouter";
-import { useConfig } from "../stores/config-store";
 import { ChevronRight } from "lucide-react";
 import { client } from "../api/client";
 
@@ -18,10 +17,6 @@ const mainClients = ["00-00000034", "00-00000118", "УТ-00000002"];
 
 export default function ClientSelectionPage() {
 	const { data, isLoading } = useSWR("/clients/", client.getList);
-
-	const { use_fancy_pos } = useConfig();
-
-	const posUrl = use_fancy_pos ? "pos-new" : "pos";
 
 	return (
 		<main className="h-full flex flex-col items-center justify-center">
@@ -58,7 +53,7 @@ export default function ClientSelectionPage() {
 							.map(({ partnerId, partnerName }) => (
 								<Link
 									key={partnerId}
-									to={`/${posUrl}/${partnerId}/sell`}
+									to={`/pos/${partnerId}/sell`}
 									className="w-72 h-24 p-2 border-2 rounded-lg flex items-center justify-between text-xl font-medium hover:shadow-lg"
 								>
 									{partnerName}
@@ -86,7 +81,7 @@ export default function ClientSelectionPage() {
 						.map(({ partnerId, partnerName }) => (
 							<Link
 								key={partnerId}
-								to={`/${posUrl}/${partnerId}/sell`}
+								to={`/pos/${partnerId}/sell`}
 								className="w-60 px-4 py-2 bg-sky-600 font-medium text-white rounded-lg my-1"
 							>
 								{partnerName}
