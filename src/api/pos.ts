@@ -28,14 +28,50 @@ async function sellProducts({ agentName, partnerId, products }: Sell) {
 	}
 }
 
-async function getSum(partnerId: string) {
+async function getSellSum(partnerId: string) {
 	return fetcher<string>({
 		url: `/shop/hs/app/sell-document/${partnerId}`,
 		method: "GET",
 	});
 }
 
-async function returnProducts() {}
+type ReturnProducts = {
+	partnerId: string;
+	agentName: string;
+	products: FTSProduct[];
+};
+
+async function returnProducts({
+	partnerId,
+	agentName,
+	products,
+}: ReturnProducts) {
+	const result = await fetcher<string>({
+		url: `/shop/hs/app/income-document/`,
+		method: "POST",
+		body: {
+			partnerId,
+			agentName,
+			products: products.map((el) => ({ ...el, searchCode: el.id.slice(7) })),
+		},
+	}).catch((err) => {
+		console.error(err);
+		return null;
+	});
+
+	if (result === "Успешно") {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function getReturnSum() {
+	return fetcher<string>({
+		url: `/shop/hs/app/income-document`,
+		method: "GET",
+	});
+}
 
 function getComment(partnerId: string) {
 	return fetcher<string>({
@@ -58,7 +94,8 @@ async function updateComment(partnerId: string, text: string) {
 export const pos = {
 	sellProducts,
 	returnProducts,
-	getSum,
+	getSellSum,
+	getReturnSum,
 	getComment,
 	updateComment,
 };

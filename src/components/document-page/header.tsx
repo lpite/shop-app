@@ -28,8 +28,9 @@ export default function Header() {
 		client.getOne(partnerId || ""),
 	);
 	const { data: documentSum } = useSWR(
-		partnerId ? `document-sum/${partnerId}` : null,
-		() => pos.getSum(partnerId || ""),
+		partnerId ? `document-sum/${type}/${partnerId}` : null,
+		() =>
+			type === "sell" ? pos.getSellSum(partnerId || "") : pos.getReturnSum(),
 	);
 
 	async function saveCart() {
@@ -55,10 +56,9 @@ export default function Header() {
 			console.error("no partnerId");
 			return;
 		}
-
-		if (
-			await pos.sellProducts({ agentName, partnerId, products: cartProducts })
-		) {
+		const saveFunction =
+			type === "sell" ? pos.sellProducts : pos.returnProducts;
+		if (await saveFunction({ agentName, partnerId, products: cartProducts })) {
 			clearCart();
 			setQuery("");
 			clearData();
@@ -120,7 +120,7 @@ export default function Header() {
 					disabled={!cartProducts.length}
 					className="bg-green-500 disabled:bg-slate-200 hover:bg-green-400 px-4 py-2 rounded-lg shadow-lg text-slate-900 font-medium"
 				>
-					Перенести в документ
+					{type === "sell" ? "Перенести в документ" : "Повернути"}
 				</button>
 			</div>
 			<SearchForm />
