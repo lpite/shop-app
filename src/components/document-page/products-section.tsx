@@ -11,6 +11,7 @@ import { useCartStore } from "../../stores/cart-store";
 
 import { FTSProduct } from "../../types/product";
 import { useHotkey } from "@tanstack/react-hotkeys";
+import { getShortcutsLayer } from "../../utils/getShortcutsLayer";
 
 const cellStyles = "border px-1 py-2 box-border";
 
@@ -100,6 +101,10 @@ export default function ProductsSection({
 		}
 
 		if (!items.length) {
+			return;
+		}
+
+		if (getShortcutsLayer() !== "page") {
 			return;
 		}
 
