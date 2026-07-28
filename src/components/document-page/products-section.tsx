@@ -98,6 +98,11 @@ export default function ProductsSection({
 		if (!selectedProduct) {
 			return;
 		}
+
+		if (!items.length) {
+			return;
+		}
+
 		addToCart({ ...selectedProduct, quantity: 1 });
 	});
 
