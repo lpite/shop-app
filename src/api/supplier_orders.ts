@@ -2,8 +2,6 @@ import { toast } from "sonner";
 import { useConfig } from "../stores/config-store";
 
 type SupplierOrderCreate = {
-	id: string;
-	date: string;
 	deposit: number;
 	car_vin: string;
 	car: string;
@@ -62,7 +60,7 @@ export async function getSuplierOrders(): Promise<SupplierOrderSelect[]> {
 }
 
 export async function createOrder(
-	order: Omit<SupplierOrderCreate, "id" | "date" | "status_id">,
+	order: Omit<SupplierOrderCreate, "status_id">,
 	customer: Omit<Customer, "id">,
 	products: Omit<SupplierOrderProduct, "id">[],
 ) {
