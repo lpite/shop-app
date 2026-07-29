@@ -1,10 +1,15 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
-import { BarcodeDialog } from "./barcode-dialog-state";
-import { getBarcodeProductLinks } from "../../../api/odata";
 import useSWR from "swr";
+import { BarcodeDialog } from "./barcode-dialog-state";
+
+import { getBarcodeProductLinks } from "../../../api/odata";
+
 import { Product } from "../../../types/product";
+
 import { fetcher } from "../../../utils/fetcher";
+import convertToId from "../../../utils/convertToId";
+
 import { useCartStore } from "../../../stores/cart-store";
 
 export function BarcodeDialogPortal() {
@@ -36,9 +41,10 @@ export function BarcodeDialogPortal() {
 			if (!barcode) {
 				return;
 			}
+			setBarcodeProducts([]);
 
 			const links = await getBarcodeProductLinks(barcode);
-			setBarcodeProducts([]);
+
 			links.forEach((link) => {
 				const product = products?.find((p) => p.ref === link.Номенклатура_Key);
 				if (!product) {
@@ -70,11 +76,11 @@ export function BarcodeDialogPortal() {
 					</button>
 				</Dialog.Close>
 				<Dialog.Title className="text-3xl pb-8 font-medium sr-only">
-					Знайдено за штрихкодом
+					Знайдено за штрихкодом {barcode}
 				</Dialog.Title>
 				{!barcodeProducts.length ? (
 					<div className="h-full flex items-center justify-center text-xl">
-						Не знайдено товар за штрихкодом
+						Не знайдено товар за штрихкодом {barcode}
 					</div>
 				) : null}
 				{barcodeProducts.map((product) => (
@@ -97,7 +103,12 @@ export function BarcodeDialogPortal() {
 							className="border py-1 px-2 rounded-lg bg-sky-400"
 							onClick={() => {
 								//TODO Так не можна робити
-								addToCart({ ...product, id: "", foundBy: "", quantity: 1 });
+								addToCart({
+									...product,
+									id: `00-${convertToId(product.searchCode)}`,
+									foundBy: "",
+									quantity: 1,
+								});
 								setOpen(false);
 							}}
 						>
