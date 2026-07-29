@@ -24,11 +24,9 @@ export default function ScannerPage() {
 	const [lastScannedCode, setLastScannedCode] = useState<string | null>(null);
 	const [scanHistory, setScanHistory] = useState<string[]>([]);
 
-	// --- State for Search/Associate Dialog ---
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 
-	// --- State for the "Found Product" Dialog ---
 	const [isFoundDialogOpen, setIsFoundDialogOpen] = useState(false);
 	const [foundProductDetails, setFoundProductDetails] = useState<{
 		product: Product;
@@ -51,7 +49,6 @@ export default function ScannerPage() {
 		setScanHistory((prev) => [...prev, scannedCode]);
 
 		try {
-			// 1. Check if the barcode already exists in the registry
 			const existingBarcodeData = await fetcher<{
 				value: ODataBarcodeRecord[];
 			}>({
@@ -59,12 +56,10 @@ export default function ScannerPage() {
 				method: "GET",
 			});
 
-			// 2. If it exists, open the "Found Product" dialog
 			if (existingBarcodeData.value && existingBarcodeData.value.length > 0) {
 				const oDataRecord = existingBarcodeData.value[0];
 				const productRef = oDataRecord.Номенклатура_Key;
 
-				// Try to find the human-readable name from SWR data
 				const matchedProduct = products?.find((p) => p.ref === productRef) || {
 					name: "Невідомий товар (не знайдено в базі)",
 					code: "N/A",
@@ -81,7 +76,6 @@ export default function ScannerPage() {
 				return;
 			}
 
-			// 3. If it doesn't exist, proceed to open the standard association dialog
 			setSearchQuery("");
 			setIsDialogOpen(true);
 		} catch (error) {
@@ -90,7 +84,7 @@ export default function ScannerPage() {
 		}
 	};
 
-	useBarcodeScanner(handleScan);
+	useBarcodeScanner(handleScan, 70);
 
 	const filteredProducts =
 		products?.filter((product) => {
@@ -122,7 +116,6 @@ export default function ScannerPage() {
 		}
 	};
 
-	// --- Action: Delete existing barcode association ---
 	const handleDeleteBarcode = async () => {
 		if (!foundProductDetails || !lastScannedCode) return;
 
@@ -130,7 +123,6 @@ export default function ScannerPage() {
 			const { Номенклатура_Key, Характеристика_Key, Упаковка_Key } =
 				foundProductDetails.oDataRecord;
 
-			// 1C OData requires specifying all composite keys (dimensions) for a DELETE on an Information Register
 			const deleteUrl = `/shop/odata/standard.odata/InformationRegister_ШтрихкодыНоменклатуры(Штрихкод='${lastScannedCode}',Номенклатура_Key=guid'${Номенклатура_Key}',Характеристика_Key=guid'${Характеристика_Key}',Упаковка_Key=guid'${Упаковка_Key}')?$format=json`;
 
 			await fetcher({
@@ -146,11 +138,9 @@ export default function ScannerPage() {
 		}
 	};
 
-	// --- Action: Close found dialog and open search dialog ---
 	const handleAttachToAnother = () => {
 		setIsFoundDialogOpen(false);
 		setSearchQuery("");
-		// Add a tiny delay to allow the first dialog to close smoothly before opening the next
 		setTimeout(() => {
 			setIsDialogOpen(true);
 		}, 100);
@@ -175,10 +165,6 @@ export default function ScannerPage() {
 					))}
 				</ul>
 			</div>
-
-			{/* ================================================================= */}
-			{/* DIALOG 1: PRODUCT ALREADY FOUND FOR THIS BARCODE                  */}
-			{/* ================================================================= */}
 			<Dialog.Root open={isFoundDialogOpen} onOpenChange={setIsFoundDialogOpen}>
 				<Dialog.Portal>
 					<Dialog.Overlay
@@ -299,10 +285,6 @@ export default function ScannerPage() {
 					</Dialog.Content>
 				</Dialog.Portal>
 			</Dialog.Root>
-
-			{/* ================================================================= */}
-			{/* DIALOG 2: SEARCH AND ASSOCIATE NEW BARCODE                        */}
-			{/* ================================================================= */}
 			<Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 				<Dialog.Portal>
 					<Dialog.Overlay
@@ -312,33 +294,13 @@ export default function ScannerPage() {
 							inset: 0,
 						}}
 					/>
-					<Dialog.Content
-						style={{
-							backgroundColor: "white",
-							borderRadius: "8px",
-							padding: "24px",
-							position: "fixed",
-							top: "50%",
-							left: "50%",
-							transform: "translate(-50%, -50%)",
-							width: "90vw",
-							maxWidth: "500px",
-							maxHeight: "85vh",
-							display: "flex",
-							flexDirection: "column",
-							boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-						}}
-					>
+					<Dialog.Content className="flex flex-col bg-white rounded-xl p-2 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-5/6 w-11/12">
 						<Dialog.Title style={{ margin: "0 0 10px 0", fontSize: "1.2rem" }}>
 							Прив'язати штрихкод
 						</Dialog.Title>
-						<Dialog.Description style={{ marginBottom: "20px", color: "#666" }}>
-							Знайдіть товар для прив'язки сканованого коду.
-						</Dialog.Description>
-
 						<div
 							style={{
-								fontSize: "2.5rem",
+								fontSize: "2rem",
 								fontWeight: "bold",
 								textAlign: "center",
 								letterSpacing: "4px",
@@ -366,13 +328,7 @@ export default function ScannerPage() {
 							}}
 						/>
 
-						<div
-							style={{
-								overflowY: "auto",
-								flex: 1,
-								borderTop: "1px solid #eee",
-							}}
-						>
+						<div className="flex-1 border-t-2 overflow-auto">
 							{filteredProducts.length === 0 ? (
 								<p style={{ padding: "10px", color: "#999" }}>
 									Товари не знайдені.
@@ -381,7 +337,7 @@ export default function ScannerPage() {
 								<ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
 									{filteredProducts.slice(0, 100).map((product) => (
 										<li
-											key={product.code}
+											key={product.ref}
 											onClick={() => handleAssociate(product)}
 											style={{
 												padding: "12px",
