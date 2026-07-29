@@ -150,7 +150,7 @@ export default function ScannerPage() {
 		<main>
 			<div style={{ padding: "20px", fontFamily: "sans-serif" }}>
 				<h2>Inventory Scanner</h2>
-
+				<button onClick={() => setIsDialogOpen(true)}>debug</button>
 				<p>
 					<strong>Last Scanned: </strong>
 					{lastScannedCode ? lastScannedCode : "Waiting for scan..."}
@@ -294,8 +294,8 @@ export default function ScannerPage() {
 							inset: 0,
 						}}
 					/>
-					<Dialog.Content className="flex flex-col bg-white rounded-xl p-2 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-5/6 w-11/12">
-						<Dialog.Title style={{ margin: "0 0 10px 0", fontSize: "1.2rem" }}>
+					<Dialog.Content className="flex flex-col bg-white rounded-xl p-2 fixed top-4 left-1/2 -translate-x-1/2 h-5/6 w-11/12">
+						<Dialog.Title className="text-xl mt-2 mb-1">
 							Прив'язати штрихкод
 						</Dialog.Title>
 						<div
