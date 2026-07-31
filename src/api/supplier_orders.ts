@@ -6,6 +6,7 @@ type SupplierOrderCreate = {
 	car_vin: string;
 	car: string;
 	status_id: string;
+	customer_id: string;
 };
 
 type SupplierOrderSelect = {
@@ -90,15 +91,17 @@ export async function createOrder(
 		throw new Error("Помилка користувача замовлення");
 	}
 
+	const orderToCreate: SupplierOrderCreate = {
+		...order,
+		customer_id: customerId,
+		status_id: "05thvo36e5fdj19", // awaiting_products
+	};
+
 	const orderId = await fetch(
 		`${pb_base_url}/api/collections/supplier_orders/records`,
 		{
 			method: "POST",
-			body: JSON.stringify({
-				order,
-				customer_id: customerId,
-				status_id: "05thvo36e5fdj19",
-			}),
+			body: JSON.stringify(orderToCreate),
 			headers: {
 				"Content-Type": "application/json",
 			},
