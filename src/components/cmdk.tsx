@@ -7,6 +7,7 @@ import {
 	useState,
 } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
+import { Eraser, X } from "lucide-react";
 
 type CMDKProps = {
 	search: string;
@@ -80,11 +81,11 @@ export function CMDK({
 		<>
 			<Dialog.Root open={isOpen} onOpenChange={onChangeOpen}>
 				<Dialog.Portal>
-					<Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-30" />
-					<Dialog.Content className="fixed w-11/12 md:w-4/6 bg-white shadow-lg top-3 md:top-1/2 start-1/2 -translate-x-1/2 md:-translate-y-1/2 rounded-lg">
+					<Dialog.Overlay className="fixed z-50 inset-0 bg-black bg-opacity-30" />
+					<Dialog.Content className="fixed z-50 w-11/12 md:w-4/6 bg-white shadow-lg top-3 md:top-1/2 start-1/2 -translate-x-1/2 md:-translate-y-1/2 rounded-lg">
 						<Dialog.Title className="sr-only">{title}</Dialog.Title>
 						<form
-							className="border-b-2 relative flex items-center"
+							className="border-b-2 flex items-center pe-2"
 							onSubmit={onSubmit}
 						>
 							<input
@@ -93,19 +94,21 @@ export function CMDK({
 								onChange={(e) => onChangeSearch(e.target.value)}
 								value={search}
 							/>
+
 							<button
 								type="button"
-								className="absolute right-2 p-2 rounded-lg hover:bg-black hover:bg-opacity-10"
+								disabled={!search.length}
+								className="p-2 rounded-lg hover:bg-black hover:bg-opacity-10 disabled:opacity-15"
+								onClick={() => onChangeSearch("")}
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="24"
-									height="24"
-									fill="currentColor"
-									viewBox="0 0 16 16"
-								>
-									<path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-								</svg>
+								<Eraser />
+							</button>
+							<button
+								type="button"
+								className="p-2 rounded-lg hover:bg-black hover:bg-opacity-10"
+								onClick={() => onChangeOpen(false)}
+							>
+								<X />
 							</button>
 						</form>
 						<div className="px-3 py-2 h-80 overflow-y-auto" ref={itemsBlockRef}>
