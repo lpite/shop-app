@@ -330,7 +330,7 @@ function AddPhotosDialog({
 								<label className="text-sm">
 									Статус
 									<select
-										className="bg-transparent cursor-pointer hover:bg-gray-100 rounded-lg px-1"
+										className="bg-transparent cursor-pointer hover:bg-gray-100 rounded-lg px-1 py-1"
 										value={defaultPhotoStatus}
 										onChange={(e) =>
 											setDefaultPhotoStatus(e.target.value as any)
@@ -398,7 +398,7 @@ function AddPhotosDialog({
 						</div>
 					</div>
 					<div className="mt-6 flex justify-end gap-2">
-						<Dialog.Close className="rounded-lg border border-input px-4 py-2 text-sm font-medium hover:bg-accent">
+						<Dialog.Close className="rounded-lg border border-input px-4 py-2 text-sm font-medium hover:bg-gray-100">
 							Скасувати
 						</Dialog.Close>
 						<button
