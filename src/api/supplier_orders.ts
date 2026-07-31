@@ -61,7 +61,7 @@ export async function getSuplierOrders(): Promise<SupplierOrderSelect[]> {
 }
 
 export async function createOrder(
-	order: Omit<SupplierOrderCreate, "status_id">,
+	order: Omit<SupplierOrderCreate, "status_id" | "customer_id">,
 	customer: Omit<Customer, "id">,
 	products: Omit<SupplierOrderProduct, "id">[],
 ) {
