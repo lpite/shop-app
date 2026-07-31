@@ -45,7 +45,7 @@ export default function PhotoStudio() {
 		"pb/photo_product_link",
 		() =>
 			fetch(
-				`${pb_base_url}/api/collections/photo_agg/records?sort=-created&perPage=100`,
+				`${pb_base_url}/api/collections/photo_agg/records?sort=-created&perPage=30`,
 			)
 				.then((r) => r.json())
 				.then((r) => r.items) as Promise<
@@ -281,10 +281,10 @@ function AddPhotosDialog({
 				<Plus className="size-4" /> Додати
 			</Dialog.Trigger>
 			<Dialog.Portal>
-				<Dialog.Overlay className="fixed inset-0 bg-black/40" />
+				<Dialog.Overlay className="fixed z-10 inset-0 bg-black/40" />
 				<Dialog.Content
 					onCloseAutoFocus={(e) => e.preventDefault()}
-					className="fixed left-1/2 top-1/2 w-11/12 max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background p-6 shadow-lg bg-white"
+					className="fixed z-10 left-1/2 top-1/2 w-11/12 max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background p-6 shadow-lg bg-white"
 				>
 					<Dialog.Title className="text-xl font-semibold">
 						Додавання фото
