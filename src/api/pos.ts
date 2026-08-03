@@ -1,13 +1,17 @@
 import { FTSProduct } from "../types/product";
 import { fetcher } from "../utils/fetcher";
 
-type Sell = {
+type SellProductsV1Params = {
 	partnerId: string;
 	agentName: string;
 	products: FTSProduct[];
 };
 
-async function sellProducts({ agentName, partnerId, products }: Sell) {
+async function sellProductsV1({
+	agentName,
+	partnerId,
+	products,
+}: SellProductsV1Params) {
 	const result = await fetcher<string>({
 		url: `/shop/hs/app/sale-document`,
 		method: "POST",
@@ -22,6 +26,37 @@ async function sellProducts({ agentName, partnerId, products }: Sell) {
 	});
 
 	if (result === "Успешно") {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+type SellProductsV2Params = {
+	partnerId: string;
+	agentName: string;
+	products: { id: string; quantity: number; price: number }[];
+};
+
+async function sellProductsV2({
+	agentName,
+	partnerId,
+	products,
+}: SellProductsV2Params) {
+	const result = await fetcher<string>({
+		url: `/shop/hs/app/sale-document`,
+		method: "POST",
+		body: {
+			partnerId,
+			agentName,
+			products,
+		},
+	}).catch((err) => {
+		console.error(err);
+		return null;
+	});
+
+	if (result === "success") {
 		return true;
 	} else {
 		return false;
@@ -92,7 +127,8 @@ async function updateComment(partnerId: string, text: string) {
 }
 
 export const pos = {
-	sellProducts,
+	sellProductsV1,
+	sellProductsV2,
 	returnProducts,
 	getSellSum,
 	getReturnSum,

@@ -17,11 +17,13 @@ import { client } from "../../api/client";
 
 import { useCartStore } from "../../stores/cart-store";
 import { OrderDialog } from "../order-dialog";
+import { useConfig } from "../../stores/config-store";
+import { toast } from "sonner";
 
 export default function Header() {
 	const { partnerId, type } = useParams();
 	const { cartProducts, clearCart } = useCartStore();
-
+	const { use_pos_v2_api } = useConfig();
 	const { setQuery, clearData } = useSearch({ fts: true });
 
 	const { data: agentAndPartner } = useSWR(partnerId ? "clients/" : null, () =>
@@ -56,12 +58,17 @@ export default function Header() {
 			console.error("no partnerId");
 			return;
 		}
-		const saveFunction =
-			type === "sell" ? pos.sellProducts : pos.returnProducts;
+
+		const sellFunction = use_pos_v2_api
+			? pos.sellProductsV2
+			: pos.sellProductsV1;
+
+		const saveFunction = type === "sell" ? sellFunction : pos.returnProducts;
 		if (await saveFunction({ agentName, partnerId, products: cartProducts })) {
 			clearCart();
 			setQuery("");
 			clearData();
+			toast.success("Успішно! Збережено.");
 		} else {
 			alert("Не вдалося перенести!");
 		}

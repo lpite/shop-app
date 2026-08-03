@@ -7,6 +7,7 @@ export const configSchema = z.object({
 	meow: z.array(z.object({ id: z.string(), color: z.string() })),
 	server_url: z.url(),
 	use_app_return_page: z.boolean(),
+	use_pos_v2_api: z.boolean(),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -19,6 +20,7 @@ export const useConfig = create<Config>()(
 			meow: [],
 			server_url: "",
 			use_app_return_page: false,
+			use_pos_v2_api: false,
 		}),
 		{
 			name: "settings",
