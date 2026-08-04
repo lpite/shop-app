@@ -44,7 +44,7 @@ async function sellProductsV2({
 	products,
 }: SellProductsV2Params) {
 	const result = await fetcher<string>({
-		url: `/shop/hs/app/sale-document`,
+		url: `/shop/hs/pos/sell`,
 		method: "POST",
 		body: {
 			partnerId,
