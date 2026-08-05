@@ -125,13 +125,9 @@ export function OrderDialog() {
 		string | null
 	>(null);
 
-	function resetForm() {
-		setEditingOrderId(null);
-	}
-
 	const openCreateForm = () => {
-		resetForm();
 		setView("form");
+		resetOrderForm();
 	};
 
 	function openEditForm(
