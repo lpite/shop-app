@@ -12,6 +12,7 @@ import { useCartStore } from "../../stores/cart-store";
 import { FTSProduct } from "../../types/product";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import { getShortcutsLayer } from "../../utils/getShortcutsLayer";
+import { useBarcodeScanner } from "../../hooks/useBarcodeScanner";
 
 const cellStyles = "border px-1 py-2 box-border";
 
@@ -94,6 +95,12 @@ export default function ProductsSection({
 	function onDoubleClick(product: FTSProduct) {
 		addToCart({ ...product, quantity: 1 });
 	}
+
+	useBarcodeScanner({
+		onScanStart: () => {
+			setSelectedProduct(undefined);
+		},
+	});
 
 	useHotkey("Enter", () => {
 		if (!selectedProduct) {

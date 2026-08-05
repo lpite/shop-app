@@ -84,7 +84,7 @@ export default function ScannerPage() {
 		}
 	};
 
-	useBarcodeScanner(handleScan, 70);
+	useBarcodeScanner({ onScanEnd: handleScan, timeout: 70 });
 
 	const filteredProducts =
 		products?.filter((product) => {

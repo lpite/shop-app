@@ -1,23 +1,40 @@
 import { useEffect, useRef } from "react";
 
-export function useBarcodeScanner(
-	onScan: (code: string) => void,
-	timeout = 40,
-) {
+type UseBarcodeScanner = {
+	onScanEnd?: (code: string) => void;
+	onScanStart?: () => void;
+	timeout?: number;
+};
+
+export function useBarcodeScanner({
+	onScanEnd,
+	onScanStart,
+	timeout = 65,
+}: UseBarcodeScanner) {
 	const bufferRef = useRef("");
+
 	const lastKeyTimeRef = useRef(Date.now());
 
-	const onScanRef = useRef(onScan);
+	const onScanEndRef = useRef(onScanEnd);
+	const onScanStartRef = useRef(onScanStart);
+
 	useEffect(() => {
-		onScanRef.current = onScan;
-	}, [onScan]);
+		onScanEndRef.current = onScanEnd;
+	}, [onScanEnd]);
+
+	useEffect(() => {
+		onScanStartRef.current = onScanStart;
+	}, [onScanStart]);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			const target = event.target as HTMLElement;
 			const targetTag = target.tagName.toUpperCase();
 
-			if (["INPUT", "TEXTAREA", "SELECT"].includes(targetTag)) {
+			if (
+				target instanceof HTMLElement &&
+				["INPUT", "TEXTAREA", "SELECT"].includes(targetTag)
+			) {
 				return;
 			}
 
@@ -30,10 +47,15 @@ export function useBarcodeScanner(
 
 			if (event.key === "Enter") {
 				if (bufferRef.current.length > 0) {
-					onScanRef.current(bufferRef.current);
+					if (onScanEndRef.current) {
+						onScanEndRef.current(bufferRef.current);
+					}
 					bufferRef.current = "";
 				}
 			} else if (event.key.length === 1) {
+				if (!bufferRef.current.length && onScanStartRef.current) {
+					onScanStartRef.current();
+				}
 				bufferRef.current += event.key;
 			}
 

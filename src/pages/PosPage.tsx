@@ -35,8 +35,10 @@ export default function PosPage() {
 			isResizing: false,
 		}));
 
-	useBarcodeScanner((barcode) => {
-		BarcodeDialog.openPopup(barcode);
+	useBarcodeScanner({
+		onScanEnd: (barcode) => {
+			BarcodeDialog.openPopup(barcode);
+		},
 	});
 
 	return (
