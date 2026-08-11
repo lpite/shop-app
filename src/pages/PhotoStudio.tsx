@@ -32,7 +32,7 @@ type Product = {
 export default function PhotoStudio() {
 	const { pb_base_url } = useConfig();
 
-	// const [filterStatus, setFilterStatus] = useState(null);
+	const [filter, setFilter] = useState<string>("");
 	const [photoDialogState, setPhotoDialogState] = useState<{
 		photo: Photo;
 		product_ref: string;
@@ -42,10 +42,10 @@ export default function PhotoStudio() {
 		useState<boolean>(false);
 
 	const { data: photos, mutate: updatePhotos } = useSWR(
-		"pb/photo_product_link",
+		["pb/photo_product_link", filter.length === 36 ? filter : null],
 		() =>
 			fetch(
-				`${pb_base_url}/api/collections/photo_agg/records?sort=-created&perPage=30`,
+				`${pb_base_url}/api/collections/photo_agg/records?sort=-created&perPage=10${filter.length === 36 ? `&filter=product_ref='${filter}'` : ""}`,
 			)
 				.then((r) => r.json())
 				.then((r) => r.items) as Promise<
@@ -82,14 +82,18 @@ export default function PhotoStudio() {
 					show={showAddPhotosDialog}
 					setShow={setShowAddPhotosDialog}
 				/>
-				<select className="px-2 rounded-lg cursor-pointer">
+				{/*<select
+					className="px-2 rounded-lg cursor-pointer"
+					onChange={(e) => setFilterStatus(e.target.value)}
+				>
 					<option>-</option>
 					{photoStatuses.map((status) => (
 						<option key={status} value={status}>
 							{status}
 						</option>
 					))}
-				</select>
+				</select>*/}
+				<input value={filter} onChange={(e) => setFilter(e.target.value)} />
 				<button
 					className="border size-10 flex items-center justify-center rounded-lg hover:shadow-sm"
 					onClick={() => updatePhotos()}
@@ -492,19 +496,22 @@ function PhotoDialog({ show, onClose, state }: PhotoDialogProps) {
 		});
 
 		if (!photoResponse) {
-			toast("Помилка");
+			toast.error("Помилка");
 			return;
 		}
 
-		await fetcher({
+		const productUpdate = await fetcher({
 			method: "PATCH",
 			url: `/shop/odata/standard.odata/Catalog_Номенклатура(guid'${state?.product_ref}')?$format=json`,
 			body: {
 				ФайлКартинки_Key: photoResponse.Ref_Key,
 			},
 		});
-
-		toast("Успішно", {
+		if (!productUpdate) {
+			toast.error("Помилка");
+			return;
+		}
+		toast.success("Успішно", {
 			className: "bg-green-600",
 		});
 	}

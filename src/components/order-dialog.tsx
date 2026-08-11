@@ -3,6 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import useSWR from "swr";
 import { X } from "lucide-react";
 import { toast } from "sonner";
+import { create } from "zustand";
 
 import {
 	getCustomer,
@@ -15,7 +16,6 @@ import {
 	getOrdersCountByStatus,
 } from "../api/supplier_orders";
 import { ArrayElement } from "../types/ArrayElement";
-import { create } from "zustand";
 
 type OrderDialogStore = {
 	customer: {
