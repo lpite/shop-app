@@ -17,7 +17,7 @@ export const useSearchStore = create<{ query: string; history: string[] }>()(
 	),
 );
 
-function createQueryForFTS(searchValue: string, exact: boolean) {
+function createQueryForFTSV1(searchValue: string, exact: boolean) {
 	if (exact) {
 		return `"${searchValue}"`;
 	}
@@ -61,7 +61,7 @@ interface UseSearch {
 	exact?: boolean;
 }
 
-export function useSearch({ exact = false }: UseSearch) {
+export function useSearchV1({ exact = false }: UseSearch) {
 	const { query, history } = useSearchStore();
 	const { data, mutate, isLoading, isValidating, error } = useSWR(
 		`search`,
@@ -69,7 +69,7 @@ export function useSearch({ exact = false }: UseSearch) {
 			fetcher<FTSProduct[]>({
 				url: "/shop/hs/api/test",
 				method: "GET",
-				query: `?q=${createQueryForFTS(query, exact)}`,
+				query: `?q=${createQueryForFTSV1(query, exact)}`,
 			}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name))),
 		{
 			revalidateOnMount: false,
@@ -113,4 +113,12 @@ export function useSearch({ exact = false }: UseSearch) {
 		clearData,
 		error,
 	};
+}
+
+export function useSearch({ exact = false }: UseSearch) {
+	return useSearchV1({ exact });
+}
+
+function useSearchV2({ exact = false }: UseSearch) {
+	throw new Error("not implemented");
 }

@@ -8,6 +8,7 @@ export const configSchema = z.object({
 	server_url: z.url(),
 	use_app_return_page: z.boolean(),
 	use_pos_v2_api: z.boolean(),
+	use_search_v2: z.boolean(),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -21,6 +22,7 @@ export const useConfig = create<Config>()(
 			server_url: "",
 			use_app_return_page: false,
 			use_pos_v2_api: false,
+			use_search_v2: false,
 		}),
 		{
 			name: "settings",
