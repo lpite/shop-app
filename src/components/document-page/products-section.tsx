@@ -1,5 +1,10 @@
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
-import { EllipsisVertical, Image } from "lucide-react";
+import {
+	EllipsisVertical,
+	Image,
+	PanelRightClose,
+	PanelRightOpen,
+} from "lucide-react";
 
 import PhotoViewer from "../photo-viewer";
 import { ProductDetailsDialog } from "./product-details-dialog/product-details-dialog-state";
@@ -13,6 +18,10 @@ import { FTSProduct } from "../../types/product";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import { getShortcutsLayer } from "../../utils/getShortcutsLayer";
 import { useBarcodeScanner } from "../../hooks/useBarcodeScanner";
+import useSWR from "swr";
+import { Product } from "../../api/product";
+import { useConfig } from "../../stores/config-store";
+import { Base64 } from "js-base64";
 
 const cellStyles = "border px-1 py-2 box-border";
 
@@ -272,6 +281,7 @@ export default function ProductsSection({
 					) : null}
 				</div>
 			</div>
+			<Sidebar product={selectedProduct} />
 		</div>
 	);
 }
@@ -290,6 +300,45 @@ function Cell({ children, width, style, className }: CellProps) {
 			style={{ width: width, ...style }}
 		>
 			{children}
+		</div>
+	);
+}
+
+type SidebarProps = {
+	product?: FTSProduct;
+};
+
+function Sidebar({ product }: SidebarProps) {
+	const serverUrl = useConfig((s) => s.server_url);
+
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+	const { data: productPhotos } = useSWR(
+		product && isSidebarOpen ? ["product-photos", product.id] : null,
+		() => Product.getPhotos(product?.id as any),
+	);
+
+	return (
+		<div
+			className={`${isSidebarOpen ? "w-96 p-2" : "py-2 w-6"} h-full overflow-y-auto flex flex-col rounded-2xl ml-2 relative duration-500`}
+		>
+			<div className="flex justify-end">
+				<button>
+					{isSidebarOpen ? (
+						<PanelRightClose onClick={() => setIsSidebarOpen(false)} />
+					) : (
+						<PanelRightOpen onClick={() => setIsSidebarOpen(true)} />
+					)}
+				</button>
+			</div>
+			<div>
+				{productPhotos?.map((photo) => (
+					<img
+						className="mt-1 rounded-lg"
+						src={`${serverUrl}/api/get-photo.php?photo=${encodeURIComponent(Base64.encode(photo))}`}
+					/>
+				))}
+			</div>
 		</div>
 	);
 }

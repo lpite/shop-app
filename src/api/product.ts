@@ -23,4 +23,4 @@ async function getPhotos(productId: string) {
 	) as string[];
 }
 
-export const product = { getPhotos };
+export const Product = { getPhotos };

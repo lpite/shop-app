@@ -118,7 +118,7 @@ export function useSearchV1({ exact = false }: UseSearch) {
 export function useSearch({ exact = false }: UseSearch) {
 	return useSearchV1({ exact });
 }
-
+//@ts-expect-error for later
 function useSearchV2({ exact = false }: UseSearch) {
 	throw new Error("not implemented");
 }
