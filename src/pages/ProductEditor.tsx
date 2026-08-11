@@ -4,17 +4,24 @@ import { FormEvent, useState } from "react";
 import { EditProductDialog } from "./PlaceChangeSuggestionReport";
 import { getOdataValue } from "../utils/odata";
 import { Search } from "lucide-react";
-import { useStorageCells } from "../api/odata";
+import { getBarcodeProductLinks, useStorageCells } from "../api/odata";
 import { getStorageCellCode } from "../utils/getStorageCellCode";
 import { Spinner } from "../components/spinner";
+import { useBarcodeScanner } from "../hooks/useBarcodeScanner";
+import { toast } from "sonner";
+import { useDebounce } from "@uidotdev/usehooks";
+import { getShortcutsLayer } from "../utils/getShortcutsLayer";
 
 export function ProductEditor() {
 	const [query, setQuery] = useState("");
+
+	const debouncedQuery = useDebounce(query, 400);
+
 	const { data: product, isLoading: isLoadingProduct } = useSWR(
-		query.length ? `odata/catalog/products/${query}` : null,
+		debouncedQuery.length ? `odata/catalog/products/${debouncedQuery}` : null,
 		() =>
 			fetcher<any>({
-				url: `/shop/odata/standard.odata/Catalog_Номенклатура?$format=json&$select=Ref_Key,Code,Description,Артикул,МестоХранения_Key,МестоХранения1_Key,МестоХранения2_Key&$filter=КодДляПоиска eq '${query}'`,
+				url: `/shop/odata/standard.odata/Catalog_Номенклатура?$format=json&$select=Ref_Key,Code,Description,Артикул,МестоХранения_Key,МестоХранения1_Key,МестоХранения2_Key&$filter=КодДляПоиска eq '${debouncedQuery}'`,
 				method: "GET",
 			})
 				.then((r) =>
@@ -44,6 +51,30 @@ export function ProductEditor() {
 		}
 	}
 
+	useBarcodeScanner({
+		onScanEnd: async (barcode) => {
+			if (getShortcutsLayer() === "popup") {
+				return;
+			}
+
+			const links = await getBarcodeProductLinks(barcode);
+			if (!links.length) {
+				toast.error("no product for this barcode");
+				return;
+			}
+			const products = await fetcher<{ value: [{ КодДляПоиска: string }] }>({
+				method: "GET",
+				url: `/shop/odata/standard.odata/Catalog_Номенклатура?$format=json&$filter=Ref_Key eq guid'${links[0].Номенклатура_Key}'`,
+			});
+
+			if (!products.value || !products.value.length) {
+				toast.error("cant fetch product");
+				return;
+			}
+			setQuery(products.value[0].КодДляПоиска);
+		},
+	});
+
 	return (
 		<main className="p-4">
 			<form onSubmit={onSubmit} className="w-full flex gap-2">
@@ -52,6 +83,8 @@ export function ProductEditor() {
 					placeholder="Код"
 					type="number"
 					className="w-full px-3 py-2 rounded-lg border"
+					value={query}
+					onChange={(e) => setQuery(e.target.value)}
 				/>
 				<button className="bg-sky-400 size-10 flex items-center justify-center rounded-lg shrink-0">
 					<Search className="size-6" />
