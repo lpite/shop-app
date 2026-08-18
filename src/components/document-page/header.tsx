@@ -12,7 +12,7 @@ import { ClientSelector } from "./client-selector";
 
 import { useSearch } from "../../hooks/useSearch";
 
-import { pos } from "../../api/pos";
+import { Pos } from "../../api/pos";
 import { client } from "../../api/client";
 
 import { useCartStore } from "../../stores/cart-store";
@@ -32,7 +32,7 @@ export default function Header() {
 	const { data: documentSum } = useSWR(
 		partnerId ? `document-sum/${type}/${partnerId}` : null,
 		() =>
-			type === "sell" ? pos.getSellSum(partnerId || "") : pos.getReturnSum(),
+			type === "sell" ? Pos.getSellSum(partnerId || "") : Pos.getReturnSum(),
 	);
 
 	async function saveCart() {
@@ -60,10 +60,10 @@ export default function Header() {
 		}
 
 		const sellFunction = use_pos_v2_api
-			? pos.sellProductsV2
-			: pos.sellProductsV1;
+			? Pos.sellProductsV2
+			: Pos.sellProductsV1;
 
-		const saveFunction = type === "sell" ? sellFunction : pos.returnProducts;
+		const saveFunction = type === "sell" ? sellFunction : Pos.returnProducts;
 		if (await saveFunction({ agentName, partnerId, products: cartProducts })) {
 			clearCart();
 			setQuery("");

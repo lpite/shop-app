@@ -21,7 +21,7 @@ function getCarModels(brandId: number) {
 
 async function getProductBrands() {}
 
-export const catalog = {
+export const Catalog = {
 	getArticleDetails,
 	getCarBrands,
 	getCarModels,

@@ -2,7 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 import { useEffect, useState } from "react";
-import { pos } from "../api/pos";
+import { Pos } from "../api/pos";
 
 type CommentPopupProps = {
 	partnerId: string;
@@ -17,7 +17,7 @@ export default function CommentPopup({
 		data: comment,
 		mutate: mutateComment,
 		isLoading: isLoadingComment,
-	} = useSWR(`/comment/${partnerId}`, () => pos.getComment(partnerId));
+	} = useSWR(`/comment/${partnerId}`, () => Pos.getComment(partnerId));
 	const [commentText, setCommentText] = useState("");
 	const [isOpen, setIsOpen] = useState(false);
 

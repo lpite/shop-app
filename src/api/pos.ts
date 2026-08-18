@@ -126,7 +126,7 @@ async function updateComment(partnerId: string, text: string) {
 	});
 }
 
-export const pos = {
+export const Pos = {
 	sellProductsV1,
 	sellProductsV2,
 	returnProducts,
