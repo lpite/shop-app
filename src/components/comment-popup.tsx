@@ -22,7 +22,7 @@ export default function CommentPopup({
 	const [isOpen, setIsOpen] = useState(false);
 
 	const { trigger: saveComment } = useSWRMutation("/comment/${partnerId}", () =>
-		pos.updateComment(partnerId, commentText),
+		Pos.updateComment(partnerId, commentText),
 	);
 
 	useEffect(() => {
