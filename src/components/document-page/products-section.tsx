@@ -311,7 +311,7 @@ type SidebarProps = {
 function Sidebar({ product }: SidebarProps) {
 	const serverUrl = useConfig((s) => s.server_url);
 
-	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
 	const { data: productPhotos } = useSWR(
 		product && isSidebarOpen ? ["product-photos", product.id] : null,

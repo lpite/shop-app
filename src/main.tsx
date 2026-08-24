@@ -16,10 +16,11 @@ import { OrderNotifier } from "./components/order-notification";
 import { ErrorBoundary } from "react-error-boundary";
 import { ProductEditor } from "./pages/ProductEditor.tsx";
 
+
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const StatsPage = lazy(() => import("./pages/StatsPage.tsx"));
 const LeftOversReport = lazy(() => import("./pages/LeftoversReport.tsx"));
-const ReportsPage = lazy(() => import("./pages/Reports.tsx"));
+const AdminPage = lazy(() => import("./pages/Admin.tsx"));
 const PhotoStudio = lazy(() => import("./pages/PhotoStudio.tsx"));
 const PlaceChangeSuggestionReport = lazy(
 	() => import("./pages/PlaceChangeSuggestionReport.tsx"),
@@ -59,7 +60,7 @@ createRoot(document.getElementById("root")!).render(
 							</Suspense>
 						)}
 					/>
-					<Route path="/report" component={ReportsPage} />
+					<Route path="/admin" component={AdminPage} />
 					<Route path="/report/leftovers" component={LeftOversReport} />
 					<Route
 						path="/report/place-change-suggestions"

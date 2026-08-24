@@ -8,7 +8,7 @@ export default function StartPage() {
 		<main className="flex items-center justify-center w-full h-full gap-4">
 			<span className="fixed top-3 start-3">{__BUILD_ID__}</span>
 			<div className="fixed end-3 top-3 flex gap-3">
-				<Link to="/report" className="p-2 hover:bg-slate-100 rounded-lg">
+				<Link to="/admin" className="p-2 hover:bg-slate-100 rounded-lg">
 					<Sticker />
 				</Link>
 				<Link to="/config" className="p-2 hover:bg-slate-100 rounded-lg">
