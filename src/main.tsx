@@ -16,7 +16,6 @@ import { OrderNotifier } from "./components/order-notification";
 import { ErrorBoundary } from "react-error-boundary";
 import { ProductEditor } from "./pages/ProductEditor.tsx";
 
-
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const StatsPage = lazy(() => import("./pages/StatsPage.tsx"));
 const LeftOversReport = lazy(() => import("./pages/LeftoversReport.tsx"));

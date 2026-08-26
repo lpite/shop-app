@@ -106,6 +106,10 @@ export function BarcodeDialogPortal() {
 								addToCart({
 									...product,
 									id: `00-${convertToId(product.searchCode)}`,
+									article: product.code,
+									oem: product.vendorCode,
+									photoUrl: "",
+									places: [],
 									foundBy: "",
 									quantity: 1,
 								});

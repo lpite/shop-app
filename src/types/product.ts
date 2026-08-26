@@ -19,20 +19,17 @@ export type Product = {
 
 export type FTSProduct = {
 	id: string;
-	searchCode: string;
+	article: string;
+	oem: string;
 	name: string;
 	brand: string;
-	vendorCode: string;
-	code: string;
-	price: number;
-	quantity: number;
 	units: string;
-	place1: string;
-	place2: string;
-	place3: string;
-	photo: string;
+	places: string[];
+	photoUrl: string;
 	photoPath: string;
 	description: string;
 	needToSell: boolean;
 	foundBy: string;
+	price: number;
+	quantity: number;
 };

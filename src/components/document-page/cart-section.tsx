@@ -3,6 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 
 import { usePosStore } from "../../stores/pos-store";
 import { useCartStore } from "../../stores/cart-store";
+import { fromIdToCode } from "../../utils/fromIdToCode";
 
 export default function CartSection() {
 	const { cartProducts, removeFromCart, editCart, clearCart } = useCartStore();
@@ -117,15 +118,15 @@ export default function CartSection() {
 				{cartProducts.map((el) => {
 					return (
 						<div
-							key={el.searchCode + "cart"}
+							key={el.id + "cart"}
 							className="flex cursor-default bg-slate-300"
-							onContextMenu={(e) => onContextMenu(e, el.searchCode)}
+							onContextMenu={(e) => onContextMenu(e, el.id)}
 						>
 							<div className="w-12 border border-slate-500 p-1 shrink-0 box-border">
-								{el.searchCode}
+								{fromIdToCode(el.id)}
 							</div>
 							<div className="w-52 border border-slate-500 p-1 shrink-0 box-border">
-								{el.code} {el.vendorCode}
+								{el.article} {el.oem}
 							</div>
 							<div className="flex-1 border border-slate-500 p-1 box-border">
 								{el.name}
@@ -138,14 +139,12 @@ export default function CartSection() {
 									type="number"
 									value={el.quantity}
 									className="w-9 h-8 appearance-none text-center outline-none bg-gray-200 rounded-l-lg"
-									onChange={(e) =>
-										editCart(el.searchCode, parseFloat(e.target.value))
-									}
+									onChange={(e) => editCart(el.id, parseFloat(e.target.value))}
 								/>
 								<div>
 									<button
 										className="w-5 bg-gray-200 rounded-tr-lg shrink-0 flex items-center justify-center hover:bg-gray-400"
-										onClick={() => editCart(el.searchCode, el.quantity + 1)}
+										onClick={() => editCart(el.id, el.quantity + 1)}
 									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
@@ -162,7 +161,7 @@ export default function CartSection() {
 									</button>
 									<button
 										className="w-5 bg-gray-200 rounded-br-lg shrink-0 flex items-center justify-center hover:bg-gray-400"
-										onClick={() => editCart(el.searchCode, el.quantity - 1)}
+										onClick={() => editCart(el.id, el.quantity - 1)}
 									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
@@ -186,10 +185,10 @@ export default function CartSection() {
 								{Math.ceil(el.price * el.quantity).toFixed(2)}
 							</div>
 							<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
-								{el.place1 || el.place2 || el.place3}
+								{el.places[0] || el.places[1] || el.places[2]}
 							</div>
 							<div className="w-48 border border-slate-500 p-1 shrink-0 box-border">
-								{el.place1 ? el.place2 || el.place3 : null}
+								{el.places[0] ? el.places[1] || el.places[2] : null}
 							</div>
 						</div>
 					);

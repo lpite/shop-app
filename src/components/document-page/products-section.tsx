@@ -22,6 +22,7 @@ import useSWR from "swr";
 import { Product } from "../../api/product";
 import { useConfig } from "../../stores/config-store";
 import { Base64 } from "js-base64";
+import { fromIdToCode } from "../../utils/fromIdToCode";
 
 const cellStyles = "border px-1 py-2 box-border";
 
@@ -207,20 +208,20 @@ export default function ProductsSection({
 									onMouseEnter={() => setPhoto(product.photoPath)}
 									onMouseLeave={() => setPhoto(undefined)}
 								>
-									{product.photo ? (
+									{product.photoPath ? (
 										<Image className="cursor-pointer size-5" />
 									) : null}
 								</div>
-								<Cell width={columns[0].width}>{product.searchCode}</Cell>
+								<Cell width={columns[0].width}>{fromIdToCode(product.id)}</Cell>
 								<Cell
 									width={columns[1].width}
 									style={{ wordWrap: "break-word" }}
 								>
-									{product.code}
-									<Show when={product.vendorCode.length && product.code.length}>
+									{product.article}
+									<Show when={product.oem.length && product.article.length}>
 										<br />
 									</Show>
-									{product.vendorCode}
+									{product.oem}
 								</Cell>
 								<Cell width="100%" className="flex flex-col justify-between">
 									<div className="flex justify-between">
@@ -259,18 +260,18 @@ export default function ProductsSection({
 										<span className="text-red-700 font-bold">Немає</span>
 									)}
 								</Cell>
-								<Cell width={columns[6].width}>{product?.place1}</Cell>
+								<Cell width={columns[6].width}>{product.places?.[0]}</Cell>
 								<Cell width={columns[7].width}>
-									{product?.place2}
+									{product.places?.[1]}
 									<Show
 										when={
-											product?.place3?.length !== 0 &&
-											product?.place2?.length !== 0
+											product.places?.[1]?.length !== 0 &&
+											product.places?.[2]?.length !== 0
 										}
 									>
 										<br />
 									</Show>
-									{product?.place3}
+									{product.places?.[2]}
 								</Cell>
 							</div>
 						))}

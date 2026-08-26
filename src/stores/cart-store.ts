@@ -5,8 +5,8 @@ import { persist } from "zustand/middleware";
 export type CartStore = {
 	cartProducts: FTSProduct[];
 	addToCart: (p: FTSProduct) => void;
-	removeFromCart: (searchCode: string) => void;
-	editCart: (searchCode: string, q: number) => void;
+	removeFromCart: (id: string) => void;
+	editCart: (id: string, q: number) => void;
 	clearCart: () => void;
 };
 
@@ -18,10 +18,10 @@ export const useCartStore = create<CartStore>()(
 			addToCart: (p) =>
 				set((state) => {
 					console.log(state.cartProducts, p);
-					if (state.cartProducts.find((el) => el.searchCode === p.searchCode)) {
+					if (state.cartProducts.find((el) => el.id === p.id)) {
 						return {
 							cartProducts: state.cartProducts.map((el) => {
-								if (el.searchCode === p.searchCode) {
+								if (el.id === p.id) {
 									return { ...el, quantity: el.quantity + 1 };
 								}
 								return el;
@@ -32,9 +32,7 @@ export const useCartStore = create<CartStore>()(
 				}),
 			removeFromCart: (s) =>
 				set((state) => {
-					const newProducts = state.cartProducts.filter(
-						(el) => el.searchCode !== s,
-					);
+					const newProducts = state.cartProducts.filter((el) => el.id !== s);
 					return { ...state, cartProducts: newProducts };
 				}),
 			editCart: (s, q) =>
@@ -43,7 +41,7 @@ export const useCartStore = create<CartStore>()(
 						return state;
 					}
 					const newProducts = state.cartProducts.map((el) => {
-						if (el.searchCode === s) {
+						if (el.id === s) {
 							return { ...el, quantity: q };
 						}
 						return el;

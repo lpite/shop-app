@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 
 import { fetcher } from "../utils/fetcher";
 import { FTSProduct } from "../types/product";
+import { useConfig } from "../stores/config-store";
 
 export const useSearchStore = create<{ query: string; history: string[] }>()(
 	persist(
@@ -116,9 +117,64 @@ export function useSearchV1({ exact = false }: UseSearch) {
 }
 
 export function useSearch({ exact = false }: UseSearch) {
+	const use_search_v2 = useConfig((s) => s.use_search_v2);
+	if (use_search_v2) {
+		return useSearchV2({ exact });
+	}
 	return useSearchV1({ exact });
 }
-//@ts-expect-error for later
+
 function useSearchV2({ exact = false }: UseSearch) {
-	throw new Error("not implemented");
+	const { query, history } = useSearchStore();
+
+	const { data, mutate, isLoading, isValidating, error } = useSWR(
+		`search`,
+		() =>
+			fetcher<FTSProduct[]>({
+				url: "/shop/hs/api/search",
+				method: "GET",
+				query: `?q=${createQueryForFTSV1(query, exact)}`,
+			}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name))),
+		{
+			revalidateOnMount: false,
+			revalidateIfStale: false,
+			revalidateOnFocus: false,
+			revalidateOnReconnect: false,
+			errorRetryCount: 0,
+		},
+	);
+	const setQuery = (query: string) => {
+		useSearchStore.setState({ query: query });
+	};
+
+	const clearData = () => {
+		mutate([], {
+			revalidate: false,
+		});
+	};
+
+	const search = () => {
+		if (!query.length) {
+			return;
+		}
+
+		if (history[0] !== query) {
+			useSearchStore.setState({
+				history: [query, ...history.slice(0, 10)],
+			});
+		}
+		mutate();
+	};
+
+	return {
+		query,
+		data: data || [],
+		setQuery,
+		search,
+		isLoading,
+		isValidating,
+		history,
+		clearData,
+		error,
+	};
 }
