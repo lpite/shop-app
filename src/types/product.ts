@@ -26,7 +26,6 @@ export type FTSProduct = {
 	units: string;
 	places: string[];
 	photoUrl: string;
-	photoPath: string;
 	description: string;
 	needToSell: boolean;
 	foundBy: string;

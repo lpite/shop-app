@@ -4,7 +4,6 @@ import { persist } from "zustand/middleware";
 
 import { fetcher } from "../utils/fetcher";
 import { FTSProduct } from "../types/product";
-import { useConfig } from "../stores/config-store";
 
 export const useSearchStore = create<{ query: string; history: string[] }>()(
 	persist(
@@ -117,11 +116,7 @@ export function useSearchV1({ exact = false }: UseSearch) {
 }
 
 export function useSearch({ exact = false }: UseSearch) {
-	const use_search_v2 = useConfig((s) => s.use_search_v2);
-	if (use_search_v2) {
-		return useSearchV2({ exact });
-	}
-	return useSearchV1({ exact });
+	return useSearchV2({ exact });
 }
 
 function useSearchV2({ exact = false }: UseSearch) {

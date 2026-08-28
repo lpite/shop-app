@@ -1,4 +1,3 @@
-import { Base64 } from "js-base64";
 import { useState } from "react";
 import { useConfig } from "../stores/config-store";
 
@@ -25,7 +24,7 @@ export default function PhotoViewer({ photo }: PhotoViewerProps) {
 				className="h-5/6"
 				onLoad={() => setIsLoading(false)}
 				onError={() => setIsLoading(false)}
-				src={`${serverUrl}/api/get-photo.php?photo=${encodeURIComponent(Base64.encode(photo))}`}
+				src={`${serverUrl}/api/get-photo.php?photo=${photo}`}
 			/>
 		</div>
 	);

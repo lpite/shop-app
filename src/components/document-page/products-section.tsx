@@ -205,10 +205,10 @@ export default function ProductsSection({
 							>
 								<div
 									className="w-6 shrink-0 flex items-center justify-center"
-									onMouseEnter={() => setPhoto(product.photoPath)}
+									onMouseEnter={() => setPhoto(product.photoUrl)}
 									onMouseLeave={() => setPhoto(undefined)}
 								>
-									{product.photoPath ? (
+									{product.photoUrl ? (
 										<Image className="cursor-pointer size-5" />
 									) : null}
 								</div>
@@ -335,6 +335,7 @@ function Sidebar({ product }: SidebarProps) {
 			<div>
 				{productPhotos?.map((photo) => (
 					<img
+						key={photo}
 						className="mt-1 rounded-lg"
 						src={`${serverUrl}/api/get-photo.php?photo=${encodeURIComponent(Base64.encode(photo))}`}
 					/>
