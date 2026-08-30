@@ -51,7 +51,7 @@ export default function LeftoversReport() {
 						disabled={isLoadingSuppliers || isValidatingSuppliers}
 						id="supplier_select"
 					>
-						<option>--------</option>
+						<option value="">--------</option>
 						{suppliers?.map((sp) => (
 							<option key={sp["Код"]} value={sp["Код"]}>
 								{sp["Наименование"]}
@@ -128,7 +128,6 @@ function Row({ headers, el }: { headers: string[]; el: Record<string, any> }) {
 			<td className="border p-2">{el["ВНаличииОстаток"] - el["МинЗапас"]}</td>
 			<td>
 				<button onClick={() => setSelected(!selected)}>
-					{/*{selected ? "-" : "+"}*/}
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="24"
