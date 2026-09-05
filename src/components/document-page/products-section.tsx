@@ -333,9 +333,9 @@ function Sidebar({ product }: SidebarProps) {
 				</button>
 			</div>
 			<div>
-				{productPhotos?.map((photo,i) => (
+				{productPhotos?.map((photo, i) => (
 					<img
-						key={product?.id+"_photo_"+i}
+						key={product?.id + "_photo_" + i}
 						className="mt-1 rounded-lg"
 						src={`${serverUrl}/api/get-photo.php?photo=${encodeURIComponent(Base64.encode(photo))}`}
 					/>

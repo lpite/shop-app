@@ -5,18 +5,33 @@ import { Spinner } from "../components/spinner";
 import Show from "../utils/Show";
 
 const headers = [
-	"Артикул",
-	"НомерПроизводителя",
-	"Наименование",
-	"Цена",
-	"ВНаличииОстаток",
-	"МинЗапас",
-];
+	"article",
+	"oem",
+	"name",
+	"price",
+	"stock",
+	"minStock",
+] as const;
+
+type Headers = (typeof headers)[number];
+
+type Row = {
+	article: string;
+	oem: string;
+	name: string;
+	price: number;
+	stock: number;
+	minStock: number;
+};
 
 export default function LeftoversReport() {
 	const [selectedSupplier, setSelectedSupplier] = useState<
 		string | undefined
 	>();
+
+	const [filters, setFilters] = useState({
+		showOnlyNotInStock: false,
+	});
 
 	const {
 		data: suppliers,
@@ -34,7 +49,7 @@ export default function LeftoversReport() {
 			? "reports/leftovers-by-supplier/" + selectedSupplier
 			: null,
 		() =>
-			fetcher<any[]>({
+			fetcher<Row[]>({
 				url: "/shop/hs/reports/leftovers-by-supplier/" + selectedSupplier,
 				method: "GET",
 			}),
@@ -61,22 +76,37 @@ export default function LeftoversReport() {
 					<Show when={isLoading || isLoadingSuppliers}>
 						<Spinner size={30} />
 					</Show>
+					<div className="flex flex-col gap-2 m-2">
+						<span>Показувати</span>
+						<label className="flex">
+							наявність 0{" "}
+							<input
+								type="checkbox"
+								checked={filters.showOnlyNotInStock}
+								onChange={() =>
+									setFilters((f) => ({
+										...f,
+										showOnlyNotInStock: !f.showOnlyNotInStock,
+									}))
+								}
+							/>
+						</label>
+					</div>
 				</div>
+
 				<div className="w-full">
 					<span className="text-xl w-64 inline-block">
 						Недостатньо штучок:
 						{data
-							?.filter((c) => c["ВНаличииОстаток"] - c["МинЗапас"] < 0)
-							.reduce((p, c) => p + (c["ВНаличииОстаток"] - c["МинЗапас"]), 0)}
+							?.filter((c) => c["stock"] - c["minStock"] < 0)
+							.reduce((p, c) => p + (c["stock"] - c["minStock"]), 0)}
 					</span>
 					<span className="text-xl w-60 inline-block">
 						Сума:
 						{data
-							?.filter((c) => c["ВНаличииОстаток"] - c["МинЗапас"] < 0)
+							?.filter((c) => c["stock"] - c["minStock"] < 0)
 							.reduce(
-								(p, c) =>
-									p +
-									Math.abs(c["ВНаличииОстаток"] - c["МинЗапас"]) * c["Цена"],
+								(p, c) => p + Math.abs(c["stock"] - c["minStock"]) * c["price"],
 								0,
 							)}
 					</span>
@@ -85,7 +115,6 @@ export default function LeftoversReport() {
 					Створити документ
 				</button>
 			</div>
-
 			<table>
 				<thead>
 					<tr>
@@ -94,20 +123,27 @@ export default function LeftoversReport() {
 								{k}
 							</td>
 						))}
+						<td className="border p-2">Різниця</td>
 					</tr>
 				</thead>
 				<tbody>
 					{data
 						?.map((el) => ({
 							...el,
-							Разница: el["ВНаличииОстаток"] - el["МинЗапас"],
+							stockDifference: el["stock"] - el["minStock"],
 						}))
-						.sort((a, b) => a["Разница"] - b["Разница"])
+						.sort((a, b) => a["stockDifference"] - b["stockDifference"])
+						.filter((el) => {
+							if (filters.showOnlyNotInStock) {
+								return el["stock"] === 0;
+							}
+							return true;
+						})
 						.map((el) => (
 							<Row
-								headers={headers}
+								headers={headers as any}
 								el={el}
-								key={el["Наименование"] + el["Артикул"]}
+								key={el["name"] + el["article"]}
 							/>
 						))}
 				</tbody>
@@ -116,16 +152,16 @@ export default function LeftoversReport() {
 	);
 }
 
-function Row({ headers, el }: { headers: string[]; el: Record<string, any> }) {
+function Row({ headers, el }: { headers: Headers[]; el: Row }) {
 	const [selected, setSelected] = useState(false);
 	return (
 		<tr className={selected ? "bg-green-200" : ""}>
 			{headers.map((k) => (
-				<td className="border p-2" key={k + el["Наименование"]}>
+				<td className="border p-2" key={k + el["name"]}>
 					{el[k]}
 				</td>
 			))}
-			<td className="border p-2">{el["ВНаличииОстаток"] - el["МинЗапас"]}</td>
+			<td className="border p-2">{el["stock"] - el["minStock"]}</td>
 			<td>
 				<button onClick={() => setSelected(!selected)}>
 					<svg
