@@ -17,7 +17,7 @@ export const useSearchStore = create<{ query: string; history: string[] }>()(
 	),
 );
 
-function createQueryForFTSV1(searchValue: string, exact: boolean) {
+function createQueryForFTS(searchValue: string, exact: boolean) {
 	if (exact) {
 		return `"${searchValue}"`;
 	}
@@ -69,7 +69,7 @@ export function useSearchV1({ exact = false }: UseSearch) {
 			fetcher<FTSProduct[]>({
 				url: "/shop/hs/api/test",
 				method: "GET",
-				query: `?q=${createQueryForFTSV1(query, exact)}`,
+				query: `?q=${createQueryForFTS(query, exact)}`,
 			}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name))),
 		{
 			revalidateOnMount: false,
@@ -128,7 +128,7 @@ function useSearchV2({ exact = false }: UseSearch) {
 			fetcher<FTSProduct[]>({
 				url: "/shop/hs/api/search",
 				method: "GET",
-				query: `?q=${createQueryForFTSV1(query, exact)}`,
+				query: `?q=${createQueryForFTS(query, exact)}`,
 			}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name))),
 		{
 			revalidateOnMount: false,
@@ -139,7 +139,7 @@ function useSearchV2({ exact = false }: UseSearch) {
 		},
 	);
 	const setQuery = (query: string) => {
-		useSearchStore.setState({ query: query });
+		useSearchStore.setState({ query });
 	};
 
 	const clearData = () => {
@@ -173,3 +173,61 @@ function useSearchV2({ exact = false }: UseSearch) {
 		error,
 	};
 }
+
+// type FTSProductV3 = FTSProduct & {
+// 	analogs: string[];
+// 	oeNumbers: string[];
+// };
+
+// function useSearchV3({}: UseSearch) {
+// 	const { query, history } = useSearchStore();
+
+// 	const { data, mutate, isLoading, isValidating, error } = useSWR(
+// 		`search`,
+// 		() =>
+// 			fetch(`http://localhost:3210/search?q=${query}`)
+// 				.then((r) => r.json() as Promise<FTSProductV3[]>)
+// 				.then((r) => r.sort((a, b) => a.name.localeCompare(b.name))),
+// 		{
+// 			revalidateOnMount: false,
+// 			revalidateIfStale: false,
+// 			revalidateOnFocus: false,
+// 			revalidateOnReconnect: false,
+// 			errorRetryCount: 0,
+// 		},
+// 	);
+// 	const setQuery = (query: string) => {
+// 		useSearchStore.setState({ query });
+// 	};
+
+// 	const clearData = () => {
+// 		mutate([], {
+// 			revalidate: false,
+// 		});
+// 	};
+
+// 	const search = () => {
+// 		if (!query.length) {
+// 			return;
+// 		}
+
+// 		if (history[0] !== query) {
+// 			useSearchStore.setState({
+// 				history: [query, ...history.slice(0, 10)],
+// 			});
+// 		}
+// 		mutate();
+// 	};
+
+// 	return {
+// 		query,
+// 		data: data || [],
+// 		setQuery,
+// 		search,
+// 		isLoading,
+// 		isValidating,
+// 		history,
+// 		clearData,
+// 		error,
+// 	};
+// }

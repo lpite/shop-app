@@ -45,7 +45,7 @@ export default function PhotoStudio() {
 		["pb/photo_product_link", filter.length === 36 ? filter : null],
 		() =>
 			fetch(
-				`${pb_base_url}/api/collections/photo_agg/records?sort=-created&perPage=10${filter.length === 36 ? `&filter=product_ref='${filter}'` : ""}`,
+				`${pb_base_url}/api/collections/photo_agg/records?sort=-created&perPage=40${filter.length === 36 ? `&filter=product_ref='${filter}'` : ""}`,
 			)
 				.then((r) => r.json())
 				.then((r) => r.items) as Promise<
@@ -357,7 +357,7 @@ function AddPhotosDialog({
 									e.preventDefault();
 									setIsDragging(false);
 								}}
-								className={`group flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-4 transition-colors ${
+								className={`group flex min-h-44 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-4 transition-colors ${
 									isDragging
 										? "border-primary bg-gray-200"
 										: "border-muted-foreground/25 hover:border-primary/50"
@@ -481,6 +481,11 @@ function PhotoDialog({ show, onClose, state }: PhotoDialogProps) {
 	}
 
 	async function savePhoto() {
+		if (!state) {
+			toast.error("no state");
+			return;
+		}
+
 		const photoResponse = await fetcher<{ Ref_Key: string } | null>({
 			method: "POST",
 			url: "/shop/odata/standard.odata/Catalog_НоменклатураПрисоединенныеФайлы?$format=json",
@@ -502,7 +507,7 @@ function PhotoDialog({ show, onClose, state }: PhotoDialogProps) {
 
 		const productUpdate = await fetcher({
 			method: "PATCH",
-			url: `/shop/odata/standard.odata/Catalog_Номенклатура(guid'${state?.product_ref}')?$format=json`,
+			url: `/shop/odata/standard.odata/Catalog_Номенклатура(guid'${state.product_ref}')?$format=json`,
 			body: {
 				ФайлКартинки_Key: photoResponse.Ref_Key,
 			},
@@ -511,6 +516,12 @@ function PhotoDialog({ show, onClose, state }: PhotoDialogProps) {
 			toast.error("Помилка");
 			return;
 		}
+
+		downloadPhoto(
+			`${pb_base_url}/api/files/photo_product_link/${state.photo.id}/${state.photo.file}`,
+			state.photo.file,
+		);
+
 		toast.success("Успішно", {
 			className: "bg-green-600",
 		});
