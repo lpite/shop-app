@@ -60,17 +60,19 @@ interface UseSearch {
 	fts?: boolean;
 	exact?: boolean;
 }
-
 export function useSearchV1({ exact = false }: UseSearch) {
 	const { query, history } = useSearchStore();
+
 	const { data, mutate, isLoading, isValidating, error } = useSWR(
 		`search`,
-		() =>
-			fetcher<FTSProduct[]>({
+		() => {
+			const currentQuery = useSearchStore.getState().query;
+			return fetcher<FTSProduct[]>({
 				url: "/shop/hs/api/test",
 				method: "GET",
-				query: `?q=${createQueryForFTS(query, exact)}`,
-			}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name))),
+				query: `?q=${createQueryForFTS(currentQuery, exact)}`,
+			}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name)));
+		},
 		{
 			revalidateOnMount: false,
 			revalidateIfStale: false,
@@ -90,13 +92,14 @@ export function useSearchV1({ exact = false }: UseSearch) {
 	};
 
 	const search = () => {
-		if (!query.length) {
+		const currentQuery = useSearchStore.getState().query;
+		if (!currentQuery.length) {
 			return;
 		}
 
-		if (history[0] !== query) {
+		if (history[0] !== currentQuery) {
 			useSearchStore.setState({
-				history: [query, ...history.slice(0, 10)],
+				history: [currentQuery, ...history.slice(0, 10)],
 			});
 		}
 		mutate();
@@ -124,12 +127,14 @@ function useSearchV2({ exact = false }: UseSearch) {
 
 	const { data, mutate, isLoading, isValidating, error } = useSWR(
 		`search`,
-		() =>
-			fetcher<FTSProduct[]>({
+		() => {
+			const currentQuery = useSearchStore.getState().query;
+			return fetcher<FTSProduct[]>({
 				url: "/shop/hs/api/search",
 				method: "GET",
-				query: `?q=${createQueryForFTS(query, exact)}`,
-			}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name))),
+				query: `?q=${createQueryForFTS(currentQuery, exact)}`,
+			}).then((r) => r.sort((a, b) => a.name.localeCompare(b.name)));
+		},
 		{
 			revalidateOnMount: false,
 			revalidateIfStale: false,
@@ -149,13 +154,14 @@ function useSearchV2({ exact = false }: UseSearch) {
 	};
 
 	const search = () => {
-		if (!query.length) {
+		const currentQuery = useSearchStore.getState().query;
+		if (!currentQuery.length) {
 			return;
 		}
 
-		if (history[0] !== query) {
+		if (history[0] !== currentQuery) {
 			useSearchStore.setState({
-				history: [query, ...history.slice(0, 10)],
+				history: [currentQuery, ...history.slice(0, 10)],
 			});
 		}
 		mutate();

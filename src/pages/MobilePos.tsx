@@ -78,9 +78,7 @@ function ProductCard({ product }: { product: FTSProduct }) {
 				</div>
 				<span className="text-xs text-gray-500">
 					{product.article}
-					<Show when={product.oem.length && product.article.length}>
-						{" "}
-					</Show>
+					<Show when={product.oem.length && product.article.length}> </Show>
 					{product.oem}
 				</span>
 				<div className="mt-auto flex items-center justify-between gap-3 pt-2">
@@ -145,7 +143,10 @@ export default function MobilePos() {
 		},
 	});
 
-	const cartTotalCount = cartProducts.reduce((prev, el) => prev + el.quantity, 0);
+	const cartTotalCount = cartProducts.reduce(
+		(prev, el) => prev + el.quantity,
+		0,
+	);
 	const cartTotalPrice = Math.ceil(
 		cartProducts.reduce((prev, el) => prev + el.price * el.quantity, 0),
 	);
@@ -251,9 +252,9 @@ export default function MobilePos() {
 						{error ? (
 							<div className="text-center text-gray-500 py-16">Помилка</div>
 						) : null}
-						{products?.slice(0, 100).map((product, i) => (
-							<ProductCard key={i} product={product} />
-						))}
+						{products
+							?.slice(0, 100)
+							.map((product, i) => <ProductCard key={i} product={product} />)}
 						{products.length > 100 ? (
 							<div className="text-center text-gray-500 py-8">
 								Запит дуже неточний
@@ -305,7 +306,11 @@ export default function MobilePos() {
 										<div className="flex items-center justify-between pt-1">
 											<span className="text-sm">
 												{product.price?.toFixed(2)}₴ × {product.quantity} ={" "}
-												<b>{Math.ceil(product.price * product.quantity).toFixed(2)}</b>
+												<b>
+													{Math.ceil(product.price * product.quantity).toFixed(
+														2,
+													)}
+												</b>
 											</span>
 											<button
 												onClick={() => removeFromCart(product.id)}
