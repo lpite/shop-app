@@ -28,6 +28,7 @@ const IncomeDocumentHelper = lazy(
 	() => import("./pages/IncomeDocumentHelper.tsx"),
 );
 const ScannerPage = lazy(() => import("./pages/ScannerPage.tsx"));
+const MobilePos = lazy(() => import("./pages/MobilePos.tsx"));
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
@@ -49,6 +50,7 @@ createRoot(document.getElementById("root")!).render(
 				<Switch>
 					<Route path="/" component={StartPage} />
 					<Route path="/clients/" component={ClientSelectionPage} />
+					<Route path="/pos/:partnerId/:type/mobile" component={MobilePos} />
 					<Route path="/pos/:partnerId/:type" component={PosPage} />
 					<Route path="/price-changer/" component={PriceChanger} />
 					<Route
