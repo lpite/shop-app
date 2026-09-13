@@ -23,26 +23,16 @@ import { useConfig } from "../stores/config-store";
 
 import { Pos } from "../api/pos";
 import { client } from "../api/client";
-import { Product } from "../api/product";
 
-import { useBarcodeScanner } from "../hooks/useBarcodeScanner";
-import { BarcodeDialog } from "../components/document-page/barcode-dialog/barcode-dialog-state";
-import { BarcodeDialogPortal } from "../components/document-page/barcode-dialog/barcode-dialog-portal";
 import { ProductDetailsDialog } from "../components/document-page/product-details-dialog/product-details-dialog-state";
 import { ProductDetailsDialogPortal } from "../components/document-page/product-details-dialog/product-details-dialog-portal";
 
 import { FTSProduct } from "../types/product";
 
-function ProductPhoto({ productId }: { productId: string }) {
+function ProductPhoto({ photoPath }: { photoPath: string }) {
 	const serverUrl = useConfig((s) => s.server_url);
-	const { data: photos } = useSWR(
-		productId ? ["product-photos", productId] : null,
-		() => Product.getPhotos(productId),
-	);
 
-	const photo = photos?.[0];
-
-	if (!photo) {
+	if (!photoPath) {
 		return (
 			<div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
 				<ImageIcon className="size-8" />
@@ -53,7 +43,7 @@ function ProductPhoto({ productId }: { productId: string }) {
 	return (
 		<img
 			className="w-full h-full object-cover"
-			src={`${serverUrl}/api/get-photo.php?photo=${encodeURIComponent(Base64.encode(photo))}`}
+			src={`${serverUrl}/api/get-photo.php?photo=${encodeURIComponent(Base64.encode(photoPath))}`}
 		/>
 	);
 }
@@ -64,17 +54,11 @@ function ProductCard({ product }: { product: FTSProduct }) {
 	return (
 		<div className="flex gap-3 bg-white rounded-2xl p-3 shadow-sm">
 			<div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden border">
-				<ProductPhoto productId={product.id} />
+				<ProductPhoto photoPath={product.photoPath} />
 			</div>
 			<div className="flex-1 min-w-0 flex flex-col">
 				<div className="flex items-start justify-between gap-2">
-					<span className="font-medium line-clamp-1">{product.name}</span>
-					<button
-						onClick={() => ProductDetailsDialog.openPopup(product)}
-						className="shrink-0 text-gray-500"
-					>
-						<EllipsisVertical />
-					</button>
+					<span className="font-medium">{product.name}</span>
 				</div>
 				<span className="text-xs text-gray-500">
 					{product.article}
@@ -137,12 +121,6 @@ export default function MobilePos() {
 		client.getOne(partnerId || ""),
 	);
 
-	useBarcodeScanner({
-		onScanEnd: (barcode) => {
-			BarcodeDialog.openPopup(barcode);
-		},
-	});
-
 	const cartTotalCount = cartProducts.reduce(
 		(prev, el) => prev + el.quantity,
 		0,
@@ -196,7 +174,6 @@ export default function MobilePos() {
 			className={`h-full overflow-hidden flex flex-col ${getPageColor(partnerId, type) || ""}`}
 		>
 			<ProductDetailsDialogPortal />
-			<BarcodeDialogPortal />
 			{isLoadingProducts ? (
 				<div className="fixed z-10 start-0 top-0 end-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
 					<div className="w-24 h-24 border-8 border-sky-500 rounded-full border-t-transparent animate-spin"></div>
@@ -210,40 +187,41 @@ export default function MobilePos() {
 				<div className="flex-1" />
 				<span>{type === "sell" ? "Продаж" : "Повернення"}</span>
 			</header>
-
+			<Show when={tab === "search"}>
+				<form onSubmit={onSearchSubmit} className="flex gap-2 pt-3">
+					<input
+						className="border-2 flex-1 h-12 rounded-xl px-3 text-base"
+						value={query}
+						onChange={({ target }) => setQuery(target.value)}
+						placeholder="Пошук товару..."
+					/>
+					<button
+						disabled={isValidatingProducts || !query}
+						className="h-12 px-4 rounded-xl bg-sky-600 text-white active:bg-sky-500 disabled:bg-slate-400"
+					>
+						<Search />
+					</button>
+				</form>
+				<Show when={history.length}>
+					<div className="flex gap-2 overflow-x-auto">
+						{history.slice(0, 5).map((item, i) => (
+							<button
+								key={i + item}
+								className="shrink-0 px-3 py-1 bg-white rounded-full text-sm shadow-sm active:bg-slate-200"
+								onClick={() => {
+									setQuery(item);
+									search();
+								}}
+							>
+								{item}
+							</button>
+						))}
+					</div>
+				</Show>
+			</Show>
 			<main className="flex-1 min-h-0 overflow-y-auto px-3 pb-3">
 				{tab === "search" ? (
 					<div className="flex flex-col gap-3">
-						<form onSubmit={onSearchSubmit} className="flex gap-2 pt-3">
-							<input
-								className="border-2 flex-1 h-12 rounded-xl px-3 text-base"
-								value={query}
-								onChange={({ target }) => setQuery(target.value)}
-								placeholder="Пошук товару..."
-							/>
-							<button
-								disabled={isValidatingProducts || !query}
-								className="h-12 px-4 rounded-xl bg-sky-600 text-white active:bg-sky-500 disabled:bg-slate-400"
-							>
-								<Search />
-							</button>
-						</form>
-						<Show when={history.length}>
-							<div className="flex gap-2 overflow-x-auto">
-								{history.slice(0, 5).map((item, i) => (
-									<button
-										key={i + item}
-										className="shrink-0 px-3 py-1 bg-white rounded-full text-sm shadow-sm active:bg-slate-200"
-										onClick={() => {
-											setQuery(item);
-											search();
-										}}
-									>
-										{item}
-									</button>
-								))}
-							</div>
-						</Show>
 						{!isLoadingProducts && !products.length && !cartProducts.length ? (
 							<div className="text-center text-gray-500 py-16">
 								Нічого не знайдено

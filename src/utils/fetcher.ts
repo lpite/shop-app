@@ -65,18 +65,21 @@ export async function fetcher<T>({
 }: Fetcher): Promise<T> {
 	const { server_url } = useConfig.getState();
 
-	const result = await fetch(`${server_url}/1c_connector/index.php`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
+	const result = await fetch(
+		`${server_url}/1c_connector/index.php?url=${url}`,
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				url: url,
+				method: method,
+				query: query,
+				body: body,
+			}),
 		},
-		body: JSON.stringify({
-			url: url,
-			method: method,
-			query: query,
-			body: body,
-		}),
-	})
+	)
 		.then(async (res) => {
 			let r = undefined;
 			try {
