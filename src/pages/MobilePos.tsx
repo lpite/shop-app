@@ -2,7 +2,6 @@ import { FormEvent, useState } from "react";
 import useSWR from "swr";
 import { useParams } from "wouter";
 import {
-	EllipsisVertical,
 	Image as ImageIcon,
 	Minus,
 	PackageSearch,
@@ -24,10 +23,8 @@ import { useConfig } from "../stores/config-store";
 import { Pos } from "../api/pos";
 import { client } from "../api/client";
 
-import { ProductDetailsDialog } from "../components/document-page/product-details-dialog/product-details-dialog-state";
-import { ProductDetailsDialogPortal } from "../components/document-page/product-details-dialog/product-details-dialog-portal";
-
 import { FTSProduct } from "../types/product";
+import { fromIdToCode } from "../utils/fromIdToCode";
 
 function ProductPhoto({ photoPath }: { photoPath: string }) {
 	const serverUrl = useConfig((s) => s.server_url);
@@ -52,49 +49,60 @@ function ProductCard({ product }: { product: FTSProduct }) {
 	const addToCart = useCartStore((state) => state.addToCart);
 
 	return (
-		<div className="flex gap-3 bg-white rounded-2xl p-3 shadow-sm">
-			<div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden border">
-				<ProductPhoto photoPath={product.photoPath} />
-			</div>
-			<div className="flex-1 min-w-0 flex flex-col">
-				<div className="flex items-start justify-between gap-2">
-					<span className="font-medium">{product.name}</span>
+		<div className="border-b-2">
+			<div className="flex gap-3 bg-white rounded-2xl p-3 pb-0">
+				<div>
+					<div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden border">
+						<ProductPhoto photoPath={product.photoPath} />
+					</div>
 				</div>
-				<span className="text-xs text-gray-500">
-					{product.article}
-					<Show when={product.oem.length && product.article.length}> </Show>
-					{product.oem}
-				</span>
-				<div className="mt-auto flex items-center justify-between gap-3 pt-2">
-					<span className="text-lg font-bold">
-						{product.price?.toFixed(2)}₴
-						<Show when={!product.quantity}>
-							<span className="text-red-700 font-bold"> · Немає</span>
-						</Show>
-						<Show when={product.quantity}>
-							<span className="text-lg font-medium text-gray-600">
-								{" "}
-								· {product.quantity} {product.units}
-							</span>
-						</Show>
-					</span>
-					<button
-						onClick={() => addToCart({ ...product, quantity: 1 })}
-						className="bg-sky-600 text-white rounded-xl p-3 active:bg-sky-500"
-					>
-						<Plus className="size-7" />
-					</button>
-				</div>
-				<div className="flex flex-wrap gap-1 pt-1">
-					{product.places?.filter(Boolean).map((place, i) => (
-						<span
-							key={i}
-							className="bg-gray-100 rounded-lg px-3 py-1.5 text-sm text-gray-600"
-						>
-							{place}
+				<div className="flex-1 min-w-0 flex flex-col">
+					<div className="flex items-center gap-2">
+						<span className="text-xl font-bold">
+							{fromIdToCode(product.id)}
 						</span>
-					))}
+						<span className="text-sm text-gray-500">
+							арт: {product.article}
+							<Show when={product.oem.length && product.article.length}>
+								ориг: {product.oem}
+							</Show>
+						</span>
+					</div>
+
+					<div className="flex items-start justify-between gap-2">
+						<span className="font-medium">{product.name}</span>
+					</div>
+					<div className="mt-auto flex items-center justify-between gap-3 pt-2">
+						<span className="text-lg font-bold">
+							{product.price?.toFixed(2)}₴
+							<Show when={!product.quantity}>
+								<span className="text-red-700 font-bold"> · Немає</span>
+							</Show>
+							<Show when={product.quantity}>
+								<span className="text-lg font-medium text-gray-600">
+									{" "}
+									· {product.quantity} {product.units}
+								</span>
+							</Show>
+						</span>
+						<button
+							onClick={() => addToCart({ ...product, quantity: 1 })}
+							className="bg-sky-600 text-white rounded-xl p-3 active:bg-sky-500"
+						>
+							<Plus className="size-7" />
+						</button>
+					</div>
 				</div>
+			</div>
+			<div className="flex flex-wrap gap-1 pb-3">
+				{product.places?.filter(Boolean).map((place, i) => (
+					<span
+						key={i}
+						className="bg-gray-100 rounded-lg px-3 py-1.5 text-sm text-gray-600"
+					>
+						{place}
+					</span>
+				))}
 			</div>
 		</div>
 	);
@@ -173,7 +181,6 @@ export default function MobilePos() {
 		<div
 			className={`h-full overflow-hidden flex flex-col ${getPageColor(partnerId, type) || ""}`}
 		>
-			<ProductDetailsDialogPortal />
 			{isLoadingProducts ? (
 				<div className="fixed z-10 start-0 top-0 end-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
 					<div className="w-24 h-24 border-8 border-sky-500 rounded-full border-t-transparent animate-spin"></div>
@@ -188,7 +195,7 @@ export default function MobilePos() {
 				<span>{type === "sell" ? "Продаж" : "Повернення"}</span>
 			</header>
 			<Show when={tab === "search"}>
-				<form onSubmit={onSearchSubmit} className="flex gap-2 pt-3">
+				<form onSubmit={onSearchSubmit} className="flex gap-2 pt-3 px-2">
 					<input
 						className="border-2 flex-1 h-12 rounded-xl px-3 text-base"
 						value={query}
@@ -203,7 +210,7 @@ export default function MobilePos() {
 					</button>
 				</form>
 				<Show when={history.length}>
-					<div className="flex gap-2 overflow-x-auto">
+					<div className="flex gap-2 overflow-x-auto px-2 py-2">
 						{history.slice(0, 5).map((item, i) => (
 							<button
 								key={i + item}
@@ -244,7 +251,7 @@ export default function MobilePos() {
 						<div className="sticky top-0 z-10 pt-3 pb-2 flex items-center gap-2">
 							<span className="bg-white rounded-xl px-3 py-2 shadow-sm text-sm">
 								Підібрано <b>{cartTotalCount.toFixed(2)}</b> на суму{" "}
-								<b>{cartTotalPrice}</b> грн
+								<b className="text-2xl">{cartTotalPrice}</b> грн
 							</span>
 							<div className="flex-1" />
 							<Show when={cartProducts.length}>
@@ -254,9 +261,9 @@ export default function MobilePos() {
 											clearCart();
 										}
 									}}
-									className="bg-white rounded-xl p-2 shadow-sm text-red-600"
+									className="flex gap-2 bg-white rounded-xl p-2 shadow-sm text-red-600"
 								>
-									<Trash2 />
+									Очистити <Trash2 />
 								</button>
 							</Show>
 						</div>
@@ -271,16 +278,22 @@ export default function MobilePos() {
 									className="flex items-center gap-3 bg-white rounded-2xl p-3 shadow-sm"
 								>
 									<div className="flex-1 min-w-0">
+										<div className="flex gap-2 items-center">
+											<span className="font-bold text-lg">
+												{fromIdToCode(product.id)}
+											</span>
+											<span className="text-xs text-gray-500">
+												арт: {product.article}
+											</span>
+											<Show when={product.oem.length}>
+												<span>оем: {product.oem}</span>
+											</Show>
+											<div className="flex justify-end grow"></div>
+										</div>
 										<span className="font-medium block line-clamp-1">
 											{product.name}
 										</span>
-										<span className="text-xs text-gray-500">
-											{product.article}
-											<Show when={product.oem.length && product.article.length}>
-												{" "}
-											</Show>
-											{product.oem}
-										</span>
+
 										<div className="flex items-center justify-between pt-1">
 											<span className="text-sm">
 												{product.price?.toFixed(2)}₴ × {product.quantity} ={" "}
@@ -290,30 +303,43 @@ export default function MobilePos() {
 													)}
 												</b>
 											</span>
+										</div>
+									</div>
+									<div className="h-full">
+										<div className="flex justify-end mb-10">
 											<button
 												onClick={() => removeFromCart(product.id)}
-												className="text-red-500 p-1"
+												className="text-red-500 p-2 bg-red-200 rounded-lg"
 											>
 												<Trash2 className="size-5" />
 											</button>
 										</div>
-									</div>
-									<div className="flex items-center gap-2">
-										<button
-											onClick={() => editCart(product.id, product.quantity - 1)}
-											className="bg-gray-100 rounded-lg p-2 active:bg-gray-300"
-										>
-											<Minus />
-										</button>
-										<span className="w-8 text-center font-medium">
-											{product.quantity}
-										</span>
-										<button
-											onClick={() => editCart(product.id, product.quantity + 1)}
-											className="bg-gray-100 rounded-lg p-2 active:bg-gray-300"
-										>
-											<Plus />
-										</button>
+										<div className="flex items-center gap-2">
+											<button
+												onClick={() =>
+													editCart(product.id, product.quantity - 1)
+												}
+												className="bg-gray-100 rounded-lg p-2 active:bg-gray-300"
+											>
+												<Minus />
+											</button>
+											<input
+												className="w-8 py-2 text-center font-medium"
+												value={product.quantity}
+												onChange={(e) =>
+													editCart(product.id, Number(e.target.value) || 0)
+												}
+											/>
+
+											<button
+												onClick={() =>
+													editCart(product.id, product.quantity + 1)
+												}
+												className="bg-gray-100 rounded-lg p-2 active:bg-gray-300"
+											>
+												<Plus />
+											</button>
+										</div>
 									</div>
 								</div>
 							))
