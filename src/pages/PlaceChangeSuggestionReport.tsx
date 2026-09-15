@@ -19,9 +19,9 @@ import { persist } from "zustand/middleware";
 import { Spinner } from "../components/spinner";
 
 import { fetcher } from "../utils/fetcher";
-import { useStorageCells } from "../api/odata";
 import { getStorageCellCode } from "../utils/getStorageCellCode";
 import { StoragePlaceSelectorDialog } from "../components/storage-place-selector-dialog";
+import { useStorageCells } from "../api/storage-cell";
 
 const halfOfYear = 15552000000;
 

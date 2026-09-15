@@ -4,13 +4,14 @@ import { FormEvent, useState } from "react";
 import { EditProductDialog } from "./PlaceChangeSuggestionReport";
 import { getOdataValue } from "../utils/odata";
 import { Search } from "lucide-react";
-import { getBarcodeProductLinks, useStorageCells } from "../api/odata";
+import { getBarcodeProductLinks } from "../api/odata";
 import { getStorageCellCode } from "../utils/getStorageCellCode";
 import { Spinner } from "../components/spinner";
 import { useBarcodeScanner } from "../hooks/useBarcodeScanner";
 import { toast } from "sonner";
 import { useDebounce } from "@uidotdev/usehooks";
 import { getShortcutsLayer } from "../utils/getShortcutsLayer";
+import { useStorageCells } from "../api/storage-cell";
 
 export function ProductEditor() {
 	const [query, setQuery] = useState("");
