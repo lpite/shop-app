@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, CircleOff, Folder, Pencil } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 
-import { StorageCell, useStorageCells } from "../api/odata";
+import { StorageCell, useStorageCells } from "../api/storage-cell";
 
 const EMPTY_REF = "00000000-0000-0000-0000-000000000000";
 
@@ -23,20 +23,20 @@ export function StoragePlaceSelectorDialog({
 	const [path, setPath] = useState<string[]>([EMPTY_REF]);
 	const [isOpen, setIsOpen] = useState(false);
 	const [selectedPlace, setSelectedPlace] = useState<{
-		Ref_Key: string;
-		Code: string;
+		ref: string;
+		id: string;
 	} | null>(null);
 
 	const fileListRef = useRef<HTMLDivElement>(null);
 
 	function onItemClick(item: StorageCell) {
-		if (item.IsFolder) {
-			setPath((p) => [item.Ref_Key, ...p]);
+		if (item.isFolder) {
+			setPath((p) => [item.ref, ...p]);
 			setSelectedPlace(null);
 			return;
 		}
 		setSelectedPlace(item);
-		setLastPlaces((pr) => [item.Ref_Key, ...pr].slice(0, 3));
+		setLastPlaces((pr) => [item.ref, ...pr].slice(0, 3));
 	}
 
 	useEffect(() => {
@@ -50,9 +50,8 @@ export function StoragePlaceSelectorDialog({
 			<Dialog.Trigger className="flex items-center grow">
 				<span className="grow text-start">
 					{selectedPlace
-						? places?.find((place) => place.Ref_Key === selectedPlace.Ref_Key)
-								?.Code
-						: places?.find((p) => p.Ref_Key === place)?.Code}
+						? places?.find((place) => place.ref === selectedPlace.ref)?.id
+						: places?.find((p) => p.ref === place)?.id}
 				</span>
 				<div className="size-10 bg-gray-50 border rounded-lg flex items-center justify-center">
 					<Pencil className="size-4" />
@@ -83,40 +82,40 @@ export function StoragePlaceSelectorDialog({
 							<>
 								<span>Останні місця</span>
 								{places
-									?.filter((el) => lastPlaces.includes(el.Ref_Key))
+									?.filter((el) => lastPlaces.includes(el.ref))
 									.map((item) => (
 										<button
-											key={item.Ref_Key + title}
-											className={`flex items-center gap-1 border-b py-2 px-2 ${selectedPlace?.Ref_Key === item.Ref_Key ? "bg-gray-100" : ""}`}
+											key={item.ref + title}
+											className={`flex items-center gap-1 border-b py-2 px-2 ${selectedPlace?.ref === item.ref ? "bg-gray-100" : ""}`}
 											onClick={() => onItemClick(item)}
 										>
-											{item.IsFolder ? (
+											{item.isFolder ? (
 												<Folder className="size-4 text-gray-600" />
 											) : null}
 											{item.DeletionMark ? (
 												<CircleOff className="size-4 text-red-600" />
 											) : null}
-											{item.Code}
+											{item.id}
 										</button>
 									))}
 								<hr className="my-3" />
 							</>
 						) : null}
 						{places
-							?.filter((el) => el.Parent_Key === path[0])
+							?.filter((el) => el.parentRef === path[0])
 							.map((item) => (
 								<button
-									key={item.Ref_Key + title}
-									className={`flex items-center gap-1 border-b py-2 px-2 ${selectedPlace?.Ref_Key === item.Ref_Key ? "bg-gray-100" : ""}`}
+									key={item.ref + title}
+									className={`flex items-center gap-1 border-b py-2 px-2 ${selectedPlace?.ref === item.ref ? "bg-gray-100" : ""}`}
 									onClick={() => onItemClick(item)}
 								>
-									{item.IsFolder ? (
+									{item.isFolder ? (
 										<Folder className="size-4 text-gray-600" />
 									) : null}
 									{item.DeletionMark ? (
 										<CircleOff className="size-4 text-red-600" />
 									) : null}
-									{item.Code}
+									{item.id}
 								</button>
 							))}
 					</div>
@@ -133,13 +132,13 @@ export function StoragePlaceSelectorDialog({
 						</button>
 
 						<button
-							className="bg-green-500 active:bg-green-600 disabled:opacity-25 disabled:active:bg-green-500 text-slate-700 w-full rounded-lg py-3 font-semibold "
+							className="bg-green-500 active:bg-green-600 disabled:opacity-25 disabled:active:bg-green-500 text-slate-700 w-full rounded-lg py-3 font-semibold"
 							disabled={!selectedPlace}
 							onClick={() => {
 								if (!selectedPlace) {
 									return;
 								}
-								setPlace(selectedPlace.Ref_Key);
+								setPlace(selectedPlace.ref);
 								setPath([""]);
 								setIsOpen(false);
 							}}
