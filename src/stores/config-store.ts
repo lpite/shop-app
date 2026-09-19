@@ -9,6 +9,7 @@ export const configSchema = z.object({
 	use_app_return_page: z.boolean(),
 	use_pos_v2_api: z.boolean(),
 	use_search_v3: z.boolean(),
+	main_partner_id: z.string(),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -23,6 +24,7 @@ export const useConfig = create<Config>()(
 			use_app_return_page: false,
 			use_pos_v2_api: false,
 			use_search_v3: false,
+			main_partner_id: "УТ-00000002",
 		}),
 		{
 			name: "settings",
