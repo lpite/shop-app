@@ -196,7 +196,16 @@ export default function MobilePos() {
 				className={`flex items-center gap-2 px-4 py-3 ${getPageColor(partnerId, type) || "bg-slate-100"}`}
 			>
 				<span className="text-lg font-semibold">
-					{type === "sell" ? "Продаж" : "Повернення"}
+					<select
+						value={type}
+						className="py-3 px-2"
+						onChange={(e) =>
+							navigate(`/pos/${partnerId}/${e.target.value}/mobile`)
+						}
+					>
+						<option value="sell">Продаж</option>
+						<option value="return">Повернення</option>
+					</select>
 				</span>
 				<div className="flex-1" />
 				<select
