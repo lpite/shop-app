@@ -343,8 +343,9 @@ export default function MobilePos() {
 											<input
 												className="w-8 py-2 text-center font-medium"
 												value={product.quantity}
+												type="number"
 												onChange={(e) =>
-													editCart(product.id, Number(e.target.value) || 0)
+													editCart(product.id, parseFloat(e.target.value))
 												}
 											/>
 
