@@ -46,6 +46,7 @@ export default function IncomeDocumentHelper() {
 				Контрагент_Key: document.counterPartyRef,
 				Склад_Key: document.warehouseRef,
 				Подразделение_Key: "04dec983-6247-11e3-9715-00e04c395324", // склад
+				Договор_Key: document.agreementRef,
 				Комментарий: document.comment,
 				Товары: document.products.map((el, i) => ({
 					Номенклатура_Key: el.ref,

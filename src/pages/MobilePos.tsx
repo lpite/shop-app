@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import useSWR from "swr";
-import { useParams } from "wouter";
+import { useLocation, useParams } from "wouter";
 import {
 	Image as ImageIcon,
 	Minus,
@@ -110,6 +110,8 @@ function ProductCard({ product }: { product: FTSProduct }) {
 
 export default function MobilePos() {
 	const { partnerId, type } = useParams();
+	const [_, navigate] = useLocation();
+
 	const {
 		query,
 		setQuery,
@@ -125,8 +127,9 @@ export default function MobilePos() {
 	const { use_pos_v2_api } = useConfig();
 	const [tab, setTab] = useState<"search" | "cart">("search");
 
-	const { data: agentAndPartner } = useSWR(partnerId ? "clients/" : null, () =>
-		client.getOne(partnerId || ""),
+	const { data: clients } = useSWR(
+		partnerId ? "clients/" : null,
+		client.getList,
 	);
 
 	const cartTotalCount = cartProducts.reduce(
@@ -151,7 +154,9 @@ export default function MobilePos() {
 			return;
 		}
 
-		const agentName = agentAndPartner?.agentName;
+		const agentName = clients?.find(
+			(el) => el.partnerId === partnerId,
+		)?.agentName;
 		if (!agentName) {
 			console.error("no agentName");
 			return;
@@ -190,9 +195,21 @@ export default function MobilePos() {
 			<header
 				className={`flex items-center gap-2 px-4 py-3 ${getPageColor(partnerId, type) || "bg-slate-100"}`}
 			>
-				<span className="text-lg font-semibold">POS</span>
+				<span className="text-lg font-semibold">
+					{type === "sell" ? "Продаж" : "Повернення"}
+				</span>
 				<div className="flex-1" />
-				<span>{type === "sell" ? "Продаж" : "Повернення"}</span>
+				<select
+					value={partnerId}
+					className="py-3 px-4 rounded-lg"
+					onChange={(e) => navigate(`/pos/${e.target.value}/sell/mobile`)}
+				>
+					{clients?.map((client) => (
+						<option key={client.partnerId} value={client.partnerId}>
+							{client.partnerName}
+						</option>
+					))}
+				</select>
 			</header>
 			<Show when={tab === "search"}>
 				<form onSubmit={onSearchSubmit} className="flex gap-2 pt-3 px-2">

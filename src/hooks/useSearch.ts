@@ -194,12 +194,14 @@ type FTSProductV3 = FTSProduct & {
 };
 
 function useSearchV3({}: UseSearch) {
+	const { server_url } = useConfig.getState();
+
 	const { query, history } = useSearchStore();
 
 	const { data, mutate, isLoading, isValidating, error } = useSWR(
 		`search`,
 		() =>
-			fetch(`http://localhost:3210/search?q=${query}`)
+			fetch(`${server_url}/search?q=${query}`)
 				.then((r) => r.json() as Promise<FTSProductV3[]>)
 				.then((r) => r.sort((a, b) => a.name.localeCompare(b.name))),
 		{
