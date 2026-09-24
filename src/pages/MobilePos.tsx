@@ -1,17 +1,17 @@
 import { FormEvent, useState } from "react";
 import useSWR from "swr";
-import { useLocation, useParams } from "wouter";
+import { Link, useLocation, useParams } from "wouter";
 import {
 	Image as ImageIcon,
 	Minus,
 	PackageSearch,
 	Plus,
+	ReceiptText,
 	Search,
 	ShoppingCart,
 	Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Base64 } from "js-base64";
 
 import Show from "../utils/Show";
 import { getPageColor } from "../utils/getPageColor";
@@ -26,10 +26,10 @@ import { client } from "../api/client";
 import { FTSProduct } from "../types/product";
 import { fromIdToCode } from "../utils/fromIdToCode";
 
-function ProductPhoto({ photoPath }: { photoPath: string }) {
+function ProductPhoto({ photoUrl }: { photoUrl: string }) {
 	const serverUrl = useConfig((s) => s.server_url);
 
-	if (!photoPath) {
+	if (!photoUrl) {
 		return (
 			<div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
 				<ImageIcon className="size-8" />
@@ -40,7 +40,7 @@ function ProductPhoto({ photoPath }: { photoPath: string }) {
 	return (
 		<img
 			className="w-full h-full object-cover"
-			src={`${serverUrl}/api/get-photo.php?photo=${encodeURIComponent(Base64.encode(photoPath))}`}
+			src={`${serverUrl}/api/get-photo.php?photo=${photoUrl}`}
 		/>
 	);
 }
@@ -53,7 +53,7 @@ function ProductCard({ product }: { product: FTSProduct }) {
 			<div className="flex gap-3 bg-white rounded-2xl p-3 pb-0">
 				<div>
 					<div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden border">
-						<ProductPhoto photoPath={product.photoPath} />
+						<ProductPhoto photoUrl={product.photoUrl} />
 					</div>
 				</div>
 				<div className="flex-1 min-w-0 flex flex-col">
@@ -61,12 +61,12 @@ function ProductCard({ product }: { product: FTSProduct }) {
 						<span className="text-xl font-bold">
 							{fromIdToCode(product.id)}
 						</span>
-						<span className="text-sm text-gray-500">
-							арт: {product.article}
+						<div className="text-sm text-gray-500 flex flex-col">
+							<span>art: {product.article}</span>
 							<Show when={product.oem.length && product.article.length}>
-								ориг: {product.oem}
+								<span>OE: {product.oem}</span>
 							</Show>
-						</span>
+						</div>
 					</div>
 
 					<div className="flex items-start justify-between gap-2">
@@ -198,7 +198,7 @@ export default function MobilePos() {
 				<span className="text-lg font-semibold">
 					<select
 						value={type}
-						className="py-3 px-2"
+						className="py-3 px-2 rounded-xl"
 						onChange={(e) =>
 							navigate(`/pos/${partnerId}/${e.target.value}/mobile`)
 						}
@@ -210,7 +210,7 @@ export default function MobilePos() {
 				<div className="flex-1" />
 				<select
 					value={partnerId}
-					className="py-3 px-4 rounded-lg"
+					className="py-3 px-4 rounded-xl"
 					onChange={(e) => navigate(`/pos/${e.target.value}/sell/mobile`)}
 				>
 					{clients?.map((client) => (
@@ -402,6 +402,13 @@ export default function MobilePos() {
 						</span>
 					</Show>
 				</button>
+				<Link
+					href="/stats"
+					className="flex-1 flex flex-col items-center gap-0.5 py-2 text-gray-500"
+				>
+					<ReceiptText />
+					<span className="text-xs">Статистика</span>
+				</Link>
 			</nav>
 		</div>
 	);
