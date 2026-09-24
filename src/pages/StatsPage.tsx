@@ -3,6 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 
 import { fetcher } from "../utils/fetcher";
 import CommentPopup from "../components/comment-popup";
+import { MessageCircle } from "lucide-react";
 
 export default function StatsPage() {
 	const { data: stats, isLoading } = useSWR(
@@ -26,7 +27,7 @@ export default function StatsPage() {
 					Назад
 				</button>
 			</header>
-			<main className="flex">
+			<main className="flex items-center md:items-start flex-col md:flex-row px-4">
 				{!isLoading &&
 					["yesterday", "today"].map((day) => {
 						const documents = stats?.filter((el: any) => el.day === day);
@@ -39,7 +40,7 @@ export default function StatsPage() {
 
 function Day({ day, documents }: { day: string; documents: any[] }) {
 	return (
-		<div className="w-3/6 flex flex-col items-center justify-start gap-3 mx-1">
+		<div className="w-full md:w-3/6 flex flex-col items-center justify-start gap-3 mx-1">
 			<h2 className="text-3xl">{day === "today" ? "Сьогодні" : "Вчора"}</h2>
 
 			{documents &&
@@ -47,15 +48,13 @@ function Day({ day, documents }: { day: string; documents: any[] }) {
 					<div key={day + i} className="border-2 rounded-lg w-full p-2">
 						{doc.type === "sale" ? (
 							<>
-								<span className="text-xl">Продаж</span>
-								<span className="text-xl font-bold">{doc.partnerName}</span>
-								<br />
-								<br />
-
-								<span className="text-xl font-bold"> {doc.sum} грн</span>
-								<br />
-								<div className="flex items-center">
-									<span className="text-xl mr-3">Комментар:</span>
+								<div className="flex flex-col">
+									<span className="text-lg text-gray-700">Продаж</span>
+									<span className="text-xl font-bold">{doc.partnerName}</span>
+									<span className="text-xl font-bold"> {doc.sum} грн</span>
+								</div>
+								<div className="flex items-center gap-1">
+									<MessageCircle className="text-gray-500" />
 									<span className="text-md">{doc.comment || "Пусто..."}</span>
 									{day === "today" ? (
 										<CommentPopup partnerId={doc.partnerId} />
