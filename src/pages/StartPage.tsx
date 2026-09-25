@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { useConfig } from "../stores/config-store";
 
 export default function StartPage() {
-	const { use_app_return_page } = useConfig();
+	const { use_app_return_page, main_partner_id } = useConfig();
 	return (
 		<main className="flex items-center justify-center w-full h-full gap-4">
 			<span className="fixed top-3 start-3">{__BUILD_ID__}</span>
@@ -23,7 +23,7 @@ export default function StartPage() {
 			</Link>
 			{use_app_return_page ? (
 				<Link
-					to="/pos/УТ-00000002/return"
+					to={`/pos/${main_partner_id}/return`}
 					className="w-32 py-3 bg-sky-600 rounded-lg text-center text-white font-semibold"
 				>
 					Повернення
