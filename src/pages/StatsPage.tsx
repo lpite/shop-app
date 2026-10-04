@@ -3,7 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 
 import { fetcher } from "../utils/fetcher";
 import CommentPopup from "../components/comment-popup";
-import { MessageCircle } from "lucide-react";
+import { Box, MessageCircle } from "lucide-react";
 
 export default function StatsPage() {
 	const { data: stats, isLoading } = useSWR(
@@ -27,7 +27,7 @@ export default function StatsPage() {
 					Назад
 				</button>
 			</header>
-			<main className="flex items-center md:items-start flex-col md:flex-row px-4">
+			<main className="flex items-center md:items-start flex-col-reverse md:flex-row px-4">
 				{!isLoading &&
 					["yesterday", "today"].map((day) => {
 						const documents = stats?.filter((el: any) => el.day === day);
@@ -45,7 +45,7 @@ function Day({ day, documents }: { day: string; documents: any[] }) {
 
 			{documents &&
 				documents?.map((doc, i) => (
-					<div key={day + i} className="border-2 rounded-lg w-full p-2">
+					<div key={day + i} className="border-2 rounded-xl w-full p-2">
 						{doc.type === "sale" ? (
 							<>
 								<div className="flex flex-col">
@@ -108,8 +108,8 @@ function ProductsPopup({
 		<>
 			<Dialog.Root>
 				<Dialog.Trigger asChild>
-					<button className="border-2 px-2 py-1 mt-3 rounded-md hover:bg-gray-200">
-						Показати товари
+					<button className="flex gap-2 border-2 px-2 py-2 mt-3 rounded-xl hover:bg-gray-200">
+						<Box /> Товари
 					</button>
 				</Dialog.Trigger>
 				<Dialog.Portal>
