@@ -1,4 +1,4 @@
-import { StorageCell } from "../api/storage-cell";
+import { StorageCell } from "../api/odata";
 
 const EMPTY_REF = "00000000-0000-0000-0000-000000000000";
 
@@ -15,7 +15,7 @@ export function getStorageCellCode(storageCells?: StorageCell[], ref?: string) {
 		return "";
 	}
 	return (
-		storageCells?.find((storageCell) => storageCell.ref === ref)?.id ||
+		storageCells?.find((storageCell) => storageCell.Ref_Key === ref)?.Code ||
 		"not found"
 	);
 }
