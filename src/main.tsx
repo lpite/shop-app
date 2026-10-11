@@ -15,6 +15,7 @@ import { Spinner } from "./components/spinner.tsx";
 import { OrderNotifier } from "./components/order-notification";
 import { ErrorBoundary } from "react-error-boundary";
 import { ProductEditor } from "./pages/ProductEditor.tsx";
+import NotFound from "./pages/NotFound.tsx";
 
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const StatsPage = lazy(() => import("./pages/StatsPage.tsx"));
@@ -76,6 +77,7 @@ createRoot(document.getElementById("root")!).render(
 					<Route path="/product-editor" component={ProductEditor} />
 					<Route path="/photo-studio" component={PhotoStudio} />
 					<Route path="/scanner" component={ScannerPage} />
+					<Route path="*" component={NotFound} />
 				</Switch>
 			</SWRConfig>
 		</ErrorBoundary>
