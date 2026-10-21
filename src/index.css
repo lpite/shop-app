@@ -139,3 +139,12 @@ input[type="number"] {
 .octocat {
 	animation: jumping_octocat 3s infinite;
 }
+
+@media print {
+	html,
+	body,
+	#root {
+		height: auto;
+		overflow: visible;
+	}
+}

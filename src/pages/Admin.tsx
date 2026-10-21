@@ -16,6 +16,9 @@ export default function AdminPage() {
 			<Link to="/" className="">
 				Друк
 			</Link>
+			<Link to="/price-tags" className="">
+				Цінники
+			</Link>
 		</main>
 	);
 }

@@ -30,6 +30,7 @@ const IncomeDocumentHelper = lazy(
 );
 const ScannerPage = lazy(() => import("./pages/ScannerPage.tsx"));
 const MobilePos = lazy(() => import("./pages/MobilePos.tsx"));
+const PriceTagsPage = lazy(() => import("./pages/PriceTags.tsx"));
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
@@ -77,6 +78,14 @@ createRoot(document.getElementById("root")!).render(
 					<Route path="/product-editor" component={ProductEditor} />
 					<Route path="/photo-studio" component={PhotoStudio} />
 					<Route path="/scanner" component={ScannerPage} />
+					<Route
+						path="/price-tags"
+						component={() => (
+							<Suspense fallback={<Spinner size={40} />}>
+								<PriceTagsPage />
+							</Suspense>
+						)}
+					/>
 					<Route path="*" component={NotFound} />
 				</Switch>
 			</SWRConfig>
