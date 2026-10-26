@@ -19,7 +19,7 @@ export default function ClientSelectionPage() {
 	const { data, isLoading } = useSWR("/clients/", client.getList);
 
 	return (
-		<main className="h-full flex flex-col items-center justify-center">
+		<main className="h-full flex flex-col items-center justify-center pt-2">
 			{isLoading ? (
 				<div className="h-20">
 					<div className="animate-spin border border-blue-700 border-b-transparent border-solid w-8 h-8 rounded-full"></div>
@@ -34,10 +34,12 @@ export default function ClientSelectionPage() {
 				<h1 className="text-2xl">
 					Оберіть клієнта для <b>Продажу</b>
 				</h1>
-				<div className="flex gap-4 mt-12 mb-3">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 mb-3 overflow-auto">
 					{data &&
 						data
-							?.filter((client) => mainClients.indexOf(client.partnerId) !== -1)
+							.filter(
+								(client) => disabledClients.indexOf(client.partnerId) === -1,
+							)
 							.sort((a, b) => {
 								const aIndex = mainClients.indexOf(a.partnerId);
 								const bIndex = mainClients.indexOf(b.partnerId);
@@ -54,14 +56,14 @@ export default function ClientSelectionPage() {
 								<Link
 									key={partnerId}
 									to={`/pos/${partnerId}/sell`}
-									className="w-72 h-24 p-2 border-2 rounded-lg flex items-center justify-between text-xl font-medium hover:shadow-lg"
+									className={`w-72  p-2 border-2 rounded-lg flex items-center justify-between  hover:shadow-lg ${mainClients.indexOf(partnerId) !== -1 ? "h-24 text-xl font-medium bg-fuchsia-50" : ""}`}
 								>
 									{partnerName}
 									<ChevronRight />
 								</Link>
 							))}
 				</div>
-				{data &&
+				{/*{data &&
 					data
 						?.filter((client) => {
 							if (client.agentName === "-" || client.partnerName === "-") {
@@ -86,7 +88,7 @@ export default function ClientSelectionPage() {
 							>
 								{partnerName}
 							</Link>
-						))}
+						))}*/}
 			</Show>
 		</main>
 	);
