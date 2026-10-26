@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { SWRConfig } from "swr";
 import { Route, Switch } from "wouter";
 import { Toaster } from "sonner";
+import { ErrorBoundary } from "react-error-boundary";
 
 import "./index.css";
 
@@ -13,10 +14,9 @@ import { ConfigPage } from "./pages/Config.tsx";
 
 import { Spinner } from "./components/spinner.tsx";
 import { OrderNotifier } from "./components/order-notification";
-import { ErrorBoundary } from "react-error-boundary";
-import { ProductEditor } from "./pages/ProductEditor.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
+const ProductEditor = lazy(() => import("./pages/ProductEditor.tsx"));
 const PriceChanger = lazy(() => import("./pages/PriceChanger.tsx"));
 const StatsPage = lazy(() => import("./pages/StatsPage.tsx"));
 const LeftOversReport = lazy(() => import("./pages/LeftoversReport.tsx"));
@@ -31,6 +31,9 @@ const IncomeDocumentHelper = lazy(
 const ScannerPage = lazy(() => import("./pages/ScannerPage.tsx"));
 const MobilePos = lazy(() => import("./pages/MobilePos.tsx"));
 const PriceTagsPage = lazy(() => import("./pages/PriceTags.tsx"));
+const StoragePlaceLabelsPage = lazy(
+	() => import("./pages/StoragePlaceLabels.tsx"),
+);
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
@@ -41,7 +44,7 @@ createRoot(document.getElementById("root")!).render(
 					className="w-full h-full flex items-center justify-center flex-col gap-6"
 				>
 					<span className="text-3xl">Сталася помилка</span>
-					<img className="w-24" src="/Sad_mac.jpg" />
+					<img className="w-24" src="/icons/Sad_mac.jpg" />
 					<span>Натисніть куди завгодно для оновлення</span>
 				</div>
 			}
@@ -75,7 +78,14 @@ createRoot(document.getElementById("root")!).render(
 						component={IncomeDocumentHelper}
 						nest
 					/>
-					<Route path="/product-editor" component={ProductEditor} />
+					<Route
+						path="/product-editor"
+						component={() => (
+							<Suspense fallback={<Spinner size={40} />}>
+								<ProductEditor />
+							</Suspense>
+						)}
+					/>
 					<Route path="/photo-studio" component={PhotoStudio} />
 					<Route path="/scanner" component={ScannerPage} />
 					<Route
@@ -83,6 +93,14 @@ createRoot(document.getElementById("root")!).render(
 						component={() => (
 							<Suspense fallback={<Spinner size={40} />}>
 								<PriceTagsPage />
+							</Suspense>
+						)}
+					/>
+					<Route
+						path="/storage-place-labels"
+						component={() => (
+							<Suspense fallback={<Spinner size={40} />}>
+								<StoragePlaceLabelsPage />
 							</Suspense>
 						)}
 					/>

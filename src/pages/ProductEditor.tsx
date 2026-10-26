@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { useDebounce } from "@uidotdev/usehooks";
 import { getShortcutsLayer } from "../utils/getShortcutsLayer";
 
-export function ProductEditor() {
+export default function ProductEditor() {
 	const [query, setQuery] = useState("");
 
 	const debouncedQuery = useDebounce(query, 400);
