@@ -123,18 +123,6 @@ export default function LeftoversReport() {
 	const selectedRow =
 		(data ?? []).find((el) => el.id === selectedRowId) ?? null;
 
-	const shortageRows = filteredData.filter(
-		(c) => c["stock"] - c["minStock"] < 0,
-	);
-	const shortageCount = shortageRows.reduce(
-		(p, c) => p + (c["stock"] - c["minStock"]),
-		0,
-	);
-	const shortageSum = shortageRows.reduce(
-		(p, c) => p + Math.abs(c["stock"] - c["minStock"]) * c["price"],
-		0,
-	);
-
 	return (
 		<main className="flex w-screen min-h-screen gap-4 py-4 px-4">
 			<aside

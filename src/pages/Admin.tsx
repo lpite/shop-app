@@ -1,4 +1,11 @@
-import { ArrowRightLeft, House, Package, Printer, Tag } from "lucide-react";
+import {
+	ArrowRightLeft,
+	House,
+	MapPin,
+	Package,
+	Printer,
+	Tag,
+} from "lucide-react";
 import { Link } from "wouter";
 
 const items = [
@@ -31,6 +38,12 @@ const items = [
 		icon: Tag,
 		title: "Цінники",
 		accent: "bg-sky-100 text-sky-700",
+	},
+	{
+		to: "/storage-place-labels",
+		icon: MapPin,
+		title: "Мітки комірок",
+		accent: "bg-rose-100 text-rose-700",
 	},
 ];
 

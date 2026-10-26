@@ -1,6 +1,6 @@
 import { fetcher } from "../utils/fetcher";
 
-type StoragePlace = {
+export type StoragePlace = {
 	id: number;
 	name: string;
 	isFolder: boolean;
