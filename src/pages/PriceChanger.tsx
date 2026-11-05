@@ -128,7 +128,7 @@ export default function PriceChanger() {
 					.slice(0, 100)
 					.map((product) => ({
 						id: product.searchCode,
-						name: `${product.searchCode} ${product.name}`,
+						name: `${product.searchCode} ${product.code} ${product.name}`,
 						onClick: () => setSelectedProduct(product),
 					}))}
 			/>
