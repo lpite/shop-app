@@ -16,7 +16,7 @@ export default function StartPage() {
 				</Link>
 			</div>
 			<Link
-				to="/clients"
+				to={`/pos/${main_partner_id}/sell`}
 				className="w-32 py-3 bg-sky-600 rounded-lg text-center text-white font-semibold"
 			>
 				Продаж
