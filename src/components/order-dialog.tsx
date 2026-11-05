@@ -104,21 +104,25 @@ function formatPhoneNumber(phoneNumber: string) {
 }
 
 export function OrderDialog() {
+	const [isOpen, setIsOpen] = useState(false);
+
 	const {
 		data: orders,
 		mutate: mutateOrders,
 		isLoading: isLoadingOrders,
 		isValidating: isValidatingOrders,
-	} = useSWR("customer_orders", () => getSuplierOrders());
-	const { data: suppliers } = useSWR("suppliers", () => getSuppliers());
-	const { data: orderStatuses } = useSWR("order_statuses", () =>
+	} = useSWR(isOpen ? "customer_orders" : null, () => getSuplierOrders());
+	const { data: suppliers } = useSWR(isOpen ? "suppliers" : null, () =>
+		getSuppliers(),
+	);
+	const { data: orderStatuses } = useSWR(isOpen ? "order_statuses" : null, () =>
 		getOrderStatuses(),
 	);
-	const { data: ordersCountByStatus } = useSWR("orders_count_by_status", () =>
-		getOrdersCountByStatus(),
+	const { data: ordersCountByStatus } = useSWR(
+		isOpen ? "orders_count_by_status" : null,
+		() => getOrdersCountByStatus(),
 	);
 
-	const [isOpen, setIsOpen] = useState(false);
 	const [view, setView] = useState("list");
 	const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
 	const [editingOrderStatusName, setEditingOrderStatusName] = useState<
