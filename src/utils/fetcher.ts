@@ -3,7 +3,7 @@ import { Product } from "../types/product";
 
 type FetchInputBase = {
 	url: string;
-	method: string;
+	method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 	body?: any;
 	query?: string;
 	response?: any;
@@ -51,7 +51,7 @@ export type FetchInputs =
 
 type Fetcher = {
 	url: string;
-	method: string;
+	method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 	query?: string;
 	// body?: Record<string, string | number | string[] | number[] | undefined>;
 	body?: any;
