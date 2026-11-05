@@ -23,4 +23,17 @@ async function getPhotos(productId: string) {
 	) as string[];
 }
 
+async function getMovements(productId: string) {
+	return fetcher<{
+		documentDate: string;
+		documentNumber: string;
+		documentType: "income" | "sell";
+		productQuantity: number;
+		productPrice: number;
+	}>({
+		method: "GET",
+		url: `/shop/hs/api/product/${productId}/movements`,
+	});
+}
+
 export const Product = { getPhotos };
